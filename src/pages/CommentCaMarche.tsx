@@ -18,12 +18,12 @@ const CommentCaMarche = () => {
     {
       icon: MessageCircle,
       title: "Échangez",
-      description: "Les acheteurs intéressés vous contactent directement. Répondez rapidement et arrangez un rendez-vous pour la remise.",
+      description: "Les acheteurs vous contactent directement sur WhatsApp. Répondez vite pour conclure la vente.",
     },
     {
       icon: Package,
-      title: "Vendez",
-      description: "Remettez l'article en main propre et recevez votre paiement. Simple, rapide et sans frais !",
+      title: "Vendez (Gratuitement)",
+      description: "Remettez l'article et gardez 100% du prix. Dish Delight ne prend AUCUNE commission sur la vente !",
     },
   ];
 
@@ -40,13 +40,13 @@ const CommentCaMarche = () => {
     },
     {
       icon: MessageCircle,
-      title: "Contactez",
-      description: "Envoyez un message au vendeur via WhatsApp ou notre système de messagerie. Posez vos questions et organisez la rencontre.",
+      title: "WhatsApp Direct",
+      description: "Discutez directement avec le vendeur via WhatsApp pour poser vos questions et fixer un rendez-vous.",
     },
     {
       icon: Package,
-      title: "Récupérez",
-      description: "Rencontrez le vendeur, vérifiez l'article et payez en main propre. Profitez de votre nouvelle vaisselle !",
+      title: "Payez à la remise",
+      description: "Vérifiez l'article au moment de la rencontre et payez le vendeur directement. Simple et sans intermédiaire.",
     },
   ];
 
@@ -59,8 +59,8 @@ const CommentCaMarche = () => {
             Comment ça marche ?
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            VaisselleSeconde facilite l'achat et la vente de vaisselle d'occasion entre particuliers. 
-            Voici comment ça fonctionne.
+            Sur Dish Delight, la vente est 100% gratuite. Gagnez en visibilité en boostant
+            votre annonce pour quelques francs seulement !
           </p>
         </div>
       </section>

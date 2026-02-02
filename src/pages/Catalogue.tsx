@@ -5,12 +5,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
-import { sampleProducts, categories } from "@/data/products";
-import { useState } from "react";
+import { sampleProducts, categories, senegalRegions } from "@/data/products";
+import { useState, useEffect } from "react";
+
+const dakarNeighborhoods = [
+  "Almadies", "Plateau", "Médina", "Grand Yoff", "Parcelles Assainies",
+  "Pikine", "Guédiawaye", "Rufisque", "Mermoz", "Ouakam", "Ngor"
+];
 
 const Catalogue = () => {
   const [showFilters, setShowFilters] = useState(false);
-  const [priceRange, setPriceRange] = useState([0, 50]);
+  const [priceRange, setPriceRange] = useState([0, 50000]);
+  const [allProducts, setAllProducts] = useState(sampleProducts);
+
+  useEffect(() => {
+    const userProducts = JSON.parse(localStorage.getItem("userProducts") || "[]");
+    const combined = [...userProducts, ...sampleProducts]
+      .sort((a, b) => (b.isBoosted ? 1 : 0) - (a.isBoosted ? 1 : 0));
+    setAllProducts(combined);
+  }, []);
 
   return (
     <Layout>
@@ -21,7 +34,7 @@ const Catalogue = () => {
             Catalogue
           </h1>
           <p className="mt-2 text-muted-foreground">
-            {sampleProducts.length} articles disponibles
+            {allProducts.length} articles disponibles
           </p>
         </div>
 
@@ -66,7 +79,7 @@ const Catalogue = () => {
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            
+
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {/* Category Filter */}
               <div className="space-y-2">
@@ -108,15 +121,34 @@ const Catalogue = () => {
                 <label className="text-sm font-medium text-foreground">Localisation</label>
                 <Select>
                   <SelectTrigger>
-                    <SelectValue placeholder="Toute la France" />
+                    <SelectValue placeholder="Toutes les régions" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Toute la France</SelectItem>
-                    <SelectItem value="paris">Paris</SelectItem>
-                    <SelectItem value="lyon">Lyon</SelectItem>
-                    <SelectItem value="marseille">Marseille</SelectItem>
-                    <SelectItem value="bordeaux">Bordeaux</SelectItem>
-                    <SelectItem value="toulouse">Toulouse</SelectItem>
+                    <SelectItem value="all">Toutes les régions</SelectItem>
+                    {senegalRegions.map((region) => (
+                      <SelectItem key={region} value={region.toLowerCase()}>
+                        {region}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Dakar Neighborhood Filter (Simulated/Extra) */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Quartier (Dakar)</label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Tous les quartiers" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tous les quartiers</SelectItem>
+                    <SelectItem value="plateau">Plateau</SelectItem>
+                    <SelectItem value="almadies">Almadies</SelectItem>
+                    <SelectItem value="medina">Médina</SelectItem>
+                    <SelectItem value="parcelles">Parcelles Assainies</SelectItem>
+                    <SelectItem value="ouakam">Ouakam</SelectItem>
+                    <SelectItem value="mermoz">Mermoz</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -124,13 +156,13 @@ const Catalogue = () => {
               {/* Price Range Filter */}
               <div className="space-y-4">
                 <label className="text-sm font-medium text-foreground">
-                  Prix : {priceRange[0]}€ - {priceRange[1]}€
+                  Prix max : {priceRange[0]} FCFA
                 </label>
                 <Slider
                   value={priceRange}
                   onValueChange={setPriceRange}
-                  max={100}
-                  step={5}
+                  max={50000}
+                  step={500}
                   className="mt-2"
                 />
               </div>
@@ -156,8 +188,8 @@ const Catalogue = () => {
         </div>
 
         {/* Products Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {sampleProducts.map((product) => (
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6">
+          {allProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

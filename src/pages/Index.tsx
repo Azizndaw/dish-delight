@@ -7,8 +7,27 @@ import ProductCard from "@/components/ProductCard";
 import FeatureCard from "@/components/FeatureCard";
 import { sampleProducts, categories } from "@/data/products";
 import heroImage from "@/assets/hero-image.jpg";
+import { useState, useEffect } from "react";
 
 const Index = () => {
+  const [latestProducts, setLatestProducts] = useState(sampleProducts.slice(0, 4));
+
+  useEffect(() => {
+    const userProducts = JSON.parse(localStorage.getItem("userProducts") || "[]");
+    if (userProducts.length > 0) {
+      // Fusionner, trier par boost, et prendre les 4 plus récents
+      const combined = [...userProducts, ...sampleProducts]
+        .sort((a, b) => (b.isBoosted ? 1 : 0) - (a.isBoosted ? 1 : 0))
+        .slice(0, 4);
+      setLatestProducts(combined);
+    } else {
+      const sortedSamples = [...sampleProducts]
+        .sort((a, b) => (b.isBoosted ? 1 : 0) - (a.isBoosted ? 1 : 0))
+        .slice(0, 4);
+      setLatestProducts(sortedSamples);
+    }
+  }, []);
+
   const features = [
     {
       icon: Leaf,
@@ -43,28 +62,31 @@ const Index = () => {
                 <Sparkles className="h-4 w-4" />
                 <span>La marketplace sénégalaise</span>
               </div>
-              <h1 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl lg:text-5xl text-balance">
-                Vaisselle d'occasion à{" "}
-                <span className="text-primary">petits prix</span>
+              <h1 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-6xl text-balance">
+                Votre vaisselle d'occasion au{" "}
+                <span className="text-primary">meilleur prix</span>
               </h1>
               <p className="max-w-xl text-base md:text-lg text-muted-foreground">
-                Achetez et vendez votre vaisselle d'occasion partout au Sénégal. 
-                Bols, marmites, théières... tout pour équiper votre cuisine à moindre coût.
+                Achetez et vendez votre vaisselle partout au Sénégal.
+                Assiettes en porcelaine, verres, bols en inox...
+                Équipez votre table à moindre coût.
               </p>
-              
+
               {/* Search Bar */}
               <div className="flex flex-col gap-3 sm:flex-row">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     type="text"
-                    placeholder="Rechercher (bol, marmite, théière...)"
+                    placeholder="Rechercher (assiettes, verres, couverts...)"
                     className="h-12 pl-10 pr-4 bg-background border-border text-base"
                   />
                 </div>
-                <Button variant="hero" size="lg" className="text-base">
-                  Rechercher
-                </Button>
+                <Link to="/catalogue">
+                  <Button variant="hero" size="lg" className="text-base w-full sm:w-auto">
+                    Rechercher
+                  </Button>
+                </Link>
               </div>
 
               {/* Stats */}
@@ -154,8 +176,8 @@ const Index = () => {
             </Link>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {sampleProducts.map((product) => (
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+            {latestProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
@@ -170,7 +192,7 @@ const Index = () => {
               Pourquoi VaisselleSeconde ?
             </h2>
             <p className="mt-3 max-w-2xl mx-auto text-muted-foreground">
-              Une plateforme simple, fiable et éco-responsable pour acheter et vendre 
+              Une plateforme simple, fiable et éco-responsable pour acheter et vendre
               votre vaisselle d'occasion.
             </p>
           </div>
@@ -197,7 +219,7 @@ const Index = () => {
             Prêt à vendre votre vaisselle ?
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-base text-primary-foreground/80">
-            Publiez gratuitement votre annonce en quelques minutes. 
+            Publiez gratuitement votre annonce en quelques minutes.
             Contact direct via WhatsApp avec les acheteurs.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -207,9 +229,9 @@ const Index = () => {
               </Button>
             </Link>
             <Link to="/comment-ca-marche">
-              <Button 
-                variant="outline" 
-                size="lg" 
+              <Button
+                variant="outline"
+                size="lg"
                 className="w-full sm:w-auto border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground text-base"
               >
                 Comment ça marche ?

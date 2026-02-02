@@ -1,10 +1,11 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Heart, MapPin } from "lucide-react";
+import { Heart, MapPin, Sparkles, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { formatPrice } from "@/data/products";
+import { useCart } from "@/context/CartContext";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export interface Product {
   id: string;
@@ -14,6 +15,7 @@ export interface Product {
   image: string;
   condition: "Neuf" | "Très bon état" | "Bon état" | "État correct";
   isLot?: boolean;
+  isBoosted?: boolean;
   category: string;
 }
 
@@ -23,6 +25,7 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
+  const { addToCart } = useCart();
 
   const conditionColors: Record<string, string> = {
     "Neuf": "bg-sage text-sage-dark",
@@ -40,8 +43,14 @@ const ProductCard = ({ product }: ProductCardProps) => {
             alt={product.title}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
+          {product.isBoosted && (
+            <Badge className="absolute left-3 top-3 z-10 bg-amber-500 text-white border-none gap-1 py-1 shadow-sm">
+              <Sparkles className="h-3 w-3" />
+              À la une
+            </Badge>
+          )}
           {product.isLot && (
-            <Badge className="absolute left-3 top-3 bg-primary text-primary-foreground">
+            <Badge className={`absolute left-3 ${product.isBoosted ? 'top-10' : 'top-3'} bg-primary text-primary-foreground`}>
               Lot
             </Badge>
           )}
@@ -55,19 +64,18 @@ const ProductCard = ({ product }: ProductCardProps) => {
             }}
           >
             <Heart
-              className={`h-4 w-4 transition-colors ${
-                isLiked ? "fill-primary text-primary" : "text-muted-foreground"
-              }`}
+              className={`h-4 w-4 transition-colors ${isLiked ? "fill-primary text-primary" : "text-muted-foreground"
+                }`}
             />
           </Button>
         </div>
-        <CardContent className="p-4">
+        <CardContent className="p-3 sm:p-4">
           <div className="mb-2 flex items-start justify-between gap-2">
-            <h3 className="line-clamp-2 text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+            <h3 className="line-clamp-2 text-xs sm:text-sm font-medium text-foreground group-hover:text-primary transition-colors">
               {product.title}
             </h3>
           </div>
-          <p className="mb-2 font-display text-lg font-bold text-primary">
+          <p className="mb-2 font-display text-base sm:text-lg font-bold text-primary">
             {formatPrice(product.price)}
           </p>
           <div className="flex flex-wrap items-center gap-2">
@@ -78,6 +86,18 @@ const ProductCard = ({ product }: ProductCardProps) => {
               <MapPin className="h-3 w-3" />
               {product.location}
             </span>
+          </div>
+          <div className="mt-3 flex gap-2">
+            <Button
+              className="flex-1 gap-2 text-[10px] sm:text-xs h-8 sm:h-9"
+              onClick={(e) => {
+                e.preventDefault();
+                addToCart(product);
+              }}
+            >
+              <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
+              Panier
+            </Button>
           </div>
         </CardContent>
       </Card>

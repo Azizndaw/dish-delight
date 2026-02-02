@@ -15,21 +15,21 @@ const Footer = () => {
                 <span className="font-display text-xl font-bold text-primary-foreground">V</span>
               </div>
               <span className="font-display text-xl font-semibold text-foreground">
-                VaisselleSeconde
+                Dish Delight
               </span>
             </Link>
             <p className="text-sm text-muted-foreground">
-              La marketplace de vaisselle d'occasion. Achetez et vendez à petits prix, 
+              La marketplace de vaisselle d'occasion. Achetez et vendez à petits prix,
               réduisez le gaspillage.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="text-muted-foreground transition-colors hover:text-primary">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground transition-colors hover:text-primary">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground transition-colors hover:text-primary">
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
                 <Twitter className="h-5 w-5" />
               </a>
             </div>
@@ -90,15 +90,15 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4" />
-                <span>contact@vaisselleseconde.com</span>
+                <span>contact@dishdelight.sn</span>
               </li>
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Phone className="h-4 w-4" />
-                <span>+33 1 23 45 67 89</span>
+                <span>+221 77 123 45 67</span>
               </li>
               <li className="flex items-start gap-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 mt-0.5" />
-                <span>Paris, France</span>
+                <span>Dakar, Sénégal (Mermoz/Plateau)</span>
               </li>
             </ul>
           </div>
@@ -106,7 +106,7 @@ const Footer = () => {
 
         <div className="mt-12 border-t border-border pt-8 text-center">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} VaisselleSeconde. Tous droits réservés.
+            © {currentYear} Dish Delight. Tous droits réservés.
           </p>
         </div>
       </div>
