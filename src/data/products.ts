@@ -1,0 +1,102 @@
+import { Product } from "@/components/ProductCard";
+
+// Sample product images (placeholder URLs - would be replaced with real images)
+const productImages = [
+  "https://images.unsplash.com/photo-1603199506016-b9a594b593c0?w=400&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=400&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1525974160448-038dacadcc71?w=400&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=400&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1493106641515-6b5631de4bb9?w=400&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1604066807851-f60b3fe1bbf7?w=400&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1516048015710-7a3b4c86be43?w=400&h=400&fit=crop",
+];
+
+export const sampleProducts: Product[] = [
+  {
+    id: "1",
+    title: "Service de 6 assiettes plates en porcelaine blanche",
+    price: 15,
+    location: "Paris 11ème",
+    image: productImages[0],
+    condition: "Très bon état",
+    category: "Assiettes",
+  },
+  {
+    id: "2",
+    title: "Lot de 4 bols à céréales colorés style vintage",
+    price: 8,
+    location: "Lyon",
+    image: productImages[1],
+    condition: "Bon état",
+    isLot: true,
+    category: "Bols",
+  },
+  {
+    id: "3",
+    title: "Set de 6 tasses à café avec soucoupes assorties",
+    price: 12,
+    location: "Marseille",
+    image: productImages[2],
+    condition: "Très bon état",
+    isLot: true,
+    category: "Tasses",
+  },
+  {
+    id: "4",
+    title: "Grande soupière en céramique artisanale",
+    price: 25,
+    location: "Bordeaux",
+    image: productImages[3],
+    condition: "Neuf",
+    category: "Plats",
+  },
+  {
+    id: "5",
+    title: "Ensemble de couverts vintage 24 pièces",
+    price: 20,
+    location: "Toulouse",
+    image: productImages[4],
+    condition: "Bon état",
+    isLot: true,
+    category: "Couverts",
+  },
+  {
+    id: "6",
+    title: "Carafe en verre soufflé avec 4 verres assortis",
+    price: 18,
+    location: "Nantes",
+    image: productImages[5],
+    condition: "Très bon état",
+    isLot: true,
+    category: "Verres",
+  },
+  {
+    id: "7",
+    title: "Plat de service ovale en faïence",
+    price: 10,
+    location: "Lille",
+    image: productImages[6],
+    condition: "État correct",
+    category: "Plats",
+  },
+  {
+    id: "8",
+    title: "Théière en porcelaine fine motif floral",
+    price: 14,
+    location: "Strasbourg",
+    image: productImages[7],
+    condition: "Très bon état",
+    category: "Tasses",
+  },
+];
+
+export const categories = [
+  { id: "assiettes", name: "Assiettes", count: 245 },
+  { id: "bols", name: "Bols", count: 128 },
+  { id: "tasses", name: "Tasses & Mugs", count: 186 },
+  { id: "verres", name: "Verres", count: 203 },
+  { id: "couverts", name: "Couverts", count: 97 },
+  { id: "plats", name: "Plats de service", count: 156 },
+  { id: "lots", name: "Lots complets", count: 89 },
+];
