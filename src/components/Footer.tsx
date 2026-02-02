@@ -81,6 +81,11 @@ const Footer = () => {
                   Contact
                 </Link>
               </li>
+              <li>
+                <Link to="/admin" className="text-[10px] text-muted-foreground/50 transition-colors hover:text-primary italic">
+                  Espace Gérant
+                </Link>
+              </li>
             </ul>
           </div>
 
