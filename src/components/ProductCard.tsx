@@ -4,6 +4,7 @@ import { Heart, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { formatPrice } from "@/data/products";
 
 export interface Product {
   id: string;
@@ -62,13 +63,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </div>
         <CardContent className="p-4">
           <div className="mb-2 flex items-start justify-between gap-2">
-            <h3 className="line-clamp-2 font-medium text-foreground group-hover:text-primary transition-colors">
+            <h3 className="line-clamp-2 text-sm font-medium text-foreground group-hover:text-primary transition-colors">
               {product.title}
             </h3>
-            <p className="shrink-0 font-display text-lg font-bold text-primary">
-              {product.price}€
-            </p>
           </div>
+          <p className="mb-2 font-display text-lg font-bold text-primary">
+            {formatPrice(product.price)}
+          </p>
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className={conditionColors[product.condition]}>
               {product.condition}

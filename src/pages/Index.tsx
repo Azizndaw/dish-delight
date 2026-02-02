@@ -13,22 +13,22 @@ const Index = () => {
     {
       icon: Leaf,
       title: "Éco-responsable",
-      description: "Donnez une seconde vie à votre vaisselle et réduisez le gaspillage en participant à l'économie circulaire.",
+      description: "Donnez une seconde vie à votre vaisselle et réduisez le gaspillage. Ensemble pour un Sénégal plus vert.",
     },
     {
       icon: ShoppingBag,
       title: "Petits prix",
-      description: "Trouvez de la vaisselle de qualité à prix mini. Idéal pour les étudiants et les petits budgets.",
+      description: "Vaisselle de qualité à prix accessible. Parfait pour les étudiants, familles et petits budgets.",
     },
     {
       icon: Users,
       title: "Communauté locale",
-      description: "Achetez et vendez près de chez vous. Favorisez les échanges locaux et la remise en main propre.",
+      description: "Achetez et vendez près de chez vous. Remise en main propre ou livraison locale.",
     },
     {
       icon: Shield,
-      title: "Fiable & sécurisé",
-      description: "Profils vérifiés, modération des annonces et contact direct entre acheteurs et vendeurs.",
+      title: "Simple & fiable",
+      description: "Contact direct via WhatsApp. Échanges faciles entre vendeurs et acheteurs.",
     },
   ];
 
@@ -36,20 +36,20 @@ const Index = () => {
     <Layout>
       {/* Hero Section */}
       <section className="relative overflow-hidden hero-gradient">
-        <div className="container relative z-10 py-16 md:py-24 lg:py-32">
+        <div className="container relative z-10 py-12 md:py-20 lg:py-28">
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-12 items-center">
             <div className="space-y-6 animate-fade-up">
               <div className="inline-flex items-center gap-2 rounded-full bg-sage/30 px-4 py-1.5 text-sm font-medium text-sage-dark">
                 <Sparkles className="h-4 w-4" />
-                <span>La marketplace éco-responsable</span>
+                <span>La marketplace sénégalaise</span>
               </div>
-              <h1 className="font-display text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl text-balance">
-                Votre vaisselle d'occasion à{" "}
+              <h1 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl lg:text-5xl text-balance">
+                Vaisselle d'occasion à{" "}
                 <span className="text-primary">petits prix</span>
               </h1>
-              <p className="max-w-xl text-lg text-muted-foreground">
-                Achetez et vendez de la vaisselle d'occasion partout en France. 
-                Donnez une seconde vie à vos assiettes, tasses et couverts tout en faisant des économies.
+              <p className="max-w-xl text-base md:text-lg text-muted-foreground">
+                Achetez et vendez votre vaisselle d'occasion partout au Sénégal. 
+                Bols, marmites, théières... tout pour équiper votre cuisine à moindre coût.
               </p>
               
               {/* Search Bar */}
@@ -58,28 +58,28 @@ const Index = () => {
                   <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     type="text"
-                    placeholder="Rechercher de la vaisselle..."
-                    className="h-12 pl-10 pr-4 bg-background border-border"
+                    placeholder="Rechercher (bol, marmite, théière...)"
+                    className="h-12 pl-10 pr-4 bg-background border-border text-base"
                   />
                 </div>
-                <Button variant="hero" size="lg">
+                <Button variant="hero" size="lg" className="text-base">
                   Rechercher
                 </Button>
               </div>
 
               {/* Stats */}
-              <div className="flex flex-wrap gap-8 pt-4">
+              <div className="flex flex-wrap gap-6 pt-4">
                 <div>
-                  <p className="font-display text-3xl font-bold text-foreground">2 500+</p>
+                  <p className="font-display text-2xl md:text-3xl font-bold text-foreground">1 500+</p>
                   <p className="text-sm text-muted-foreground">Annonces actives</p>
                 </div>
                 <div>
-                  <p className="font-display text-3xl font-bold text-foreground">15 000+</p>
+                  <p className="font-display text-2xl md:text-3xl font-bold text-foreground">8 000+</p>
                   <p className="text-sm text-muted-foreground">Utilisateurs</p>
                 </div>
                 <div>
-                  <p className="font-display text-3xl font-bold text-foreground">98%</p>
-                  <p className="text-sm text-muted-foreground">Satisfaction</p>
+                  <p className="font-display text-2xl md:text-3xl font-bold text-foreground">14</p>
+                  <p className="text-sm text-muted-foreground">Régions</p>
                 </div>
               </div>
             </div>
@@ -190,29 +190,29 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="relative overflow-hidden bg-primary py-16 md:py-20">
+      <section className="relative overflow-hidden bg-primary py-12 md:py-16">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,hsl(var(--terracotta-light)/0.3),transparent_70%)]" />
         <div className="container relative z-10 text-center">
-          <h2 className="font-display text-3xl font-bold text-primary-foreground md:text-4xl">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-primary-foreground">
             Prêt à vendre votre vaisselle ?
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-primary-foreground/80">
-            Publiez gratuitement votre annonce en quelques minutes et donnez une seconde vie 
-            à votre vaisselle inutilisée.
+          <p className="mx-auto mt-4 max-w-xl text-base text-primary-foreground/80">
+            Publiez gratuitement votre annonce en quelques minutes. 
+            Contact direct via WhatsApp avec les acheteurs.
           </p>
-          <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Link to="/vendre">
-              <Button variant="secondary" size="xl" className="w-full sm:w-auto">
+              <Button variant="secondary" size="lg" className="w-full sm:w-auto text-base">
                 Déposer une annonce gratuite
               </Button>
             </Link>
             <Link to="/comment-ca-marche">
               <Button 
                 variant="outline" 
-                size="xl" 
-                className="w-full sm:w-auto border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+                size="lg" 
+                className="w-full sm:w-auto border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground text-base"
               >
-                En savoir plus
+                Comment ça marche ?
               </Button>
             </Link>
           </div>
