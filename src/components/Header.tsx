@@ -1,13 +1,17 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Search, Heart, User, ShoppingCart } from "lucide-react";
+import { Menu, X, Search, Heart, User, ShoppingCart, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { totalItems } = useCart();
+  const { user, signOut } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navLinks = [
     { href: "/", label: "Accueil" },
@@ -19,6 +23,12 @@ const Header = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("Déconnexion réussie");
+    navigate("/");
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
@@ -28,7 +38,7 @@ const Header = () => {
             <span className="font-display text-xl font-bold text-primary-foreground">V</span>
           </div>
           <span className="font-display text-lg font-bold text-foreground sm:text-xl">
-            Dish Delight
+            VaisselleSeconde
           </span>
         </Link>
 
@@ -38,10 +48,7 @@ const Header = () => {
             <Link
               key={link.href}
               to={link.href}
-              className={`px-4 py-2 text-sm font-medium transition-colors hover:text-primary ${isActive(link.href)
-                ? "text-primary"
-                : "text-muted-foreground"
-                }`}
+              className={`px-4 py-2 text-sm font-medium transition-colors hover:text-primary ${isActive(link.href) ? "text-primary" : "text-muted-foreground"}`}
             >
               {link.label}
             </Link>
@@ -60,11 +67,17 @@ const Header = () => {
               <Heart className="h-5 w-5" />
             </Button>
           </Link>
-          <Link to="/connexion">
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
+          {user ? (
+            <Button variant="ghost" size="icon" onClick={handleSignOut} title="Se déconnecter">
+              <LogOut className="h-5 w-5" />
             </Button>
-          </Link>
+          ) : (
+            <Link to="/connexion">
+              <Button variant="ghost" size="icon">
+                <User className="h-5 w-5" />
+              </Button>
+            </Link>
+          )}
           <Link to="/panier">
             <Button variant="ghost" size="icon" className="relative">
               <ShoppingCart className="h-5 w-5" />
@@ -102,10 +115,7 @@ const Header = () => {
                 key={link.href}
                 to={link.href}
                 onClick={() => setIsMenuOpen(false)}
-                className={`px-4 py-3 text-sm font-medium transition-colors hover:bg-muted ${isActive(link.href)
-                  ? "text-primary"
-                  : "text-muted-foreground"
-                  }`}
+                className={`px-4 py-3 text-sm font-medium transition-colors hover:bg-muted ${isActive(link.href) ? "text-primary" : "text-muted-foreground"}`}
               >
                 {link.label}
               </Link>

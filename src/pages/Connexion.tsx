@@ -2,26 +2,43 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, LogIn, UserPlus } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 const Connexion = () => {
     const navigate = useNavigate();
+    const { signIn, signUp } = useAuth();
     const [isLogin, setIsLogin] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [fullName, setFullName] = useState("");
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
 
-        // Simulation d'authentification
-        setTimeout(() => {
+        if (isLogin) {
+            const { error } = await signIn(email, password);
             setIsLoading(false);
-            toast.success(isLogin ? "Connexion réussie !" : "Compte créé avec succès !");
-            navigate("/");
-        }, 1500);
+            if (error) {
+                toast.error(error.message === "Invalid login credentials" ? "Email ou mot de passe incorrect." : error.message);
+            } else {
+                toast.success("Connexion réussie !");
+                navigate("/");
+            }
+        } else {
+            const { error } = await signUp(email, password, fullName);
+            setIsLoading(false);
+            if (error) {
+                toast.error(error.message);
+            } else {
+                toast.success("Compte créé ! Vérifiez votre email pour confirmer votre inscription.");
+            }
+        }
     };
 
     return (
@@ -51,23 +68,18 @@ const Connexion = () => {
                         {!isLogin && (
                             <div className="space-y-2">
                                 <Label htmlFor="name">Nom complet</Label>
-                                <Input id="name" placeholder="Moussa Diop" required />
+                                <Input id="name" placeholder="Moussa Diop" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
                             </div>
                         )}
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
-                            <Input id="email" type="email" placeholder="moussa@exemple.com" required />
+                            <Input id="email" type="email" placeholder="moussa@exemple.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
                         </div>
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
                                 <Label htmlFor="password">Mot de passe</Label>
-                                {isLogin && (
-                                    <button type="button" className="text-xs text-primary hover:underline">
-                                        Oublié ?
-                                    </button>
-                                )}
                             </div>
-                            <Input id="password" type="password" required />
+                            <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
                         </div>
 
                         <Button type="submit" className="w-full h-11" disabled={isLoading}>

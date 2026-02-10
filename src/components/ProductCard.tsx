@@ -17,6 +17,8 @@ export interface Product {
   isLot?: boolean;
   isBoosted?: boolean;
   category: string;
+  whatsapp?: string;
+  description?: string;
 }
 
 interface ProductCardProps {
