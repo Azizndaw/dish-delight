@@ -15,12 +15,11 @@ const Footer = () => {
                 <span className="font-display text-xl font-bold text-primary-foreground">V</span>
               </div>
               <span className="font-display text-xl font-semibold text-foreground">
-                Dish Delight
+                VaisselleSeconde
               </span>
             </Link>
             <p className="text-sm text-muted-foreground">
-              La marketplace de vaisselle d'occasion. Achetez et vendez à petits prix,
-              réduisez le gaspillage.
+              La marketplace de vaisselle d'occasion au Sénégal. Achetez et vendez à petits prix.
             </p>
             <div className="flex gap-4">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
@@ -39,26 +38,10 @@ const Footer = () => {
           <div className="space-y-4">
             <h4 className="font-display text-lg font-semibold text-foreground">Navigation</h4>
             <ul className="space-y-2">
-              <li>
-                <Link to="/catalogue" className="text-sm text-muted-foreground transition-colors hover:text-primary">
-                  Catalogue
-                </Link>
-              </li>
-              <li>
-                <Link to="/comment-ca-marche" className="text-sm text-muted-foreground transition-colors hover:text-primary">
-                  Comment ça marche
-                </Link>
-              </li>
-              <li>
-                <Link to="/a-propos" className="text-sm text-muted-foreground transition-colors hover:text-primary">
-                  À propos
-                </Link>
-              </li>
-              <li>
-                <Link to="/vendre" className="text-sm text-muted-foreground transition-colors hover:text-primary">
-                  Vendre ma vaisselle
-                </Link>
-              </li>
+              <li><Link to="/catalogue" className="text-sm text-muted-foreground transition-colors hover:text-primary">Catalogue</Link></li>
+              <li><Link to="/comment-ca-marche" className="text-sm text-muted-foreground transition-colors hover:text-primary">Comment ça marche</Link></li>
+              <li><Link to="/a-propos" className="text-sm text-muted-foreground transition-colors hover:text-primary">À propos</Link></li>
+              <li><Link to="/vendre" className="text-sm text-muted-foreground transition-colors hover:text-primary">Vendre ma vaisselle</Link></li>
             </ul>
           </div>
 
@@ -66,26 +49,9 @@ const Footer = () => {
           <div className="space-y-4">
             <h4 className="font-display text-lg font-semibold text-foreground">Informations légales</h4>
             <ul className="space-y-2">
-              <li>
-                <Link to="/conditions-generales" className="text-sm text-muted-foreground transition-colors hover:text-primary">
-                  Conditions générales
-                </Link>
-              </li>
-              <li>
-                <Link to="/confidentialite" className="text-sm text-muted-foreground transition-colors hover:text-primary">
-                  Politique de confidentialité
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-sm text-muted-foreground transition-colors hover:text-primary">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link to="/admin" className="text-[10px] text-muted-foreground/50 transition-colors hover:text-primary italic">
-                  Espace Gérant
-                </Link>
-              </li>
+              <li><Link to="/conditions-generales" className="text-sm text-muted-foreground transition-colors hover:text-primary">Conditions générales</Link></li>
+              <li><Link to="/confidentialite" className="text-sm text-muted-foreground transition-colors hover:text-primary">Politique de confidentialité</Link></li>
+              <li><Link to="/contact" className="text-sm text-muted-foreground transition-colors hover:text-primary">Contact</Link></li>
             </ul>
           </div>
 
@@ -95,7 +61,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4" />
-                <span>contact@dishdelight.sn</span>
+                <span>contact@vaisselleseconde.sn</span>
               </li>
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Phone className="h-4 w-4" />
@@ -103,7 +69,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start gap-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 mt-0.5" />
-                <span>Dakar, Sénégal (Mermoz/Plateau)</span>
+                <span>Dakar, Sénégal</span>
               </li>
             </ul>
           </div>
@@ -111,7 +77,7 @@ const Footer = () => {
 
         <div className="mt-12 border-t border-border pt-8 text-center">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} Dish Delight. Tous droits réservés.
+            © {currentYear} VaisselleSeconde. Tous droits réservés.
           </p>
         </div>
       </div>

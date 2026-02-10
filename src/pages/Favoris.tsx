@@ -1,33 +1,62 @@
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { Heart, ChevronLeft, ShoppingBag } from "lucide-react";
+import { Heart, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import { useFavorites } from "@/hooks/useFavorites";
+import { useProducts } from "@/hooks/useProducts";
+import ProductCard from "@/components/ProductCard";
 
 const Favoris = () => {
+  const { user } = useAuth();
+  const { favorites, isLoading: favsLoading } = useFavorites();
+  const { data: allProducts = [] } = useProducts();
+
+  const favoriteProducts = allProducts.filter((p) => favorites.includes(p.id));
+
+  if (!user) {
     return (
-        <Layout>
-            <div className="container py-12 md:py-20 text-center">
-                <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-muted">
-                    <Heart className="h-10 w-10 text-muted-foreground" />
-                </div>
-                <h1 className="font-display text-3xl font-bold">Vos Favoris</h1>
-                <p className="mt-4 text-muted-foreground max-w-md mx-auto">
-                    Vous n'avez pas encore d'articles en favoris. Parcourez le catalogue et cliquez sur le cœur pour les enregistrer ici.
-                </p>
-                <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
-                    <Link to="/catalogue">
-                        <Button variant="hero" className="gap-2">
-                            <ShoppingBag className="h-4 w-4" />
-                            Parcourir le catalogue
-                        </Button>
-                    </Link>
-                    <Link to="/">
-                        <Button variant="outline">Retour à l'accueil</Button>
-                    </Link>
-                </div>
-            </div>
-        </Layout>
+      <Layout>
+        <div className="container py-12 md:py-20 text-center">
+          <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+            <Heart className="h-10 w-10 text-muted-foreground" />
+          </div>
+          <h1 className="font-display text-3xl font-bold">Vos Favoris</h1>
+          <p className="mt-4 text-muted-foreground max-w-md mx-auto">Connectez-vous pour voir vos favoris.</p>
+          <div className="mt-10">
+            <Link to="/connexion"><Button variant="hero">Se connecter</Button></Link>
+          </div>
+        </div>
+      </Layout>
     );
+  }
+
+  return (
+    <Layout>
+      <div className="container py-8 md:py-12">
+        <h1 className="font-display text-3xl font-bold mb-8">Vos Favoris</h1>
+        {favsLoading ? (
+          <div className="py-20 text-center text-muted-foreground">Chargement...</div>
+        ) : favoriteProducts.length === 0 ? (
+          <div className="py-20 text-center">
+            <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+              <Heart className="h-10 w-10 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground max-w-md mx-auto">Aucun favori pour le moment.</p>
+            <div className="mt-10">
+              <Link to="/catalogue"><Button variant="hero" className="gap-2"><ShoppingBag className="h-4 w-4" />Parcourir le catalogue</Button></Link>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6">
+            {favoriteProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
+      </div>
+    </Layout>
+  );
 };
 
 export default Favoris;
