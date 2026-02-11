@@ -16,6 +16,7 @@ const Connexion = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [fullName, setFullName] = useState("");
+    const [phone, setPhone] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,7 +32,7 @@ const Connexion = () => {
                 navigate("/");
             }
         } else {
-            const { error } = await signUp(email, password, fullName);
+            const { error } = await signUp(email, password, fullName, phone);
             setIsLoading(false);
             if (error) {
                 toast.error(error.message);
@@ -69,6 +70,12 @@ const Connexion = () => {
                             <div className="space-y-2">
                                 <Label htmlFor="name">Nom complet</Label>
                                 <Input id="name" placeholder="Moussa Diop" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
+                            </div>
+                        )}
+                        {!isLogin && (
+                            <div className="space-y-2">
+                                <Label htmlFor="phone">Numéro de téléphone</Label>
+                                <Input id="phone" type="tel" placeholder="+221 77 123 45 67" required value={phone} onChange={(e) => setPhone(e.target.value)} />
                             </div>
                         )}
                         <div className="space-y-2">
