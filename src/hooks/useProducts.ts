@@ -32,14 +32,25 @@ export const toProduct = (p: DBProduct) => ({
   category: p.category,
   whatsapp: p.whatsapp ?? undefined,
   description: p.description ?? undefined,
+  createdAt: p.created_at,
+  userId: p.user_id,
 });
 
-export const useProducts = (options?: { category?: string; search?: string; location?: string; condition?: string; maxPrice?: number }) => {
+export const useProducts = (options?: { category?: string; search?: string; location?: string; condition?: string; maxPrice?: number; userId?: string; showInactive?: boolean }) => {
   return useQuery({
     queryKey: ["products", options],
     queryFn: async () => {
-      let query = supabase.from("products").select("*").eq("is_active", true).order("is_boosted", { ascending: false }).order("created_at", { ascending: false });
+      let query = supabase.from("products").select("*");
 
+      if (!options?.showInactive) {
+        query = query.eq("is_active", true);
+      }
+
+      query = query.order("is_boosted", { ascending: false }).order("created_at", { ascending: false });
+
+      if (options?.userId) {
+        query = query.eq("user_id", options.userId);
+      }
       if (options?.category && options.category !== "all") {
         query = query.eq("category", options.category);
       }
@@ -86,7 +97,7 @@ export const useProduct = (id: string) => {
     queryFn: async () => {
       // First try DB
       const { data, error } = await supabase.from("products").select("*").eq("id", id).maybeSingle();
-      
+
       if (data) return toProduct(data as DBProduct);
 
       // Fallback to sample products

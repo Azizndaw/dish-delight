@@ -19,6 +19,10 @@ import Contact from "./pages/Contact";
 import ConditionsGenerales from "./pages/ConditionsGenerales";
 import Confidentialite from "./pages/Confidentialite";
 import AdminDashboard from "./pages/AdminDashboard";
+import Compte from "./pages/Compte";
+import MesAnnonces from "./pages/MesAnnonces";
+import ModifierAnnonce from "./pages/ModifierAnnonce";
+import MesAchats from "./pages/MesAchats";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +50,10 @@ const App = () => (
               <Route path="/conditions-generales" element={<ConditionsGenerales />} />
               <Route path="/confidentialite" element={<Confidentialite />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/compte" element={<Compte />} />
+              <Route path="/mes-annonces" element={<MesAnnonces />} />
+              <Route path="/modifier-annonce/:id" element={<ModifierAnnonce />} />
+              <Route path="/mes-achats" element={<MesAchats />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

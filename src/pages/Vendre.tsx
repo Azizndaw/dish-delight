@@ -25,6 +25,7 @@ const Vendre = () => {
   const [whatsapp, setWhatsapp] = useState("");
   const [description, setDescription] = useState("");
   const [isBoosted, setIsBoosted] = useState(false);
+  const [isLot, setIsLot] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,24 +72,18 @@ const Vendre = () => {
         imageUrl = urlData.publicUrl;
       }
 
-      const conditionMap: Record<string, string> = {
-        neuf: "Neuf",
-        "tres-bon": "Très bon état",
-        bon: "Bon état",
-        correct: "État correct",
-      };
-
       const { error } = await supabase.from("products").insert({
         user_id: user.id,
         title,
         category,
-        condition: conditionMap[condition] || condition,
+        condition,
         price: parseInt(price),
         location: location.charAt(0).toUpperCase() + location.slice(1),
         whatsapp,
         description,
         image_url: imageUrl,
         is_boosted: isBoosted,
+        is_lot: isLot,
       });
 
       if (error) throw error;
@@ -164,10 +159,10 @@ const Vendre = () => {
               <Select onValueChange={setCondition} required>
                 <SelectTrigger className="h-11"><SelectValue placeholder="État" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="neuf">Neuf</SelectItem>
-                  <SelectItem value="tres-bon">Très bon état</SelectItem>
-                  <SelectItem value="bon">Bon état</SelectItem>
-                  <SelectItem value="correct">État correct</SelectItem>
+                  <SelectItem value="Neuf">Neuf</SelectItem>
+                  <SelectItem value="Très bon état">Très bon état</SelectItem>
+                  <SelectItem value="Bon état">Bon état</SelectItem>
+                  <SelectItem value="État correct">État correct</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -195,6 +190,18 @@ const Vendre = () => {
             <div className="space-y-2 sm:col-span-2">
               <label htmlFor="description" className="text-sm font-medium text-foreground">Description</label>
               <Textarea id="description" placeholder="Décrivez l'article..." className="min-h-[120px] resize-none" required value={description} onChange={(e) => setDescription(e.target.value)} />
+            </div>
+            <div className="flex items-center space-x-2 sm:col-span-2 py-2">
+              <input
+                type="checkbox"
+                id="isLot"
+                checked={isLot}
+                onChange={(e) => setIsLot(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <label htmlFor="isLot" className="text-sm font-medium text-foreground">
+                C'est un lot d'articles (plusieurs pièces)
+              </label>
             </div>
             <div className="sm:col-span-2 rounded-xl border-2 border-primary/20 bg-primary/5 p-4">
               <div className="flex items-start gap-4">

@@ -6,6 +6,10 @@ import { formatPrice } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useFavorites } from "@/hooks/useFavorites";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 export interface Product {
   id: string;
@@ -19,6 +23,7 @@ export interface Product {
   category: string;
   whatsapp?: string;
   description?: string;
+  userId?: string;
 }
 
 interface ProductCardProps {
@@ -26,8 +31,11 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const [isLiked, setIsLiked] = useState(false);
   const { addToCart } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const isLiked = isFavorite(product.id);
 
   const conditionColors: Record<string, string> = {
     "Neuf": "bg-sage text-sage-dark",
@@ -62,7 +70,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
             className="absolute right-3 top-3 h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
             onClick={(e) => {
               e.preventDefault();
-              setIsLiked(!isLiked);
+              e.stopPropagation();
+              if (!user) {
+                toast.info("Connectez-vous pour ajouter des favoris");
+                navigate("/connexion");
+                return;
+              }
+              toggleFavorite.mutate(product.id);
             }}
           >
             <Heart

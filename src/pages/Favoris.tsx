@@ -9,7 +9,7 @@ import ProductCard from "@/components/ProductCard";
 
 const Favoris = () => {
   const { user } = useAuth();
-  const { favorites, isLoading: favsLoading } = useFavorites();
+  const { favorites, isLoading: favsLoading, toggleFavorite } = useFavorites();
   const { data: allProducts = [] } = useProducts();
 
   const favoriteProducts = allProducts.filter((p) => favorites.includes(p.id));
@@ -50,7 +50,18 @@ const Favoris = () => {
         ) : (
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6">
             {favoriteProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <div key={product.id} className="space-y-3">
+                <ProductCard product={product} />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-2 text-destructive hover:bg-destructive/10"
+                  onClick={() => toggleFavorite.mutate(product.id)}
+                >
+                  <Heart className="h-4 w-4 fill-current" />
+                  Retirer
+                </Button>
+              </div>
             ))}
           </div>
         )}

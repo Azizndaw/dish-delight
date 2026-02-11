@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Search, Heart, User, ShoppingCart, LogOut } from "lucide-react";
+import { Menu, X, Search, Heart, User, ShoppingCart, LogOut, Shield } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
@@ -9,7 +9,7 @@ import { toast } from "sonner";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { totalItems } = useCart();
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -68,9 +68,23 @@ const Header = () => {
             </Button>
           </Link>
           {user ? (
-            <Button variant="ghost" size="icon" onClick={handleSignOut} title="Se déconnecter">
-              <LogOut className="h-5 w-5" />
-            </Button>
+            <div className="flex items-center gap-2">
+              {isAdmin && (
+                <Link to="/admin">
+                  <Button variant="ghost" size="icon" title="Espace Admin" className="text-amber-600 hover:text-amber-700 hover:bg-amber-50">
+                    <Shield className="h-5 w-5" />
+                  </Button>
+                </Link>
+              )}
+              <Link to="/compte">
+                <Button variant="ghost" size="icon" title="Mon Profil">
+                  <User className="h-5 w-5" />
+                </Button>
+              </Link>
+              <Button variant="ghost" size="icon" onClick={handleSignOut} title="Se déconnecter">
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </div>
           ) : (
             <Link to="/connexion">
               <Button variant="ghost" size="icon">
@@ -120,6 +134,43 @@ const Header = () => {
                 {link.label}
               </Link>
             ))}
+            {user && (
+              <>
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="px-4 py-3 text-sm font-medium text-amber-600 hover:bg-amber-50 flex items-center gap-2"
+                  >
+                    <Shield className="h-4 w-4" />
+                    Espace Admin
+                  </Link>
+                )}
+                <Link
+                  to="/compte"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted"
+                >
+                  Mon Profil
+                </Link>
+                <Link
+                  to="/mes-annonces"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted"
+                >
+                  Mes Annonces
+                </Link>
+                <button
+                  onClick={() => {
+                    handleSignOut();
+                    setIsMenuOpen(false);
+                  }}
+                  className="px-4 py-3 text-left text-sm font-medium text-destructive hover:bg-muted"
+                >
+                  Déconnexion
+                </button>
+              </>
+            )}
             <div className="mt-4 px-4">
               <Link to="/vendre" onClick={() => setIsMenuOpen(false)}>
                 <Button variant="hero" className="w-full">

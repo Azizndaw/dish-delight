@@ -1,17 +1,25 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, MessageCircle, MapPin, Share2, ShieldCheck, Truck, ShoppingCart } from "lucide-react";
+import { ChevronLeft, MessageCircle, MapPin, Share2, ShieldCheck, Truck, ShoppingCart, Pencil, Trash2 } from "lucide-react";
 import { formatPrice } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
 import { useProduct } from "@/hooks/useProducts";
+import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 const DetailsProduit = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const { data: product, isLoading } = useProduct(id || "");
+
+  const isOwner = user?.id === product?.userId;
 
   if (isLoading) {
     return <Layout><div className="container py-20 text-center text-muted-foreground">Chargement...</div></Layout>;
@@ -39,13 +47,44 @@ const DetailsProduit = () => {
     toast.success("Lien copié !");
   };
 
+  const handleDelete = async () => {
+    if (!confirm("Voulez-vous vraiment supprimer cette annonce définitivement ?")) return;
+
+    const { error } = await supabase.from("products").delete().eq("id", product.id);
+    if (error) {
+      toast.error("Erreur lors de la suppression");
+      return;
+    }
+
+    toast.success("Annonce supprimée");
+    queryClient.invalidateQueries({ queryKey: ["products"] });
+    navigate("/mes-annonces");
+  };
+
   return (
     <Layout>
       <div className="container py-6 md:py-10">
-        <Link to="/catalogue" className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-          <ChevronLeft className="h-4 w-4" />
-          Retour au catalogue
-        </Link>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <Link to="/catalogue" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+            <ChevronLeft className="h-4 w-4" />
+            Retour au catalogue
+          </Link>
+
+          {isOwner && (
+            <div className="flex gap-3">
+              <Link to={`/modifier-annonce/${product.id}`}>
+                <Button variant="outline" className="gap-2">
+                  <Pencil className="h-4 w-4" />
+                  Modifier
+                </Button>
+              </Link>
+              <Button variant="ghost" onClick={handleDelete} className="gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive">
+                <Trash2 className="h-4 w-4" />
+                Supprimer
+              </Button>
+            </div>
+          )}
+        </div>
 
         <div className="grid gap-8 lg:grid-cols-2">
           <div className="aspect-square overflow-hidden rounded-2xl border border-border bg-muted">
