@@ -22,7 +22,6 @@ const Vendre = () => {
   const [condition, setCondition] = useState("");
   const [price, setPrice] = useState("");
   const [location, setLocation] = useState("");
-  const [whatsapp, setWhatsapp] = useState("");
   const [description, setDescription] = useState("");
   const [isBoosted, setIsBoosted] = useState(false);
   const [isLot, setIsLot] = useState(false);
@@ -79,7 +78,6 @@ const Vendre = () => {
         condition,
         price: parseInt(price),
         location: location.charAt(0).toUpperCase() + location.slice(1),
-        whatsapp,
         description,
         image_url: imageUrl,
         is_boosted: isBoosted,
@@ -179,13 +177,6 @@ const Vendre = () => {
                 <SelectTrigger className="h-11"><SelectValue placeholder="Région" /></SelectTrigger>
                 <SelectContent>{senegalRegions.map((r) => (<SelectItem key={r} value={r.toLowerCase()}>{r}</SelectItem>))}</SelectContent>
               </Select>
-            </div>
-            <div className="space-y-2 sm:col-span-2">
-              <label htmlFor="whatsapp" className="text-sm font-medium text-foreground">WhatsApp</label>
-              <div className="relative">
-                <Input id="whatsapp" type="tel" placeholder="77 000 00 00" required className="h-11 pl-12" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} />
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm border-r pr-2 border-border font-medium text-muted-foreground">+221</span>
-              </div>
             </div>
             <div className="space-y-2 sm:col-span-2">
               <label htmlFor="description" className="text-sm font-medium text-foreground">Description</label>

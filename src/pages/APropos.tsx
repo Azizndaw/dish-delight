@@ -32,11 +32,11 @@ const APropos = () => {
         <div className="container">
           <div className="mx-auto max-w-3xl text-center">
             <h1 className="font-display text-4xl font-bold text-foreground md:text-5xl">
-              À propos de VaisselleSeconde
+              À propos de Vide Placard
             </h1>
             <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
-              Nous sommes nés d'une conviction simple : la vaisselle inutilisée mérite 
-              une seconde vie. Plutôt que de laisser des assiettes, bols et tasses 
+              Nous sommes nés d'une conviction simple : la vaisselle inutilisée mérite
+              une seconde vie. Plutôt que de laisser des assiettes, bols et tasses
               s'accumuler dans les placards, pourquoi ne pas les partager ?
             </p>
           </div>
@@ -52,18 +52,18 @@ const APropos = () => {
             </h2>
             <div className="prose prose-lg text-muted-foreground">
               <p>
-                VaisselleSeconde est né d'un constat simple : chaque année, des milliers 
-                de pièces de vaisselle en parfait état finissent oubliées dans des cartons 
+                Vide Placard est né d'un constat simple : chaque année, des milliers
+                de pièces de vaisselle en parfait état finissent oubliées dans des cartons
                 ou pire, à la poubelle.
               </p>
               <p className="mt-4">
-                Parallèlement, de nombreuses personnes — étudiants qui s'installent, jeunes 
-                couples qui démarrent, familles à budget serré — peinent à s'équiper 
+                Parallèlement, de nombreuses personnes — étudiants qui s'installent, jeunes
+                couples qui démarrent, familles à budget serré — peinent à s'équiper
                 sans se ruiner.
               </p>
               <p className="mt-4">
-                Notre mission ? Créer le pont entre ces deux mondes. Une plateforme 
-                nationale où chacun peut facilement vendre ce qu'il n'utilise plus et 
+                Notre mission ? Créer le pont entre ces deux mondes. Une plateforme
+                nationale où chacun peut facilement vendre ce qu'il n'utilise plus et
                 acheter à petit prix.
               </p>
             </div>
@@ -85,7 +85,7 @@ const APropos = () => {
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {values.map((value) => (
-              <div 
+              <div
                 key={value.title}
                 className="rounded-2xl border border-border/50 bg-card p-6 text-center transition-all hover:shadow-medium"
               >

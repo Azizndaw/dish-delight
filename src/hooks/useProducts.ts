@@ -55,7 +55,8 @@ export const useProducts = (options?: { category?: string; search?: string; loca
         query = query.eq("category", options.category);
       }
       if (options?.search) {
-        query = query.ilike("title", `%${options.search}%`);
+        const searchTerm = `%${options.search}%`;
+        query = query.or(`title.ilike.${searchTerm},description.ilike.${searchTerm},category.ilike.${searchTerm}`);
       }
       if (options?.location && options.location !== "all") {
         query = query.ilike("location", `%${options.location}%`);
@@ -77,9 +78,22 @@ export const useProducts = (options?: { category?: string; search?: string; loca
           filtered = filtered.filter(p => p.category === options.category);
         }
         if (options?.search) {
-          const s = options.search.toLowerCase();
-          filtered = filtered.filter(p => p.title.toLowerCase().includes(s));
+          const s = options.search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          filtered = filtered.filter(p => {
+            const title = (p.title || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const desc = (p.description || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const cat = (p.category || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            return title.includes(s) || desc.includes(s) || cat.includes(s);
+          });
         }
+
+        // Ensure boosted products appear first even in sample data
+        filtered = filtered.sort((a, b) => {
+          if (a.isBoosted && !b.isBoosted) return -1;
+          if (!a.isBoosted && b.isBoosted) return 1;
+          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+        });
+
         if (options?.maxPrice && options.maxPrice < 50000) {
           filtered = filtered.filter(p => p.price <= options.maxPrice!);
         }

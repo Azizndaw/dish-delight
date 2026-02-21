@@ -10,8 +10,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import {
   Users, Package, DollarSign, Trash2, ShoppingBag, Clock, Truck, CheckCircle2,
   Search, Eye, EyeOff, Sparkles, SparklesIcon, AlertTriangle, MapPin, Phone,
-  Calendar, ChevronDown, BarChart3, ArrowUpRight, ArrowDownRight, Ban
+  Calendar, ChevronDown, BarChart3, ArrowUpRight, ArrowDownRight, Ban,
+  TrendingUp, Globe, MousePointer2, Wallet
 } from "lucide-react";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  LineChart, Line, AreaChart, Area
+} from 'recharts';
 import { formatPrice } from "@/data/products";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -77,6 +82,20 @@ const AdminDashboard = () => {
     enabled: !!isAdmin,
   });
 
+  // Fetch Site Visits
+  const { data: rawVisits = [], isLoading: isLoadingVisits } = useQuery({
+    queryKey: ["admin-visits"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_visits")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!isAdmin,
+  });
+
   // Filtered data
   const filteredProducts = useMemo(() => {
     let filtered = rawProducts;
@@ -106,7 +125,40 @@ const AdminDashboard = () => {
     return profiles.filter((p: any) => (p.full_name || "").toLowerCase().includes(s) || (p.phone || "").includes(s) || (p.location || "").toLowerCase().includes(s));
   }, [profiles, userSearch]);
 
-  if (loading || isLoadingProducts || isLoadingOrders || isLoadingProfiles) {
+  // Format visits for chart (last 7 days)
+  const visitsByDay = useMemo(() => {
+    const last7Days = [...Array(7)].map((_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (6 - i));
+      return d.toLocaleDateString('fr-FR', { weekday: 'short' });
+    });
+
+    const counts = rawVisits.reduce((acc: any, visit: any) => {
+      const day = new Date(visit.created_at).toLocaleDateString('fr-FR', { weekday: 'short' });
+      acc[day] = (acc[day] || 0) + 1;
+      return acc;
+    }, {});
+
+    return last7Days.map(day => ({
+      name: day,
+      visites: counts[day] || 0
+    }));
+  }, [rawVisits]);
+
+  // Top Pages
+  const topPages = useMemo(() => {
+    const counts = rawVisits.reduce((acc: any, visit: any) => {
+      acc[visit.page_path] = (acc[visit.page_path] || 0) + 1;
+      return acc;
+    }, {});
+
+    return Object.entries(counts)
+      .map(([path, count]) => ({ path, count: count as number }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+  }, [rawVisits]);
+
+  if (loading || isLoadingProducts || isLoadingOrders || isLoadingProfiles || isLoadingVisits) {
     return <Layout><div className="container py-20 text-center text-muted-foreground">Chargement du tableau de bord...</div></Layout>;
   }
 
@@ -143,11 +195,20 @@ const AdminDashboard = () => {
   };
 
   // Stats
-  const totalRevenue = allOrders.filter((o: any) => o.status === "completed").reduce((acc: number, o: any) => acc + o.total_price, 0);
+  const completedOrders = allOrders.filter((o: any) => o.status === "completed");
+  const totalRevenue = completedOrders.reduce((acc: number, o: any) => acc + o.total_price, 0);
+  const totalCommissionRevenue = completedOrders.reduce((acc: number, o: any) => acc + (o.commission_amount || 0), 0);
   const pendingOrders = allOrders.filter((o: any) => o.status === "pending").length;
   const activeProducts = rawProducts.filter((p: any) => p.is_active).length;
   const inactiveProducts = rawProducts.length - activeProducts;
   const boostedProducts = rawProducts.filter((p: any) => p.is_boosted).length;
+  const BOOST_PRICE = 500; // Average price in FCFA
+  const estimatedBoostRevenue = boostedProducts * BOOST_PRICE;
+
+  // Analytics Helpers
+  const totalVisits = rawVisits.length;
+  const uniqueVisitors = new Set(rawVisits.filter(v => v.user_id).map(v => v.user_id)).size || 1; // Basic estimation
+
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -168,7 +229,7 @@ const AdminDashboard = () => {
       <div className="container py-8 md:py-12">
         <div className="mb-8">
           <h1 className="font-display text-3xl font-bold text-foreground">Tableau de Bord Admin</h1>
-          <p className="text-muted-foreground">Gestion centrale de VaisselleSeconde.</p>
+          <p className="text-muted-foreground">Gestion centrale de Vide Placard.</p>
         </div>
 
         <Tabs defaultValue="stats" className="space-y-8">
@@ -189,7 +250,29 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-primary">{formatPrice(totalRevenue)}</div>
-                  <p className="text-xs text-muted-foreground mt-1">{allOrders.filter((o: any) => o.status === "completed").length} commandes livrées</p>
+                  <p className="text-xs text-muted-foreground mt-1">{completedOrders.length} commandes livrées</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-none shadow-sm bg-purple-50 dark:bg-purple-900/10">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-xs font-semibold text-purple-700 uppercase tracking-wider">Commissions Marché (10%)</CardTitle>
+                  <Wallet className="h-4 w-4 text-purple-700" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-purple-700">{formatPrice(totalCommissionRevenue)}</div>
+                  <p className="text-xs text-muted-foreground mt-1">Revenu net de la plateforme</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-none shadow-sm bg-amber-50 dark:bg-amber-900/10">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-xs font-semibold text-amber-700 uppercase tracking-wider">Revenu Boosts (Est.)</CardTitle>
+                  <Sparkles className="h-4 w-4 text-amber-700" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-amber-700">{formatPrice(estimatedBoostRevenue)}</div>
+                  <p className="text-xs text-muted-foreground mt-1">Sur {boostedProducts} annonces boostées</p>
                 </CardContent>
               </Card>
 
@@ -223,6 +306,81 @@ const AdminDashboard = () => {
                 <CardContent>
                   <div className="text-2xl font-bold text-blue-700">{profiles.length}</div>
                   <p className="text-xs text-muted-foreground mt-1">Inscrits sur la plateforme</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-none shadow-sm bg-purple-50 dark:bg-purple-950/20 col-span-full lg:col-span-1">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-xs font-semibold text-purple-700 uppercase tracking-wider">Visites Totales</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-purple-700" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-purple-700">{totalVisits}</div>
+                  <p className="text-xs text-muted-foreground mt-1">Sur toute la période</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid gap-8 lg:grid-cols-3">
+              {/* Analytics Chart */}
+              <Card className="border-none shadow-sm lg:col-span-2">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-primary" />
+                    Fréquentation (7 derniers jours)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[250px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={visitsByDay}>
+                        <defs>
+                          <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} />
+                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} />
+                        <Tooltip
+                          contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                          cursor={{ stroke: '#10B981', strokeWidth: 2 }}
+                        />
+                        <Area type="monotone" dataKey="visites" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorVisits)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Top Pages */}
+              <Card className="border-none shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Globe className="h-5 w-5 text-primary" />
+                    Pages les plus visitées
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {topPages.map((page, idx) => (
+                      <div key={idx} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="h-6 w-6 rounded bg-muted flex items-center justify-center text-[10px] font-bold shrink-0">
+                            {idx + 1}
+                          </div>
+                          <span className="text-sm truncate font-medium">{page.path === '/' ? 'Accueil' : page.path}</span>
+                        </div>
+                        <Badge variant="secondary" className="bg-primary/5 text-primary border-none text-[10px]">
+                          {page.count} vues
+                        </Badge>
+                      </div>
+                    ))}
+                    {topPages.length === 0 && (
+                      <p className="text-center text-sm text-muted-foreground py-4">Aucune donnée de visite.</p>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             </div>

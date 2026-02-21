@@ -36,11 +36,6 @@ const DetailsProduit = () => {
     );
   }
 
-  const handleWhatsApp = () => {
-    const message = encodeURIComponent(`Bonjour, je suis intéressé par "${product.title}" sur VaisselleSeconde.`);
-    const phoneNumber = product.whatsapp || "770000000";
-    window.open(`https://wa.me/221${phoneNumber.replace(/\s/g, '')}?text=${message}`, "_blank");
-  };
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -126,10 +121,6 @@ const DetailsProduit = () => {
               <Button onClick={() => addToCart(product)} variant="hero" className="w-full h-12 md:h-14 text-base md:text-lg gap-3">
                 <ShoppingCart className="h-5 w-5" />
                 Ajouter au panier
-              </Button>
-              <Button onClick={handleWhatsApp} variant="outline" className="w-full h-12 md:h-14 text-base md:text-lg gap-3 border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10">
-                <MessageCircle className="h-5 w-5" />
-                Commander sur WhatsApp
               </Button>
             </div>
 

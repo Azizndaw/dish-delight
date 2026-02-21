@@ -21,6 +21,8 @@ export const sampleProducts: Product[] = [
     image: "https://images.unsplash.com/photo-1591192453812-7162a3465dd8?q=80&w=800",
     condition: "Neuf",
     category: "assiettes",
+    isBoosted: true,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
   },
   {
     id: "2",
@@ -31,6 +33,8 @@ export const sampleProducts: Product[] = [
     condition: "Très bon état",
     isLot: true,
     category: "verres",
+    isBoosted: false,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
   },
   {
     id: "3",
@@ -40,6 +44,8 @@ export const sampleProducts: Product[] = [
     image: "https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=800",
     condition: "Bon état",
     category: "bols",
+    isBoosted: true,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(), // 12 hours ago
   },
   {
     id: "4",
@@ -50,6 +56,8 @@ export const sampleProducts: Product[] = [
     condition: "Très bon état",
     isLot: true,
     category: "assiettes",
+    isBoosted: false,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(), // 3 days ago
   },
   {
     id: "5",
@@ -119,6 +127,14 @@ export const senegalRegions = [
   "Matam",
   "Sédhiou",
   "Kédougou",
+];
+
+export const deliveryZones = [
+  { id: "dakar_centre", name: "Dakar Centre (Plateau, Medina, etc.)", price: 1500 },
+  { id: "almadies", name: "Almadies / Ngor / Ouakam", price: 2000 },
+  { id: "banlieue_proche", name: "Pikine / Guédiawaye / Parcelles", price: 2500 },
+  { id: "banlieue_lointaine", name: "Rufisque / Keur Massar / Diamniadio", price: 3500 },
+  { id: "autre_region", name: "Autres régions (Expédition)", price: 5000 },
 ];
 
 // Format price in FCFA

@@ -2,16 +2,17 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingBag, ChevronLeft, Package, Clock, Truck, CheckCircle2, Trash2, EyeOff } from "lucide-react";
+import { ShoppingBag, ChevronLeft, Package, Clock, Truck, CheckCircle2, Trash2, EyeOff, XCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/data/products";
 import { toast } from "sonner";
 
 const MesAchats = () => {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const { user, loading } = useAuth();
 
     const { data: orders = [], isLoading } = useQuery({
@@ -39,6 +40,24 @@ const MesAchats = () => {
         // In a real app, we would update a 'is_hidden' column in the orders table
     };
 
+    const handleCancel = async (id: string) => {
+        if (!confirm("Voulez-vous vraiment annuler cette commande ?")) return;
+
+        try {
+            const { error } = await supabase
+                .from("orders")
+                .update({ status: "cancelled" })
+                .eq("id", id);
+
+            if (error) throw error;
+            toast.success("Commande annulée avec succès");
+            queryClient.invalidateQueries({ queryKey: ["user-orders", user?.id] });
+        } catch (error) {
+            console.error("Error cancelling order:", error);
+            toast.error("Erreur lors de l'annulation de la commande");
+        }
+    };
+
     if (loading || isLoading) {
         return <Layout><div className="container py-20 text-center text-muted-foreground">Chargement...</div></Layout>;
     }
@@ -53,6 +72,7 @@ const MesAchats = () => {
             case "completed": return <Badge className="bg-green-500 hover:bg-green-600"><CheckCircle2 className="mr-1 h-3 w-3" />Livré</Badge>;
             case "processing": return <Badge className="bg-blue-500 hover:bg-blue-600"><Clock className="mr-1 h-3 w-3" />En cours</Badge>;
             case "shipped": return <Badge className="bg-amber-500 hover:bg-amber-600"><Truck className="mr-1 h-3 w-3" />En cours d'expédition</Badge>;
+            case "cancelled": return <Badge variant="destructive"><XCircle className="mr-1 h-3 w-3" />Annulée</Badge>;
             default: return <Badge variant="secondary">Reçu</Badge>;
         }
     };
@@ -68,7 +88,7 @@ const MesAchats = () => {
                 <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="font-display text-3xl font-bold text-foreground md:text-4xl">Mes Achats</h1>
-                        <p className="mt-2 text-muted-foreground">Retrouvez l'historique de vos commandes sur VaisselleSeconde.</p>
+                        <p className="mt-2 text-muted-foreground">Retrouvez l'historique de vos commandes sur Vide Placard.</p>
                     </div>
                 </div>
 
@@ -131,6 +151,17 @@ const MesAchats = () => {
                                                 <span className="text-sm font-medium italic">Prix Total</span>
                                                 <span className="font-bold text-primary text-lg">{formatPrice(order.total_price)}</span>
                                             </div>
+                                            {(order.status === "pending" || order.status === "processing" || !order.status) && (
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="text-destructive hover:bg-destructive/10 border-destructive/20"
+                                                    onClick={() => handleCancel(order.id)}
+                                                >
+                                                    <XCircle className="h-4 w-4 mr-2" />
+                                                    Annuler
+                                                </Button>
+                                            )}
                                             <Button
                                                 variant="ghost"
                                                 size="sm"

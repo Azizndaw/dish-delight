@@ -7,26 +7,12 @@ import ProductCard from "@/components/ProductCard";
 import FeatureCard from "@/components/FeatureCard";
 import { sampleProducts, categories } from "@/data/products";
 import heroImage from "@/assets/hero-image.jpg";
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
+import { useProducts } from "@/hooks/useProducts";
 
 const Index = () => {
-  const [latestProducts, setLatestProducts] = useState(sampleProducts.slice(0, 4));
-
-  useEffect(() => {
-    const userProducts = JSON.parse(localStorage.getItem("userProducts") || "[]");
-    if (userProducts.length > 0) {
-      // Fusionner, trier par boost, et prendre les 4 plus récents
-      const combined = [...userProducts, ...sampleProducts]
-        .sort((a, b) => (b.isBoosted ? 1 : 0) - (a.isBoosted ? 1 : 0))
-        .slice(0, 4);
-      setLatestProducts(combined);
-    } else {
-      const sortedSamples = [...sampleProducts]
-        .sort((a, b) => (b.isBoosted ? 1 : 0) - (a.isBoosted ? 1 : 0))
-        .slice(0, 4);
-      setLatestProducts(sortedSamples);
-    }
-  }, []);
+  const { data: products = [] as any[], isLoading } = useProducts({ showInactive: false });
+  const latestProducts = useMemo(() => products.slice(0, 8), [products]);
 
   const features = [
     {
@@ -162,7 +148,7 @@ const Index = () => {
           <div className="mb-10 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <div>
               <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">
-                Dernières annonces
+                À la une & Nouveautés
               </h2>
               <p className="mt-2 text-muted-foreground">
                 Découvrez les nouveaux articles ajoutés
@@ -189,7 +175,7 @@ const Index = () => {
         <div className="container">
           <div className="mb-12 text-center">
             <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">
-              Pourquoi VaisselleSeconde ?
+              Pourquoi Vide Placard ?
             </h2>
             <p className="mt-3 max-w-2xl mx-auto text-muted-foreground">
               Une plateforme simple, fiable et éco-responsable pour acheter et vendre

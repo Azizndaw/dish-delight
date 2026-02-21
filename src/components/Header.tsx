@@ -38,7 +38,7 @@ const Header = () => {
             <span className="font-display text-xl font-bold text-primary-foreground">V</span>
           </div>
           <span className="font-display text-lg font-bold text-foreground sm:text-xl">
-            VaisselleSeconde
+            Vide Placard
           </span>
         </Link>
 

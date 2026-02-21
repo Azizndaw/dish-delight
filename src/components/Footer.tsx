@@ -15,7 +15,7 @@ const Footer = () => {
                 <span className="font-display text-xl font-bold text-primary-foreground">V</span>
               </div>
               <span className="font-display text-xl font-semibold text-foreground">
-                VaisselleSeconde
+                Vide Placard
               </span>
             </Link>
             <p className="text-sm text-muted-foreground">
@@ -61,11 +61,11 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4" />
-                <span>contact@vaisselleseconde.sn</span>
+                <span>contact@videplacard.sn</span>
               </li>
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Phone className="h-4 w-4" />
-                <span>+221 77 123 45 67</span>
+                <span>+221 77 224 37 63</span>
               </li>
               <li className="flex items-start gap-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 mt-0.5" />
@@ -77,7 +77,7 @@ const Footer = () => {
 
         <div className="mt-12 border-t border-border pt-8 text-center">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} VaisselleSeconde. Tous droits réservés.
+            © {currentYear} Vide Placard. Tous droits réservés.
           </p>
         </div>
       </div>

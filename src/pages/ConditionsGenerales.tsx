@@ -8,10 +8,10 @@ const ConditionsGenerales = () => {
           <h1 className="font-display text-3xl font-bold text-foreground md:text-4xl mb-8">
             Conditions Générales d'Utilisation
           </h1>
-          
+
           <div className="prose prose-lg text-muted-foreground">
             <p className="lead">
-              Bienvenue sur VaisselleSeconde. En utilisant notre plateforme, vous acceptez 
+              Bienvenue sur Vide Placard. En utilisant notre plateforme, vous acceptez
               les présentes conditions générales d'utilisation.
             </p>
 
@@ -19,8 +19,8 @@ const ConditionsGenerales = () => {
               1. Objet
             </h2>
             <p>
-              VaisselleSeconde est une plateforme de mise en relation entre particuliers 
-              pour l'achat et la vente de vaisselle d'occasion. Nous ne sommes pas partie 
+              Vide Placard est une plateforme de mise en relation entre particuliers
+              pour l'achat et la vente de vaisselle d'occasion. Nous ne sommes pas partie
               aux transactions entre utilisateurs.
             </p>
 
@@ -28,8 +28,8 @@ const ConditionsGenerales = () => {
               2. Inscription
             </h2>
             <p>
-              L'inscription est gratuite et ouverte aux personnes majeures. Vous vous engagez 
-              à fournir des informations exactes et à maintenir la confidentialité de vos 
+              L'inscription est gratuite et ouverte aux personnes majeures. Vous vous engagez
+              à fournir des informations exactes et à maintenir la confidentialité de vos
               identifiants de connexion.
             </p>
 
@@ -37,8 +37,8 @@ const ConditionsGenerales = () => {
               3. Publication d'annonces
             </h2>
             <p>
-              Les annonces doivent concerner exclusivement de la vaisselle. Le vendeur garantit 
-              être propriétaire des articles proposés. Les annonces doivent être honnêtes et 
+              Les annonces doivent concerner exclusivement de la vaisselle. Le vendeur garantit
+              être propriétaire des articles proposés. Les annonces doivent être honnêtes et
               les photos représentatives de l'état réel du produit.
             </p>
             <p>
@@ -49,7 +49,7 @@ const ConditionsGenerales = () => {
               4. Prix
             </h2>
             <p>
-              VaisselleSeconde promeut les petits prix. Nous nous réservons le droit de fixer 
+              Vide Placard promeut les petits prix. Nous nous réservons le droit de fixer
               des prix plafonds par catégorie pour maintenir l'accessibilité de la plateforme.
             </p>
 
@@ -57,8 +57,8 @@ const ConditionsGenerales = () => {
               5. Transactions
             </h2>
             <p>
-              Les transactions s'effectuent directement entre acheteurs et vendeurs, généralement 
-              en remise en main propre. VaisselleSeconde ne garantit pas les transactions et 
+              Les transactions s'effectuent directement entre acheteurs et vendeurs, généralement
+              en remise en main propre. Vide Placard ne garantit pas les transactions et
               n'est pas responsable des litiges entre utilisateurs.
             </p>
 
@@ -66,8 +66,8 @@ const ConditionsGenerales = () => {
               6. Responsabilités
             </h2>
             <p>
-              Les utilisateurs sont responsables du contenu qu'ils publient et des transactions 
-              qu'ils effectuent. VaisselleSeconde décline toute responsabilité en cas de litige, 
+              Les utilisateurs sont responsables du contenu qu'ils publient et des transactions
+              qu'ils effectuent. Vide Placard décline toute responsabilité en cas de litige,
               d'arnaque ou de produit non conforme.
             </p>
 
@@ -75,7 +75,7 @@ const ConditionsGenerales = () => {
               7. Modification des CGU
             </h2>
             <p>
-              Nous nous réservons le droit de modifier ces conditions à tout moment. 
+              Nous nous réservons le droit de modifier ces conditions à tout moment.
               Les utilisateurs seront informés des modifications importantes.
             </p>
 

@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { formatPrice } from "@/data/products";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { formatPrice, deliveryZones } from "@/data/products";
 import { ChevronLeft, CheckCircle2, Truck, Wallet, MapPin } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { PhoneInput } from "@/components/ui/phone-input";
 
 const Commande = () => {
   const { cart, totalPrice, clearCart } = useCart();
@@ -22,24 +24,33 @@ const Commande = () => {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [selectedZone, setSelectedZone] = useState("");
+
+  const deliveryFee = deliveryZones.find(z => z.id === selectedZone)?.price || 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      toast.error("Connectez-vous pour passer une commande.");
-      navigate("/connexion");
+    if (!selectedZone) {
+      toast.error("Veuillez choisir une zone de livraison.");
       return;
     }
+
     setIsSubmitting(true);
 
     try {
+      const commissionAmount = totalPrice * 0.1;
+      const sellerRevenue = totalPrice * 0.9;
+
       const { data: order, error: orderError } = await supabase.from("orders").insert({
-        user_id: user.id,
+        user_id: user?.id || null, // null if guest
         full_name: fullName,
         phone,
         address,
         payment_method: paymentMethod,
-        total_price: totalPrice,
+        total_price: totalPrice + deliveryFee,
+        commission_amount: commissionAmount,
+        seller_revenue: sellerRevenue,
+        delivery_fee: deliveryFee,
       }).select().single();
 
       if (orderError) throw orderError;
@@ -76,7 +87,7 @@ const Commande = () => {
           </div>
           <h1 className="font-display text-3xl font-bold">Merci pour votre commande !</h1>
           <p className="mt-4 text-muted-foreground max-w-md mx-auto">
-            Nous vous contacterons par WhatsApp pour confirmer la livraison.
+            Votre commande a été enregistrée avec succès. Vous recevrez une notification dès qu'elle sera prête.
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Link to="/catalogue"><Button variant="hero">Retour au catalogue</Button></Link>
@@ -121,7 +132,12 @@ const Commande = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Téléphone</Label>
-                  <Input id="phone" type="tel" placeholder="77 123 45 67" required value={phone} onChange={(e) => setPhone(e.target.value)} />
+                  <PhoneInput
+                    value={phone}
+                    onChange={setPhone}
+                    placeholder="77 123 45 67"
+                    disabled={isSubmitting}
+                  />
                 </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="address">Adresse</Label>
@@ -158,14 +174,33 @@ const Commande = () => {
                 <Truck className="h-5 w-5 text-primary" />
                 Livraison (Tiak-Tiak)
               </h2>
-              <div className="flex items-center space-x-3 rounded-lg border border-border p-4 bg-muted/30">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                  <Truck className="h-5 w-5" />
+              <div className="space-y-4 pt-2">
+                <div className="space-y-2">
+                  <Label htmlFor="zone">Zone de livraison</Label>
+                  <Select onValueChange={setSelectedZone} required>
+                    <SelectTrigger className="h-11">
+                      <SelectValue placeholder="Choisir votre quartier/zone" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {deliveryZones.map((zone) => (
+                        <SelectItem key={zone.id} value={zone.id}>
+                          {zone.name} ({formatPrice(zone.price)})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div>
-                  <p className="font-medium">Livraison standard à Dakar</p>
-                  <p className="text-xs text-muted-foreground">1 500 – 3 000 FCFA selon votre quartier.</p>
-                </div>
+                {selectedZone && (
+                  <div className="flex items-center space-x-3 rounded-lg border border-border p-4 bg-muted/30">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                      <Truck className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Frais de livraison : {formatPrice(deliveryFee)}</p>
+                      <p className="text-xs text-muted-foreground">Livraison rapide par Tiak-Tiak.</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -193,8 +228,8 @@ const Commande = () => {
               </div>
               <div className="space-y-3 pt-6 border-t border-border">
                 <div className="flex justify-between text-muted-foreground"><span>Sous-total</span><span>{formatPrice(totalPrice)}</span></div>
-                <div className="flex justify-between text-muted-foreground"><span>Livraison</span><span className="font-medium">À payer au livreur</span></div>
-                <div className="flex justify-between font-bold text-xl pt-2"><span>Total</span><span className="text-primary">{formatPrice(totalPrice)}</span></div>
+                <div className="flex justify-between text-muted-foreground"><span>Livraison</span><span>{selectedZone ? formatPrice(deliveryFee) : "Choisir une zone"}</span></div>
+                <div className="flex justify-between font-bold text-xl pt-2"><span>Total</span><span className="text-primary">{formatPrice(totalPrice + deliveryFee)}</span></div>
               </div>
             </div>
           </div>

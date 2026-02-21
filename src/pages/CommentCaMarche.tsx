@@ -23,7 +23,7 @@ const CommentCaMarche = () => {
     {
       icon: Package,
       title: "Vendez (Gratuitement)",
-      description: "Remettez l'article et gardez 100% du prix. Dish Delight ne prend AUCUNE commission sur la vente !",
+      description: "Remettez l'article et gardez 100% du prix. Vide Placard ne prend AUCUNE commission sur la vente !",
     },
   ];
 
@@ -59,7 +59,7 @@ const CommentCaMarche = () => {
             Comment ça marche ?
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            Sur Dish Delight, la vente est 100% gratuite. Gagnez en visibilité en boostant
+            Sur Vide Placard, la vente est 100% gratuite. Gagnez en visibilité en boostant
             votre annonce pour quelques francs seulement !
           </p>
         </div>

@@ -14,15 +14,15 @@ const Contact = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     toast({
       title: "Message envoyé !",
       description: "Nous vous répondrons dans les plus brefs délais.",
     });
-    
+
     setIsSubmitting(false);
     (e.target as HTMLFormElement).reset();
   };
@@ -49,7 +49,7 @@ const Contact = () => {
               <h2 className="font-display text-2xl font-bold text-foreground mb-6">
                 Envoyez-nous un message
               </h2>
-              
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
@@ -61,27 +61,27 @@ const Contact = () => {
                     <Input id="lastName" placeholder="Votre nom" required />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" type="email" placeholder="votre@email.com" required />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="subject">Sujet</Label>
                   <Input id="subject" placeholder="Le sujet de votre message" required />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="message">Message</Label>
-                  <Textarea 
-                    id="message" 
+                  <Textarea
+                    id="message"
                     placeholder="Décrivez votre demande en détail..."
                     rows={6}
                     required
                   />
                 </div>
-                
+
                 <Button variant="hero" size="lg" type="submit" disabled={isSubmitting}>
                   {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
                 </Button>
@@ -94,7 +94,7 @@ const Contact = () => {
                 <h2 className="font-display text-2xl font-bold text-foreground mb-6">
                   Autres moyens de nous joindre
                 </h2>
-                
+
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -102,11 +102,11 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-medium text-foreground">Email</h3>
-                      <p className="text-muted-foreground">contact@vaisselleseconde.com</p>
+                      <p className="text-muted-foreground">contact@videplacard.sn</p>
                       <p className="text-sm text-muted-foreground">Réponse sous 24-48h</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                       <Phone className="h-5 w-5" />
@@ -117,7 +117,7 @@ const Contact = () => {
                       <p className="text-sm text-muted-foreground">Lun-Ven, 9h-18h</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                       <MapPin className="h-5 w-5" />
@@ -127,7 +127,7 @@ const Contact = () => {
                       <p className="text-muted-foreground">Paris, France</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-sage text-sage-dark">
                       <MessageCircle className="h-5 w-5" />

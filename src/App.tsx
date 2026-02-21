@@ -24,8 +24,37 @@ import MesAnnonces from "./pages/MesAnnonces";
 import ModifierAnnonce from "./pages/ModifierAnnonce";
 import MesAchats from "./pages/MesAchats";
 import NotFound from "./pages/NotFound";
+import { useAnalytics } from "./hooks/useAnalytics";
 
 const queryClient = new QueryClient();
+
+const AppContent = () => {
+  useAnalytics();
+  return (
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/catalogue" element={<Catalogue />} />
+      <Route path="/vendre" element={<Vendre />} />
+      <Route path="/produit/:id" element={<DetailsProduit />} />
+      <Route path="/panier" element={<Panier />} />
+      <Route path="/commande" element={<Commande />} />
+      <Route path="/connexion" element={<Connexion />} />
+      <Route path="/favoris" element={<Favoris />} />
+      <Route path="/comment-ca-marche" element={<CommentCaMarche />} />
+      <Route path="/a-propos" element={<APropos />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/conditions-generales" element={<ConditionsGenerales />} />
+      <Route path="/confidentialite" element={<Confidentialite />} />
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/compte" element={<Compte />} />
+      <Route path="/mes-annonces" element={<MesAnnonces />} />
+      <Route path="/modifier-annonce/:id" element={<ModifierAnnonce />} />
+      <Route path="/mes-achats" element={<MesAchats />} />
+      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -35,28 +64,7 @@ const App = () => (
           <CartProvider>
             <Toaster />
             <Sonner />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/catalogue" element={<Catalogue />} />
-              <Route path="/vendre" element={<Vendre />} />
-              <Route path="/produit/:id" element={<DetailsProduit />} />
-              <Route path="/panier" element={<Panier />} />
-              <Route path="/commande" element={<Commande />} />
-              <Route path="/connexion" element={<Connexion />} />
-              <Route path="/favoris" element={<Favoris />} />
-              <Route path="/comment-ca-marche" element={<CommentCaMarche />} />
-              <Route path="/a-propos" element={<APropos />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/conditions-generales" element={<ConditionsGenerales />} />
-              <Route path="/confidentialite" element={<Confidentialite />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/compte" element={<Compte />} />
-              <Route path="/mes-annonces" element={<MesAnnonces />} />
-              <Route path="/modifier-annonce/:id" element={<ModifierAnnonce />} />
-              <Route path="/mes-achats" element={<MesAchats />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AppContent />
           </CartProvider>
         </AuthProvider>
       </BrowserRouter>

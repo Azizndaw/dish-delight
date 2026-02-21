@@ -8,11 +8,11 @@ const Confidentialite = () => {
           <h1 className="font-display text-3xl font-bold text-foreground md:text-4xl mb-8">
             Politique de Confidentialité
           </h1>
-          
+
           <div className="prose prose-lg text-muted-foreground">
             <p className="lead">
-              Chez VaisselleSeconde, nous accordons une grande importance à la protection 
-              de vos données personnelles. Cette politique explique comment nous collectons, 
+              Chez Vide Placard, nous accordons une grande importance à la protection
+              de vos données personnelles. Cette politique explique comment nous collectons,
               utilisons et protégeons vos informations.
             </p>
 
@@ -43,8 +43,8 @@ const Confidentialite = () => {
               3. Partage des données
             </h2>
             <p>
-              Nous ne vendons jamais vos données personnelles. Certaines informations 
-              (prénom, ville, annonces) sont visibles publiquement sur la plateforme. 
+              Nous ne vendons jamais vos données personnelles. Certaines informations
+              (prénom, ville, annonces) sont visibles publiquement sur la plateforme.
               Vos coordonnées complètes ne sont partagées qu'avec votre consentement.
             </p>
 
@@ -52,8 +52,8 @@ const Confidentialite = () => {
               4. Conservation des données
             </h2>
             <p>
-              Vos données sont conservées tant que votre compte est actif. Après suppression 
-              de votre compte, les données sont effacées dans un délai de 30 jours, sauf 
+              Vos données sont conservées tant que votre compte est actif. Après suppression
+              de votre compte, les données sont effacées dans un délai de 30 jours, sauf
               obligation légale de conservation.
             </p>
 
@@ -69,14 +69,14 @@ const Confidentialite = () => {
               <li>Droit d'opposition</li>
             </ul>
             <p className="mt-4">
-              Pour exercer ces droits, contactez-nous à : privacy@vaisselleseconde.com
+              Pour exercer ces droits, contactez-nous à : privacy@videplacard.sn
             </p>
 
             <h2 className="font-display text-xl font-semibold text-foreground mt-8 mb-4">
               6. Cookies
             </h2>
             <p>
-              Nous utilisons des cookies pour améliorer votre expérience de navigation. 
+              Nous utilisons des cookies pour améliorer votre expérience de navigation.
               Vous pouvez gérer vos préférences de cookies dans les paramètres de votre navigateur.
             </p>
 
@@ -84,7 +84,7 @@ const Confidentialite = () => {
               7. Sécurité
             </h2>
             <p>
-              Nous mettons en œuvre des mesures de sécurité appropriées pour protéger vos 
+              Nous mettons en œuvre des mesures de sécurité appropriées pour protéger vos
               données contre tout accès non autorisé, modification ou divulgation.
             </p>
 

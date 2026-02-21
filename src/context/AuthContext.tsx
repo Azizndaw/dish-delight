@@ -8,6 +8,8 @@ interface AuthContextType {
   loading: boolean;
   signUp: (email: string, password: string, fullName: string, phone?: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signInWithOtp: (phone: string) => Promise<{ error: any }>;
+  verifyOtp: (phone: string, token: string, fullName?: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   isAdmin: boolean;
 }
@@ -50,17 +52,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signUp = async (email: string, password: string, fullName: string, phone?: string) => {
+    const normalizedPhone = phone ? normalizePhoneNumber(phone) : undefined;
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: window.location.origin,
-        data: { full_name: fullName, phone },
+        data: { full_name: fullName, phone: normalizedPhone },
       },
     });
     // Save phone to profile after signup
-    if (!error && data.user && phone) {
-      await supabase.from("profiles").update({ phone }).eq("user_id", data.user.id);
+    if (!error && data.user && normalizedPhone) {
+      await supabase.from("profiles").update({ phone: normalizedPhone }).eq("user_id", data.user.id);
     }
     return { error };
   };
@@ -70,12 +73,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error };
   };
 
+  const normalizePhoneNumber = (phone: string) => {
+    // Remove all non-digit characters except the leading +
+    let cleaned = phone.replace(/[^\d+]/g, "");
+    // If it doesn't start with +, and it looks like a Senegalese number (starts with 7 or 3), add +221
+    if (!cleaned.startsWith("+")) {
+      if (cleaned.startsWith("00")) {
+        cleaned = "+" + cleaned.slice(2);
+      } else if (cleaned.length === 9) {
+        cleaned = "+221" + cleaned;
+      }
+    }
+    return cleaned;
+  };
+
+  const signInWithOtp = async (phone: string) => {
+    const normalizedPhone = normalizePhoneNumber(phone);
+    console.log("Attempting OTP sign-in for:", normalizedPhone);
+    const { error } = await supabase.auth.signInWithOtp({
+      phone: normalizedPhone,
+    });
+    if (error) console.error("OTP Sign-in Error:", error);
+    return { error };
+  };
+
+  const verifyOtp = async (phone: string, token: string, fullName?: string) => {
+    const normalizedPhone = normalizePhoneNumber(phone);
+    console.log("Verifying OTP for:", normalizedPhone);
+    const { data, error } = await supabase.auth.verifyOtp({
+      phone: normalizedPhone,
+      token,
+      type: 'sms',
+    });
+
+    if (!error && data.user && fullName) {
+      await supabase.from("profiles").update({ full_name: fullName, phone }).eq("user_id", data.user.id);
+    }
+
+    return { error };
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signOut, isAdmin }}>
+    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signInWithOtp, verifyOtp, signOut, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

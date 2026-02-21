@@ -21,9 +21,18 @@ const Catalogue = () => {
   const { data: products = [], isLoading } = useProducts({ category, search, location, condition, maxPrice });
 
   const sorted = [...products].sort((a, b) => {
+    // 1. Boosted items ALWAYS come first
+    if (a.isBoosted && !b.isBoosted) return -1;
+    if (!a.isBoosted && b.isBoosted) return 1;
+
+    // 2. Secondary sort within the same priority group
     if (sortBy === "price-asc") return a.price - b.price;
     if (sortBy === "price-desc") return b.price - a.price;
-    return 0; // default: already sorted by boosted + recent from hook
+
+    // Default: Sort by date (most recent first)
+    const dateA = new Date(a.createdAt || 0).getTime();
+    const dateB = new Date(b.createdAt || 0).getTime();
+    return dateB - dateA;
   });
 
   const resetFilters = () => {
