@@ -185,6 +185,10 @@ const ModifierAnnonce = () => {
                             <Input id="price" type="number" required value={price} onChange={(e) => setPrice(e.target.value)} />
                         </div>
                         <div className="space-y-2">
+                            <label htmlFor="stock" className="text-sm font-medium text-foreground">Quantité en stock</label>
+                            <Input id="stock" type="number" min="1" required value={stockQuantity} onChange={(e) => setStockQuantity(e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
                             <label className="text-sm font-medium text-foreground">Région</label>
                             <Select value={location.toLowerCase()} onValueChange={(v) => setLocation(v.charAt(0).toUpperCase() + v.slice(1))} required>
                                 <SelectTrigger><SelectValue placeholder="Région" /></SelectTrigger>
