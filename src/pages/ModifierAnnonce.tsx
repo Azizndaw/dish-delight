@@ -31,6 +31,7 @@ const ModifierAnnonce = () => {
     const [description, setDescription] = useState("");
     const [isBoosted, setIsBoosted] = useState(false);
     const [isLot, setIsLot] = useState(false);
+    const [stockQuantity, setStockQuantity] = useState("1");
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
