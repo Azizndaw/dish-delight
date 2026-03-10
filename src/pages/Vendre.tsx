@@ -83,6 +83,7 @@ const Vendre = () => {
         image_url: imageUrl,
         is_boosted: isBoosted,
         is_lot: isLot,
+        stock_quantity: parseInt(stockQuantity) || 1,
       });
 
       if (error) throw error;
