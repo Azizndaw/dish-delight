@@ -173,6 +173,7 @@ export type Database = {
           is_lot: boolean | null
           location: string
           price: number
+          stock_quantity: number
           title: string
           updated_at: string
           user_id: string
@@ -191,6 +192,7 @@ export type Database = {
           is_lot?: boolean | null
           location: string
           price: number
+          stock_quantity?: number
           title: string
           updated_at?: string
           user_id: string
@@ -209,6 +211,7 @@ export type Database = {
           is_lot?: boolean | null
           location?: string
           price?: number
+          stock_quantity?: number
           title?: string
           updated_at?: string
           user_id?: string

@@ -20,6 +20,7 @@ import {
 import { formatPrice } from "@/data/products";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { createNotification } from "@/hooks/useNotifications";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Navigate } from "react-router-dom";
@@ -190,6 +191,27 @@ const AdminDashboard = () => {
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     const { error } = await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
     if (error) { toast.error("Erreur"); return; }
+
+    // Notify buyer about status change
+    const order = allOrders.find((o: any) => o.id === orderId);
+    if (order) {
+      const statusLabels: Record<string, string> = {
+        pending: "en attente",
+        confirmed: "confirmée",
+        preparing: "en préparation",
+        shipped: "expédiée",
+        delivered: "livrée",
+        completed: "terminée",
+        cancelled: "annulée",
+      };
+      await createNotification(
+        order.user_id,
+        "order_status",
+        `📦 Votre commande #${orderId.slice(0, 8)} est maintenant ${statusLabels[newStatus] || newStatus}.`,
+        orderId
+      );
+    }
+
     toast.success(`Statut → ${newStatus}`);
     queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
   };

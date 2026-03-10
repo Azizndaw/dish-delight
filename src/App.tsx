@@ -23,6 +23,7 @@ import Compte from "./pages/Compte";
 import MesAnnonces from "./pages/MesAnnonces";
 import ModifierAnnonce from "./pages/ModifierAnnonce";
 import MesAchats from "./pages/MesAchats";
+import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 import { useAnalytics } from "./hooks/useAnalytics";
 
@@ -50,6 +51,7 @@ const AppContent = () => {
       <Route path="/mes-annonces" element={<MesAnnonces />} />
       <Route path="/modifier-annonce/:id" element={<ModifierAnnonce />} />
       <Route path="/mes-achats" element={<MesAchats />} />
+      <Route path="/notifications" element={<Notifications />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>

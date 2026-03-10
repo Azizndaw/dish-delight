@@ -25,6 +25,7 @@ const Vendre = () => {
   const [description, setDescription] = useState("");
   const [isBoosted, setIsBoosted] = useState(false);
   const [isLot, setIsLot] = useState(false);
+  const [stockQuantity, setStockQuantity] = useState("1");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,6 +83,7 @@ const Vendre = () => {
         image_url: imageUrl,
         is_boosted: isBoosted,
         is_lot: isLot,
+        stock_quantity: parseInt(stockQuantity) || 1,
       });
 
       if (error) throw error;
@@ -170,6 +172,10 @@ const Vendre = () => {
                 <Input id="price" type="number" placeholder="5000" required className="h-11 pr-16" value={price} onChange={(e) => setPrice(e.target.value)} />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-muted-foreground">FCFA</span>
               </div>
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="stock" className="text-sm font-medium text-foreground">Quantité en stock</label>
+              <Input id="stock" type="number" min="1" placeholder="1" required className="h-11" value={stockQuantity} onChange={(e) => setStockQuantity(e.target.value)} />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Région</label>

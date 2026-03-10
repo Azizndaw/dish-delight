@@ -31,6 +31,7 @@ const ModifierAnnonce = () => {
     const [description, setDescription] = useState("");
     const [isBoosted, setIsBoosted] = useState(false);
     const [isLot, setIsLot] = useState(false);
+    const [stockQuantity, setStockQuantity] = useState("1");
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -42,6 +43,7 @@ const ModifierAnnonce = () => {
             setLocation(product.location);
             setDescription(product.description || "");
             setIsBoosted(product.isBoosted);
+            setStockQuantity((product as any).stockQuantity?.toString() || "1");
             setIsLot(product.isLot);
             if (product.image) {
                 setImagePreviews([product.image]);
@@ -96,6 +98,7 @@ const ModifierAnnonce = () => {
                 image_url: imageUrl,
                 is_boosted: isBoosted,
                 is_lot: isLot,
+                stock_quantity: parseInt(stockQuantity) || 1,
             }).eq("id", id).eq("user_id", user.id);
 
             if (error) throw error;
@@ -180,6 +183,10 @@ const ModifierAnnonce = () => {
                         <div className="space-y-2">
                             <label htmlFor="price" className="text-sm font-medium text-foreground">Prix (FCFA)</label>
                             <Input id="price" type="number" required value={price} onChange={(e) => setPrice(e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="stock" className="text-sm font-medium text-foreground">Quantité en stock</label>
+                            <Input id="stock" type="number" min="1" required value={stockQuantity} onChange={(e) => setStockQuantity(e.target.value)} />
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-foreground">Région</label>

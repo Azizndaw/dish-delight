@@ -24,6 +24,7 @@ const Connexion = () => {
     const [phone, setPhone] = useState("");
     const [otp, setOtp] = useState("");
     const [phoneStep, setPhoneStep] = useState<"phone" | "otp">("phone");
+    const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
 
     const handleSendOtp = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -88,10 +89,36 @@ const Connexion = () => {
             if (error) {
                 toast.error(error.message);
             } else {
-                toast.success("Compte créé ! Vérifiez votre email pour confirmer votre inscription.");
+                setShowEmailConfirmation(true);
             }
         }
     };
+
+    if (showEmailConfirmation) {
+        return (
+            <Layout>
+                <div className="container max-w-md py-20 text-center animate-fade-in">
+                    <div className="rounded-2xl border border-border bg-card p-10 shadow-medium">
+                        <div className="mb-6 flex justify-center">
+                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                            </div>
+                        </div>
+                        <h1 className="font-display text-2xl font-bold">Vérifiez votre email</h1>
+                        <p className="mt-4 text-muted-foreground">
+                            Un email de confirmation a été envoyé à <span className="font-semibold text-foreground">{email}</span>.
+                        </p>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                            Cliquez sur le lien dans l'email pour activer votre compte. Vérifiez aussi vos spams.
+                        </p>
+                        <Button variant="outline" className="mt-8" onClick={() => { setShowEmailConfirmation(false); setIsLogin(true); }}>
+                            Retour à la connexion
+                        </Button>
+                    </div>
+                </div>
+            </Layout>
+        );
+    }
 
     return (
         <Layout>

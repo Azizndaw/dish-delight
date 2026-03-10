@@ -34,6 +34,7 @@ export const toProduct = (p: DBProduct) => ({
   description: p.description ?? undefined,
   createdAt: p.created_at,
   userId: p.user_id,
+  stockQuantity: (p as any).stock_quantity ?? 1,
 });
 
 export const useProducts = (options?: { category?: string; search?: string; location?: string; condition?: string; maxPrice?: number; userId?: string; showInactive?: boolean }) => {
