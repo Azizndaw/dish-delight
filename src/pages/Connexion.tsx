@@ -24,6 +24,7 @@ const Connexion = () => {
     const [phone, setPhone] = useState("");
     const [otp, setOtp] = useState("");
     const [phoneStep, setPhoneStep] = useState<"phone" | "otp">("phone");
+    const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
 
     const handleSendOtp = async (e: React.FormEvent) => {
         e.preventDefault();
