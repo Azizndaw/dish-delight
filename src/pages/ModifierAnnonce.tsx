@@ -98,6 +98,7 @@ const ModifierAnnonce = () => {
                 image_url: imageUrl,
                 is_boosted: isBoosted,
                 is_lot: isLot,
+                stock_quantity: parseInt(stockQuantity) || 1,
             }).eq("id", id).eq("user_id", user.id);
 
             if (error) throw error;
