@@ -43,6 +43,7 @@ const ModifierAnnonce = () => {
             setLocation(product.location);
             setDescription(product.description || "");
             setIsBoosted(product.isBoosted);
+            setStockQuantity((product as any).stockQuantity?.toString() || "1");
             setIsLot(product.isLot);
             if (product.image) {
                 setImagePreviews([product.image]);
