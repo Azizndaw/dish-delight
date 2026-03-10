@@ -77,6 +77,7 @@ const Header = () => {
                   </Button>
                 </Link>
               )}
+              <NotificationBell />
               <Link to="/compte">
                 <Button variant="ghost" size="icon" title="Mon Profil">
                   <User className="h-5 w-5" />

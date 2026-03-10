@@ -51,6 +51,7 @@ const AppContent = () => {
       <Route path="/mes-annonces" element={<MesAnnonces />} />
       <Route path="/modifier-annonce/:id" element={<ModifierAnnonce />} />
       <Route path="/mes-achats" element={<MesAchats />} />
+      <Route path="/notifications" element={<Notifications />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>

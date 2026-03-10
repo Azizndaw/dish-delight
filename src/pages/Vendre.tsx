@@ -174,6 +174,10 @@ const Vendre = () => {
               </div>
             </div>
             <div className="space-y-2">
+              <label htmlFor="stock" className="text-sm font-medium text-foreground">Quantité en stock</label>
+              <Input id="stock" type="number" min="1" placeholder="1" required className="h-11" value={stockQuantity} onChange={(e) => setStockQuantity(e.target.value)} />
+            </div>
+            <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Région</label>
               <Select onValueChange={setLocation} required>
                 <SelectTrigger className="h-11"><SelectValue placeholder="Région" /></SelectTrigger>
