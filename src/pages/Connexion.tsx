@@ -89,7 +89,7 @@ const Connexion = () => {
             if (error) {
                 toast.error(error.message);
             } else {
-                toast.success("Compte créé ! Vérifiez votre email pour confirmer votre inscription.");
+                setShowEmailConfirmation(true);
             }
         }
     };
