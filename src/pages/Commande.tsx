@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { PhoneInput } from "@/components/ui/phone-input";
+import { createNotification, notifyAdmins } from "@/hooks/useNotifications";
 
 const Commande = () => {
   const { cart, totalPrice, clearCart } = useCart();
