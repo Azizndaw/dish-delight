@@ -21,8 +21,7 @@ const ModifierAnnonce = () => {
     const { data: product, isLoading: isLoadingProduct } = useProduct(id || "");
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [imageFiles, setImageFiles] = useState<File[]>([]);
-    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+    const [images, setImages] = useState<{ url: string; file?: File; isExisting: boolean }[]>([]);
     const [title, setTitle] = useState("");
     const [category, setCategory] = useState("");
     const [condition, setCondition] = useState("");
@@ -45,29 +44,44 @@ const ModifierAnnonce = () => {
             setIsBoosted(product.isBoosted);
             setStockQuantity((product as any).stockQuantity?.toString() || "1");
             setIsLot(product.isLot);
-            if (product.image) {
-                setImagePreviews([product.image]);
+
+            const initialImages: { url: string; isExisting: boolean }[] = [];
+            if (product.images && product.images.length > 0) {
+                product.images.forEach(url => initialImages.push({ url, isExisting: true }));
+            } else if (product.image) {
+                initialImages.push({ url: product.image, isExisting: true });
             }
+            setImages(initialImages);
         }
     }, [product]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files) return;
+
+        if (images.length + files.length > 5) {
+            toast.error("Maximum 5 photos.");
+            return;
+        }
+
         const newFiles = Array.from(files);
-        setImageFiles(newFiles);
         newFiles.forEach((file) => {
             const reader = new FileReader();
             reader.onload = (ev) => {
-                if (ev.target?.result) setImagePreviews([ev.target!.result as string]);
+                if (ev.target?.result) {
+                    setImages(prev => [...prev, {
+                        url: ev.target!.result as string,
+                        file,
+                        isExisting: false
+                    }]);
+                }
             };
             reader.readAsDataURL(file);
         });
     };
 
-    const removeImage = () => {
-        setImageFiles([]);
-        setImagePreviews([]);
+    const removeImage = (index: number) => {
+        setImages(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -76,32 +90,43 @@ const ModifierAnnonce = () => {
         setIsSubmitting(true);
 
         try {
-            let imageUrl = product?.image || null;
+            const finalImageUrls: string[] = [];
 
-            if (imageFiles.length > 0) {
-                const file = imageFiles[0];
-                const ext = file.name.split(".").pop();
-                const path = `${user.id}/${Date.now()}.${ext}`;
-                const { error: uploadError } = await supabase.storage.from("product-images").upload(path, file);
-                if (uploadError) throw uploadError;
-                const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(path);
-                imageUrl = urlData.publicUrl;
+            for (const img of images) {
+                if (img.isExisting) {
+                    finalImageUrls.push(img.url);
+                } else if (img.file) {
+                    const file = img.file;
+                    const ext = file.name.split(".").pop();
+                    const path = `${user.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
+                    const { error: uploadError } = await supabase.storage.from("product-images").upload(path, file);
+                    if (uploadError) throw uploadError;
+                    const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(path);
+                    finalImageUrls.push(urlData.publicUrl);
+                }
             }
 
-            const { error } = await supabase.from("products").update({
+            const { data: updatedData, error } = await supabase.from("products").update({
                 title,
                 category,
                 condition,
                 price: parseInt(price),
-                location,
+                location: location.charAt(0).toUpperCase() + location.slice(1),
                 description,
-                image_url: imageUrl,
+                image_url: finalImageUrls[0] || null,
+                images: finalImageUrls,
                 is_boosted: isBoosted,
                 is_lot: isLot,
                 stock_quantity: parseInt(stockQuantity) || 1,
-            }).eq("id", id).eq("user_id", user.id);
+            }).eq("id", id).eq("user_id", user.id).select();
 
-            if (error) throw error;
+            if (error) {
+                console.error("Supabase update error:", error);
+                throw error;
+            }
+            if (!updatedData || updatedData.length === 0) {
+                throw new Error("Vous n'êtes pas autorisé à modifier cette annonce.");
+            }
 
             toast.success("Annonce modifiée !");
             queryClient.invalidateQueries({ queryKey: ["products"] });
@@ -137,20 +162,20 @@ const ModifierAnnonce = () => {
                             <Camera className="h-4 w-4 text-primary" />
                             Photo actuelle ou nouvelle
                         </label>
-                        <div className="grid grid-cols-2 gap-4">
-                            {imagePreviews.map((image, index) => (
+                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                            {images.map((img, index) => (
                                 <div key={index} className="group relative aspect-square rounded-xl overflow-hidden border border-border">
-                                    <img src={image} alt="Aperçu" className="h-full w-full object-cover" />
-                                    <button type="button" onClick={removeImage} className="absolute right-1 top-1 rounded-full bg-destructive p-1 text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100">
+                                    <img src={img.url} alt="Aperçu" className="h-full w-full object-cover" />
+                                    <button type="button" onClick={() => removeImage(index)} className="absolute right-1 top-1 rounded-full bg-destructive p-1 text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100">
                                         <X className="h-4 w-4" />
                                     </button>
                                 </div>
                             ))}
-                            {imagePreviews.length === 0 && (
+                            {images.length < 5 && (
                                 <div onClick={() => fileInputRef.current?.click()} className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-muted/30 transition-colors hover:bg-muted/50 hover:border-primary/50">
                                     <Upload className="h-6 w-6 text-muted-foreground" />
-                                    <span className="text-xs font-medium text-muted-foreground">Changer photo</span>
-                                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
+                                    <span className="text-xs font-medium text-muted-foreground">Ajouter</span>
+                                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" multiple className="hidden" />
                                 </div>
                             )}
                         </div>

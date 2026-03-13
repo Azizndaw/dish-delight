@@ -1,8 +1,9 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, MessageCircle, MapPin, Share2, ShieldCheck, Truck, ShoppingCart, Pencil, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, MessageCircle, MapPin, Share2, ShieldCheck, Truck, ShoppingCart, Pencil, Trash2, ZoomIn, X } from "lucide-react";
 import { formatPrice } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
@@ -18,6 +19,9 @@ const DetailsProduit = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { data: product, isLoading } = useProduct(id || "");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
 
   const isOwner = user?.id === product?.userId;
 
@@ -82,8 +86,77 @@ const DetailsProduit = () => {
         </div>
 
         <div className="grid gap-8 lg:grid-cols-2">
-          <div className="aspect-square overflow-hidden rounded-2xl border border-border bg-muted">
-            <img src={product.image} alt={product.title} className="h-full w-full object-cover" />
+          {/* Gallery Section */}
+          <div className="space-y-4">
+            <div className="relative aspect-square overflow-hidden rounded-2xl border border-border bg-muted group cursor-zoom-in font-display">
+              <div
+                className="h-full w-full transition-transform duration-500 ease-out"
+                style={{
+                  transform: isZoomed ? "scale(1.5)" : "scale(1)",
+                  cursor: isZoomed ? "zoom-out" : "zoom-in"
+                }}
+                onMouseEnter={() => setIsZoomed(true)}
+                onMouseLeave={() => setIsZoomed(false)}
+                onClick={() => setIsLightboxOpen(true)}
+              >
+                <img
+                  src={product.images && product.images.length > 0 ? product.images[currentImageIndex] : product.image}
+                  alt={product.title}
+                  className="h-full w-full object-cover animate-fade-in"
+                />
+              </div>
+
+              {/* Zoom Hint Icon */}
+              <div className="absolute top-4 right-4 h-8 w-8 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                <ZoomIn className="h-4 w-4" />
+              </div>
+
+              {product.images && product.images.length > 1 && (
+                <>
+                  {/* Arrows */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : product.images!.length - 1));
+                    }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-background/80 backdrop-blur-sm text-foreground shadow-sm opacity-0 transition-opacity group-hover:opacity-100 disabled:opacity-50 z-10"
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentImageIndex((prev) => (prev < product.images!.length - 1 ? prev + 1 : 0));
+                    }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-background/80 backdrop-blur-sm text-foreground shadow-sm opacity-0 transition-opacity group-hover:opacity-100 z-10"
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+
+                  {/* Counter Badge */}
+                  <div className="absolute bottom-4 right-4 rounded-lg bg-black/50 backdrop-blur-md px-3 py-1 text-[10px] font-bold text-white z-10 font-display">
+                    {currentImageIndex + 1} / {product.images.length}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {product.images && product.images.length > 1 && (
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+                {product.images.map((img, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border-2 transition-all ${currentImageIndex === index
+                      ? "border-primary ring-2 ring-primary/20 scale-105"
+                      : "border-transparent opacity-60 hover:opacity-100"
+                      }`}
+                  >
+                    <img src={img} alt={`${product.title} ${index + 1}`} className="h-full w-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="space-y-6">
@@ -135,6 +208,45 @@ const DetailsProduit = () => {
           </div>
         </div>
       </div>
+
+      {/* Lightbox Modal */}
+      {isLightboxOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm animate-in fade-in duration-300">
+          <button
+            onClick={() => setIsLightboxOpen(false)}
+            className="absolute top-6 right-6 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-[110]"
+          >
+            <X className="h-6 w-6" />
+          </button>
+
+          <img
+            src={product.images && product.images.length > 0 ? product.images[currentImageIndex] : product.image}
+            alt={product.title}
+            className="h-auto max-h-[85vh] max-w-[95vw] object-contain animate-in zoom-in-95 duration-300 shadow-2xl"
+          />
+
+          {product.images && product.images.length > 1 && (
+            <>
+              <button
+                onClick={() => setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : product.images!.length - 1))}
+                className="absolute left-6 top-1/2 -translate-y-1/2 flex h-14 w-14 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+              >
+                <ChevronLeft className="h-8 w-8" />
+              </button>
+              <button
+                onClick={() => setCurrentImageIndex((prev) => (prev < product.images!.length - 1 ? prev + 1 : 0))}
+                className="absolute right-6 top-1/2 -translate-y-1/2 flex h-14 w-14 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+              >
+                <ChevronRight className="h-8 w-8" />
+              </button>
+
+              <div className="absolute bottom-10 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-2 text-sm font-bold text-white backdrop-blur-md">
+                {currentImageIndex + 1} / {product.images.length}
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </Layout>
   );
 };

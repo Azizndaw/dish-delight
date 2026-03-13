@@ -61,15 +61,15 @@ const Vendre = () => {
     setIsSubmitting(true);
 
     try {
-      let imageUrl: string | null = null;
-      if (imageFiles.length > 0) {
-        const file = imageFiles[0];
+      const imageUrls: string[] = [];
+
+      for (const file of imageFiles) {
         const ext = file.name.split(".").pop();
-        const path = `${user.id}/${Date.now()}.${ext}`;
+        const path = `${user.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
         const { error: uploadError } = await supabase.storage.from("product-images").upload(path, file);
         if (uploadError) throw uploadError;
         const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(path);
-        imageUrl = urlData.publicUrl;
+        imageUrls.push(urlData.publicUrl);
       }
 
       const { error } = await supabase.from("products").insert({
@@ -80,7 +80,8 @@ const Vendre = () => {
         price: parseInt(price),
         location: location.charAt(0).toUpperCase() + location.slice(1),
         description,
-        image_url: imageUrl,
+        image_url: imageUrls[0] || null,
+        images: imageUrls,
         is_boosted: isBoosted,
         is_lot: isLot,
         stock_quantity: parseInt(stockQuantity) || 1,

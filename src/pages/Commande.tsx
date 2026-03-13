@@ -67,50 +67,53 @@ const Commande = () => {
       const { error: itemsError } = await supabase.from("order_items").insert(items);
       if (itemsError) throw itemsError;
 
-      // Decrement stock and deactivate if stock reaches 0
-      for (const item of cart) {
-        if (item.id.length === 36) {
-          // Get current product to find seller
-          const { data: product } = await supabase
-            .from("products")
-            .select("stock_quantity, user_id, title")
-            .eq("id", item.id)
-            .single();
+      // --- Notifications & Stock Update ---
+      try {
+        // Decrease stock and notify sellers
+        for (const item of cart) {
+          if (item.id.length === 36) {
+            const { data: product } = await supabase
+              .from("products")
+              .select("stock_quantity, user_id, title")
+              .eq("id", item.id)
+              .single();
 
-          if (product) {
-            const newStock = Math.max(0, (product.stock_quantity || 1) - item.quantity);
-            const updateData: any = { stock_quantity: newStock };
-            if (newStock <= 0) {
-              updateData.is_active = false;
+            if (product) {
+              const newStock = Math.max(0, (product.stock_quantity || 1) - item.quantity);
+              const updateData: any = { stock_quantity: newStock };
+              if (newStock <= 0) {
+                updateData.is_active = false;
+              }
+              await supabase.from("products").update(updateData).eq("id", item.id);
+
+              // Notify seller
+              await createNotification(
+                product.user_id,
+                "product_sold",
+                `🎉 Votre produit "${product.title}" a été commandé par ${fullName} ! ${newStock <= 0 ? "(Stock épuisé - annonce désactivée)" : `(${newStock} restant(s) en stock)`}`,
+                order.id
+              );
             }
-            await supabase.from("products").update(updateData).eq("id", item.id);
-
-            // Notify seller
-            await createNotification(
-              product.user_id,
-              "product_sold",
-              `🎉 Votre produit "${product.title}" a été commandé par ${fullName} ! ${newStock <= 0 ? "(Stock épuisé - annonce désactivée)" : `(${newStock} restant(s) en stock)`}`,
-              order.id
-            );
           }
         }
+
+        // Notify Admins
+        await notifyAdmins(
+          "new_order_admin",
+          `📦 Nouvelle commande #${order.id.slice(0, 8)} de ${fullName} pour ${formatPrice(totalPrice + deliveryFee)}`,
+          order.id
+        );
+
+        // Notify Buyer
+        await createNotification(
+          user.id,
+          "order_placed",
+          `✅ Votre commande de ${formatPrice(totalPrice + deliveryFee)} a été enregistrée. Nous vous tiendrons informé de son avancement.`,
+          order.id
+        );
+      } catch (notifyErr) {
+        console.error("Error sending notifications or updating stock:", notifyErr);
       }
-
-      // Notify buyer
-      await createNotification(
-        user.id,
-        "order_placed",
-        `✅ Votre commande de ${formatPrice(totalPrice + deliveryFee)} a été enregistrée. Nous vous tiendrons informé de son avancement.`,
-        order.id
-      );
-
-      // Notify admins
-      await notifyAdmins(
-        "new_order_admin",
-        `📦 Nouvelle commande #${order.id.slice(0, 8)} de ${fullName} pour ${formatPrice(totalPrice + deliveryFee)}`,
-        order.id
-      );
-
       clearCart();
       setIsSuccess(true);
       toast.success("Commande enregistrée !");

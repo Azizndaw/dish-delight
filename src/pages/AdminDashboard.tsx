@@ -189,31 +189,54 @@ const AdminDashboard = () => {
   };
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    const order = allOrders.find((o: any) => o.id === orderId);
+    const previousStatus = order?.status;
+
     const { error } = await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
     if (error) { toast.error("Erreur"); return; }
 
-    // Notify buyer about status change
-    const order = allOrders.find((o: any) => o.id === orderId);
-    if (order) {
-      const statusLabels: Record<string, string> = {
-        pending: "en attente",
-        confirmed: "confirmée",
-        preparing: "en préparation",
-        shipped: "expédiée",
-        delivered: "livrée",
-        completed: "terminée",
-        cancelled: "annulée",
-      };
-      await createNotification(
-        order.user_id,
-        "order_status",
-        `📦 Votre commande #${orderId.slice(0, 8)} est maintenant ${statusLabels[newStatus] || newStatus}.`,
-        orderId
-      );
+    // --- Stock handling for cancellations ---
+    if (newStatus === "cancelled" && previousStatus !== "cancelled") {
+      if (order && order.order_items) {
+        for (const item of order.order_items) {
+          if (item.product_id) {
+            const { data: product } = await supabase.from("products").select("stock_quantity").eq("id", item.product_id).single();
+            if (product) {
+              const newStock = (product.stock_quantity || 0) + item.quantity;
+              await supabase.from("products").update({ stock_quantity: newStock, is_active: true }).eq("id", item.product_id);
+            }
+          }
+        }
+      }
+    }
+
+    // Notify Buyer
+    try {
+      if (order && order.user_id) {
+        let statusText = newStatus;
+        if (newStatus === "processing") statusText = "en cours de traitement";
+        else if (newStatus === "shipped") statusText = "expédiée";
+        else if (newStatus === "completed") statusText = "livrée";
+        else if (newStatus === "cancelled") statusText = "annulée";
+        else if (newStatus === "pending") statusText = "en attente";
+        else if (newStatus === "confirmed") statusText = "confirmée";
+        else if (newStatus === "preparing") statusText = "en préparation";
+
+        await createNotification(
+          order.user_id,
+          "order_status",
+          `📦 Votre commande #${orderId.slice(0, 8)} est maintenant ${statusText}.`,
+          orderId
+        );
+      }
+    } catch (notifyErr) {
+      console.error("Error notifying buyer:", notifyErr);
     }
 
     toast.success(`Statut → ${newStatus}`);
     queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+    // Also invalidate products so stock counts update
+    queryClient.invalidateQueries({ queryKey: ["admin-products"] });
   };
 
   // Stats

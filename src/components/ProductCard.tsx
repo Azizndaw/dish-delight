@@ -22,6 +22,7 @@ export interface Product {
   isBoosted?: boolean;
   category: string;
   description?: string;
+  images?: string[];
   userId?: string;
   createdAt?: string;
 }

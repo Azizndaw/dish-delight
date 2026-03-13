@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { sampleProducts } from "@/data/products";
 
 export interface DBProduct {
   id: string;
@@ -13,6 +12,7 @@ export interface DBProduct {
   location: string;
   whatsapp: string | null;
   image_url: string | null;
+  images: string[] | null;
   is_boosted: boolean | null;
   is_lot: boolean | null;
   is_active: boolean | null;
@@ -20,22 +20,26 @@ export interface DBProduct {
 }
 
 // Convert DB product to the Product format used by ProductCard
-export const toProduct = (p: DBProduct) => ({
-  id: p.id,
-  title: p.title,
-  price: p.price,
-  location: p.location,
-  image: p.image_url || "https://images.unsplash.com/photo-1621327017866-6fb07e6c96ca?q=80&w=800",
-  condition: p.condition as any,
-  isLot: p.is_lot ?? false,
-  isBoosted: p.is_boosted ?? false,
-  category: p.category,
-  whatsapp: p.whatsapp ?? undefined,
-  description: p.description ?? undefined,
-  createdAt: p.created_at,
-  userId: p.user_id,
-  stockQuantity: (p as any).stock_quantity ?? 1,
-});
+export const toProduct = (p: DBProduct) => {
+  const images = p.images && p.images.length > 0 ? p.images : (p.image_url ? [p.image_url] : []);
+  return {
+    id: p.id,
+    title: p.title,
+    price: p.price,
+    location: p.location,
+    image: images[0] || "https://images.unsplash.com/photo-1621327017866-6fb07e6c96ca?q=80&w=800",
+    images: images,
+    condition: p.condition as any,
+    isLot: p.is_lot ?? false,
+    isBoosted: p.is_boosted ?? false,
+    category: p.category,
+    whatsapp: p.whatsapp ?? undefined,
+    description: p.description ?? undefined,
+    createdAt: p.created_at,
+    userId: p.user_id,
+    stockQuantity: (p as any).stock_quantity ?? 1,
+  };
+};
 
 export const useProducts = (options?: { category?: string; search?: string; location?: string; condition?: string; maxPrice?: number; userId?: string; showInactive?: boolean }) => {
   return useQuery({
@@ -72,34 +76,7 @@ export const useProducts = (options?: { category?: string; search?: string; loca
       const { data, error } = await query;
       if (error) throw error;
 
-      // If no DB products yet, return sample products
-      if (!data || data.length === 0) {
-        let filtered = [...sampleProducts];
-        if (options?.category && options.category !== "all") {
-          filtered = filtered.filter(p => p.category === options.category);
-        }
-        if (options?.search) {
-          const s = options.search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-          filtered = filtered.filter(p => {
-            const title = (p.title || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            const desc = (p.description || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            const cat = (p.category || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            return title.includes(s) || desc.includes(s) || cat.includes(s);
-          });
-        }
-
-        // Ensure boosted products appear first even in sample data
-        filtered = filtered.sort((a, b) => {
-          if (a.isBoosted && !b.isBoosted) return -1;
-          if (!a.isBoosted && b.isBoosted) return 1;
-          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
-        });
-
-        if (options?.maxPrice && options.maxPrice < 50000) {
-          filtered = filtered.filter(p => p.price <= options.maxPrice!);
-        }
-        return filtered;
-      }
+      if (!data) return [];
 
       return (data as DBProduct[]).map(toProduct);
     },
@@ -110,15 +87,10 @@ export const useProduct = (id: string) => {
   return useQuery({
     queryKey: ["product", id],
     queryFn: async () => {
-      // First try DB
+      if (!id) return null;
       const { data, error } = await supabase.from("products").select("*").eq("id", id).maybeSingle();
-
+      if (error) throw error;
       if (data) return toProduct(data as DBProduct);
-
-      // Fallback to sample products
-      const sample = sampleProducts.find(p => p.id === id);
-      if (sample) return sample;
-
       return null;
     },
   });

@@ -14,82 +14,51 @@ import { PhoneInput } from "@/components/ui/phone-input";
 
 const Connexion = () => {
     const navigate = useNavigate();
-    const { signIn, signUp, signInWithOtp, verifyOtp } = useAuth();
+    const { signIn, signUp } = useAuth();
     const [isLogin, setIsLogin] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [fullName, setFullName] = useState("");
     const [phone, setPhone] = useState("");
-    const [otp, setOtp] = useState("");
-    const [phoneStep, setPhoneStep] = useState<"phone" | "otp">("phone");
     const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
-
-    const handleSendOtp = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!phone) {
-            toast.error("Veuillez entrer votre numéro de téléphone.");
-            return;
-        }
-
-        setIsLoading(true);
-        const { error } = await signInWithOtp(phone);
-        setIsLoading(false);
-
-        if (error) {
-            toast.error(error.message);
-        } else {
-            setPhoneStep("otp");
-            toast.success("Code envoyé sur WhatsApp !");
-        }
-    };
-
-    const handleVerifyOtp = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!otp || otp.length < 6) {
-            toast.error("Veuillez entrer le code de vérification.");
-            return;
-        }
-
-        setIsLoading(true);
-        const { error } = await verifyOtp(phone, otp, !isLogin ? fullName : undefined);
-        setIsLoading(false);
-
-        if (error) {
-            toast.error(error.message);
-        } else {
-            toast.success("Connexion réussie !");
-            navigate("/");
-        }
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (authMethod === "phone") {
-            if (phoneStep === "phone") return handleSendOtp(e);
-            return handleVerifyOtp(e);
+        if (!isLogin && password !== confirmPassword) {
+            toast.error("Les mots de passe ne correspondent pas.");
+            return;
         }
 
         setIsLoading(true);
 
+        const identifier = authMethod === "email" ? email : phone;
+
         if (isLogin) {
-            const { error } = await signIn(email, password);
+            const { error } = await signIn(identifier, password);
             setIsLoading(false);
             if (error) {
-                toast.error(error.message === "Invalid login credentials" ? "Email ou mot de passe incorrect." : error.message);
+                toast.error(error.message === "Invalid login credentials" ? "Identifiants incorrects." : error.message);
             } else {
                 toast.success("Connexion réussie !");
                 navigate("/");
             }
         } else {
-            const { error } = await signUp(email, password, fullName, phone);
+            const { error } = await signUp(identifier, password, fullName, authMethod === "phone" ? phone : undefined);
             setIsLoading(false);
             if (error) {
                 toast.error(error.message);
             } else {
-                setShowEmailConfirmation(true);
+                if (authMethod === "email") {
+                    toast.success("Compte créé ! Vérifiez votre email pour confirmer votre inscription.");
+                    setShowEmailConfirmation(true);
+                } else {
+                    toast.success("Compte créé avec succès !");
+                    navigate("/");
+                }
             }
         }
     };
@@ -101,7 +70,7 @@ const Connexion = () => {
                     <div className="rounded-2xl border border-border bg-card p-10 shadow-medium">
                         <div className="mb-6 flex justify-center">
                             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
                             </div>
                         </div>
                         <h1 className="font-display text-2xl font-bold">Vérifiez votre email</h1>
@@ -168,63 +137,33 @@ const Connexion = () => {
                                     <Label htmlFor="email">Email</Label>
                                     <Input id="email" type="email" placeholder="moussa@exemple.com" required={authMethod === "email"} value={email} onChange={(e) => setEmail(e.target.value)} />
                                 </div>
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between">
-                                        <Label htmlFor="password">Mot de passe</Label>
-                                    </div>
-                                    <Input id="password" type="password" required={authMethod === "email"} value={password} onChange={(e) => setPassword(e.target.value)} />
-                                </div>
                             </TabsContent>
 
                             <TabsContent value="phone" className="space-y-4 mt-0">
-                                {phoneStep === "phone" ? (
-                                    <>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="phone">Numéro de téléphone</Label>
-                                            <PhoneInput
-                                                value={phone}
-                                                onChange={setPhone}
-                                                disabled={isLoading}
-                                            />
-                                        </div>
-                                        <Alert className="bg-primary/5 border-primary/20">
-                                            <MessageCircle className="h-4 w-4 text-primary" />
-                                            <AlertDescription className="text-xs text-muted-foreground ml-2">
-                                                Le code d'activation vous sera envoyé directement sur **WhatsApp** pour éviter les frais de SMS.
-                                            </AlertDescription>
-                                        </Alert>
-                                    </>
-                                ) : (
-                                    <div className="space-y-4 flex flex-col items-center">
-                                        <Label htmlFor="otp">Code de vérification</Label>
-                                        <InputOTP
-                                            maxLength={6}
-                                            value={otp}
-                                            onChange={(v) => setOtp(v)}
-                                            render={({ slots }) => (
-                                                <InputOTPGroup>
-                                                    {slots.map((slot, index) => (
-                                                        <InputOTPSlot key={index} index={index} {...slot} />
-                                                    ))}
-                                                </InputOTPGroup>
-                                            )}
-                                        />
-                                        <p className="text-xs text-muted-foreground text-center">
-                                            Entrez le code à 6 chiffres reçu sur WhatsApp au **{phone}**.
-                                        </p>
-                                        <Button variant="ghost" size="sm" onClick={() => setPhoneStep("phone")} className="text-xs">
-                                            Changer de numéro
-                                        </Button>
-                                    </div>
-                                )}
+                                <div className="space-y-2">
+                                    <Label htmlFor="phone">Numéro de téléphone</Label>
+                                    <PhoneInput
+                                        value={phone}
+                                        onChange={setPhone}
+                                        disabled={isLoading}
+                                    />
+                                </div>
                             </TabsContent>
 
+                            <div className="space-y-2">
+                                <Label htmlFor="password">Mot de passe</Label>
+                                <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                            </div>
+
+                            {!isLogin && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                                    <Input id="confirmPassword" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                                </div>
+                            )}
+
                             <Button type="submit" className="w-full h-11" disabled={isLoading}>
-                                {isLoading ? "Traitement..." : (
-                                    authMethod === "phone"
-                                        ? (phoneStep === "phone" ? "Recevoir le code" : "Vérifier le code")
-                                        : (isLogin ? "Se connecter" : "S'inscrire")
-                                )}
+                                {isLoading ? "Traitement..." : (isLogin ? "Se connecter" : "S'inscrire")}
                             </Button>
                         </form>
                     </Tabs>
@@ -236,7 +175,6 @@ const Connexion = () => {
                         <button
                             onClick={() => {
                                 setIsLogin(!isLogin);
-                                setPhoneStep("phone");
                             }}
                             className="font-semibold text-primary hover:underline"
                         >

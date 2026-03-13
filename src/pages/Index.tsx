@@ -5,16 +5,39 @@ import { Search, Leaf, ShoppingBag, Users, Shield, ArrowRight, Sparkles } from "
 import Layout from "@/components/Layout";
 import ProductCard from "@/components/ProductCard";
 import FeatureCard from "@/components/FeatureCard";
-import { sampleProducts, categories } from "@/data/products";
+import { categories } from "@/data/products";
 import heroImage from "@/assets/hero-image.jpg";
 import { useMemo } from "react";
 import { useProducts } from "@/hooks/useProducts";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const { data: products = [] as any[], isLoading } = useProducts({ showInactive: false });
   const latestProducts = useMemo(() => products.slice(0, 8), [products]);
 
+  const { data: stats } = useQuery({
+    queryKey: ["homepage-stats"],
+    queryFn: async () => {
+      const { count: productsCount } = await supabase
+        .from("products")
+        .select("*", { count: 'exact', head: true })
+        .eq("is_active", true);
+
+      const { count: usersCount } = await supabase
+        .from("profiles")
+        .select("*", { count: 'exact', head: true });
+
+      return {
+        products: productsCount || 0,
+        users: usersCount || 0,
+        regions: 14
+      };
+    }
+  });
+
   const features = [
+    // ... existing features
     {
       icon: Leaf,
       title: "Éco-responsable",
@@ -78,15 +101,15 @@ const Index = () => {
               {/* Stats */}
               <div className="flex flex-wrap gap-6 pt-4">
                 <div>
-                  <p className="font-display text-2xl md:text-3xl font-bold text-foreground">1 500+</p>
+                  <p className="font-display text-2xl md:text-3xl font-bold text-foreground">{stats?.products || 0}</p>
                   <p className="text-sm text-muted-foreground">Annonces actives</p>
                 </div>
                 <div>
-                  <p className="font-display text-2xl md:text-3xl font-bold text-foreground">8 000+</p>
+                  <p className="font-display text-2xl md:text-3xl font-bold text-foreground">{stats?.users || 0}</p>
                   <p className="text-sm text-muted-foreground">Utilisateurs</p>
                 </div>
                 <div>
-                  <p className="font-display text-2xl md:text-3xl font-bold text-foreground">14</p>
+                  <p className="font-display text-2xl md:text-3xl font-bold text-foreground">{stats?.regions || 14}</p>
                   <p className="text-sm text-muted-foreground">Régions</p>
                 </div>
               </div>
@@ -132,10 +155,9 @@ const Index = () => {
                 className="group flex flex-col items-center rounded-xl border border-border/50 bg-card p-4 transition-all duration-300 hover:shadow-medium hover:-translate-y-1 hover:border-primary/30"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <span className="mb-2 font-medium text-foreground group-hover:text-primary transition-colors">
+                <span className="font-medium text-foreground group-hover:text-primary transition-colors text-center">
                   {category.name}
                 </span>
-                <span className="text-xs text-muted-foreground">{category.count} articles</span>
               </Link>
             ))}
           </div>

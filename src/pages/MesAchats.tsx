@@ -50,6 +50,32 @@ const MesAchats = () => {
                 .eq("id", id);
 
             if (error) throw error;
+
+            // Restore inventory
+            const order = orders.find((o) => o.id === id);
+            if (order && order.order_items) {
+                for (const item of order.order_items) {
+                    if (item.product_id) { // Some legacy test orders might have null
+                        const { data: product } = await supabase
+                            .from("products")
+                            .select("stock_quantity")
+                            .eq("id", item.product_id)
+                            .single();
+
+                        if (product) {
+                            const newStock = (product.stock_quantity || 0) + item.quantity;
+                            await supabase
+                                .from("products")
+                                .update({
+                                    stock_quantity: newStock,
+                                    is_active: true
+                                })
+                                .eq("id", item.product_id);
+                        }
+                    }
+                }
+            }
+
             toast.success("Commande annulée avec succès");
             queryClient.invalidateQueries({ queryKey: ["user-orders", user?.id] });
         } catch (error) {

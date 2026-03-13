@@ -10,6 +10,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatPrice } from "@/data/products";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const MesAnnonces = () => {
     const navigate = useNavigate();
@@ -219,15 +230,35 @@ const MesAnnonces = () => {
                                                     </Button>
                                                 )}
 
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                                                    onClick={() => handleHardDelete(product.id)}
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                    Supprimer
-                                                </Button>
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                            Supprimer
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                Cette action est irréversible. Votre annonce sera supprimée définitivement du catalogue et de nos serveurs.
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                                            <AlertDialogAction
+                                                                onClick={() => handleHardDelete(product.id)}
+                                                                className="bg-destructive hover:bg-destructive/90"
+                                                            >
+                                                                Supprimer définitivement
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
                                             </div>
                                         </div>
                                     </div>

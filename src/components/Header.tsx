@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Search, Heart, User, ShoppingCart, LogOut, Shield } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Menu, X, Search, Heart, User, ShoppingCart, LogOut, Shield, Bell } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
@@ -13,6 +14,8 @@ const Header = () => {
   const { user, signOut, isAdmin } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+
 
   const navLinks = [
     { href: "/", label: "Accueil" },
@@ -57,19 +60,19 @@ const Header = () => {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-2">
-          <Link to="/catalogue">
-            <Button variant="ghost" size="icon" className="hidden sm:flex">
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Link to="/catalogue" className="hidden md:flex">
+            <Button variant="ghost" size="icon">
               <Search className="h-5 w-5" />
             </Button>
           </Link>
-          <Link to="/favoris" className="hidden sm:flex">
+          <Link to="/favoris" className="hidden md:flex">
             <Button variant="ghost" size="icon">
               <Heart className="h-5 w-5" />
             </Button>
           </Link>
           {user ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               {isAdmin && (
                 <Link to="/admin">
                   <Button variant="ghost" size="icon" title="Espace Admin" className="text-amber-600 hover:text-amber-700 hover:bg-amber-50">
@@ -83,17 +86,18 @@ const Header = () => {
                   <User className="h-5 w-5" />
                 </Button>
               </Link>
-              <Button variant="ghost" size="icon" onClick={handleSignOut} title="Se déconnecter">
+              <Button variant="ghost" size="icon" onClick={handleSignOut} title="Se déconnecter" className="hidden md:flex">
                 <LogOut className="h-5 w-5" />
               </Button>
             </div>
           ) : (
-            <Link to="/connexion">
+            <Link to="/connexion" className="flex">
               <Button variant="ghost" size="icon">
                 <User className="h-5 w-5" />
               </Button>
             </Link>
           )}
+
           <Link to="/panier">
             <Button variant="ghost" size="icon" className="relative">
               <ShoppingCart className="h-5 w-5" />
@@ -104,7 +108,7 @@ const Header = () => {
               )}
             </Button>
           </Link>
-          <Link to="/vendre" className="hidden sm:block">
+          <Link to="/vendre" className="hidden md:flex">
             <Button variant="hero" size="default">
               Vendre
             </Button>
@@ -124,7 +128,7 @@ const Header = () => {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="animate-fade-in border-t border-border/40 bg-background md:hidden">
+        <div className="animate-fade-in border-t border-border/40 bg-background md:hidden absolute top-16 left-0 right-0 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
           <nav className="container flex flex-col py-4">
             {navLinks.map((link) => (
               <Link
@@ -136,7 +140,16 @@ const Header = () => {
                 {link.label}
               </Link>
             ))}
-            {user && (
+
+            <Link
+              to="/favoris"
+              onClick={() => setIsMenuOpen(false)}
+              className={`px-4 py-3 text-sm font-medium transition-colors hover:bg-muted ${isActive('/favoris') ? "text-primary" : "text-muted-foreground"}`}
+            >
+              Favoris
+            </Link>
+
+            {user ? (
               <>
                 {isAdmin && (
                   <Link
@@ -149,9 +162,19 @@ const Header = () => {
                   </Link>
                 )}
                 <Link
+                  to="/notifications"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted flex items-center justify-between"
+                >
+                  <span className="flex items-center gap-2">
+                    <Bell className="h-4 w-4" />
+                    Notifications
+                  </span>
+                </Link>
+                <Link
                   to="/compte"
                   onClick={() => setIsMenuOpen(false)}
-                  className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted"
+                  className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted font-display"
                 >
                   Mon Profil
                 </Link>
@@ -172,8 +195,16 @@ const Header = () => {
                   Déconnexion
                 </button>
               </>
+            ) : (
+              <Link
+                to="/connexion"
+                onClick={() => setIsMenuOpen(false)}
+                className="px-4 py-3 text-sm font-medium text-foreground hover:bg-muted font-display"
+              >
+                Se connecter / S'inscrire
+              </Link>
             )}
-            <div className="mt-4 px-4">
+            <div className="mt-4 px-4 pb-4">
               <Link to="/vendre" onClick={() => setIsMenuOpen(false)}>
                 <Button variant="hero" className="w-full">
                   Vendre ma vaisselle
