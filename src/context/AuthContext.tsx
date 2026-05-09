@@ -64,17 +64,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     // Save phone to profile after signup
-    if (!error && data.user && normalizedPhone) {
-      await supabase.from("profiles").update({ phone: normalizedPhone }).eq("user_id", data.user.id);
+    if (!error && data.user) {
+      await supabase.from("profiles").update({ 
+        phone: normalizedPhone,
+        email: data.user.email 
+      }).eq("user_id", data.user.id);
     }
     return { error };
   };
 
-  const signIn = async (email: string, password: string) => {
-    const isPhone = !email.includes("@") && (email.startsWith("+") || /^\d+$/.test(email));
+  const signIn = async (identifier: string, password: string) => {
+    const isPhone = !identifier.includes("@") && (identifier.startsWith("+") || /^\d+$/.test(identifier));
 
     if (isPhone) {
-      const normalizedPhone = normalizePhoneNumber(email);
+      const normalizedPhone = normalizePhoneNumber(identifier);
       const { data: resolvedEmail, error: phoneLookupError } = await supabase.rpc("get_email_for_phone", {
         _phone: normalizedPhone,
       });
@@ -95,7 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error };
     }
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({ email: identifier, password });
     return { error };
   };
 

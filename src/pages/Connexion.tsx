@@ -113,7 +113,7 @@ const Connexion = () => {
                     </div>
 
                     {isLogin ? (
-                        <Tabs defaultValue="email" className="w-full" onValueChange={(v) => setAuthMethod(v as "email" | "phone")}>
+                        <Tabs value={authMethod} className="w-full" onValueChange={(v) => setAuthMethod(v as "email" | "phone")}>
                             <TabsList className="grid w-full grid-cols-2 mb-8">
                                 <TabsTrigger value="email" className="flex items-center gap-2">
                                     <Mail className="h-4 w-4" />
@@ -199,6 +199,7 @@ const Connexion = () => {
                         <button
                             onClick={() => {
                                 setIsLogin(!isLogin);
+                                if (isLogin) setAuthMethod("email");
                             }}
                             className="font-semibold text-primary hover:underline"
                         >
