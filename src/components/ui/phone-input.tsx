@@ -9,6 +9,7 @@ export interface PhoneInputProps {
     className?: string;
     placeholder?: string;
     disabled?: boolean;
+    required?: boolean;
 }
 
 const countries = [
@@ -25,7 +26,7 @@ const countries = [
 ];
 
 export const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
-    ({ value, onChange, className, placeholder, disabled }, ref) => {
+    ({ value, onChange, className, placeholder, disabled, required }, ref) => {
         // Split value into country code and local number
         // We assume the value starts with +
         const [countryCode, setCountryCode] = React.useState("+221");
@@ -92,6 +93,7 @@ export const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
                     onChange={handleLocalNumberChange}
                     placeholder={placeholder || "77 123 45 67"}
                     disabled={disabled}
+                    required={required}
                     className="flex-1 h-11 border-none bg-background rounded-none focus-visible:ring-0"
                 />
             </div>
