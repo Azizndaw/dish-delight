@@ -52,24 +52,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signUp = async (email: string, password: string, fullName: string, phone?: string) => {
-    const isPhone = !email.includes("@") && (email.startsWith("+") || /^\d+$/.test(email));
-    const normalizedPhone = phone ? normalizePhoneNumber(phone) : (isPhone ? normalizePhoneNumber(email) : undefined);
+    const normalizedPhone = phone ? normalizePhoneNumber(phone) : undefined;
 
-    const signUpData: any = {
+    const { data, error } = await supabase.auth.signUp({
+      email,
       password,
       options: {
         emailRedirectTo: window.location.origin,
         data: { full_name: fullName, phone: normalizedPhone },
       },
-    };
-
-    if (isPhone) {
-      signUpData.phone = normalizedPhone;
-    } else {
-      signUpData.email = email;
-    }
-
-    const { data, error } = await supabase.auth.signUp(signUpData);
+    });
 
     // Save phone to profile after signup
     if (!error && data.user && normalizedPhone) {
