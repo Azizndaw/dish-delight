@@ -52,24 +52,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signUp = async (email: string, password: string, fullName: string, phone?: string) => {
-    const isPhone = !email.includes("@") && (email.startsWith("+") || /^\d+$/.test(email));
-    const normalizedPhone = phone ? normalizePhoneNumber(phone) : (isPhone ? normalizePhoneNumber(email) : undefined);
+    const normalizedPhone = phone ? normalizePhoneNumber(phone) : undefined;
 
-    const signUpData: any = {
+    const { data, error } = await supabase.auth.signUp({
+      email,
       password,
       options: {
         emailRedirectTo: window.location.origin,
         data: { full_name: fullName, phone: normalizedPhone },
       },
-    };
-
-    if (isPhone) {
-      signUpData.phone = normalizedPhone;
-    } else {
-      signUpData.email = email;
-    }
-
-    const { data, error } = await supabase.auth.signUp(signUpData);
+    });
 
     // Save phone to profile after signup
     if (!error && data.user && normalizedPhone) {
@@ -83,7 +75,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (isPhone) {
       const normalizedPhone = normalizePhoneNumber(email);
-      const { error } = await supabase.auth.signInWithPassword({ phone: normalizedPhone, password });
+      const { data: resolvedEmail, error: phoneLookupError } = await supabase.rpc("get_email_for_phone", {
+        _phone: normalizedPhone,
+      });
+
+      if (phoneLookupError) {
+        return { error: phoneLookupError };
+      }
+
+      if (!resolvedEmail) {
+        return {
+          error: {
+            message: "Aucun compte n'est associé à ce numéro de téléphone.",
+          },
+        };
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({ email: resolvedEmail, password });
       return { error };
     }
 
