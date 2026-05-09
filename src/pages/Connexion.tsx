@@ -35,7 +35,9 @@ const Connexion = () => {
 
         setIsLoading(true);
 
-        const identifier = authMethod === "email" ? email : phone;
+        // En inscription, toujours email + téléphone obligatoire
+        // En connexion, soit email soit téléphone selon l'onglet choisi
+        const identifier = isLogin ? (authMethod === "email" ? email : phone) : email;
 
         if (isLogin) {
             const { error } = await signIn(identifier, password);
@@ -47,18 +49,18 @@ const Connexion = () => {
                 navigate("/");
             }
         } else {
-            const { error } = await signUp(identifier, password, fullName, authMethod === "phone" ? phone : undefined);
+            if (!phone) {
+                setIsLoading(false);
+                toast.error("Le numéro de téléphone est obligatoire.");
+                return;
+            }
+            const { error } = await signUp(email, password, fullName, phone);
             setIsLoading(false);
             if (error) {
                 toast.error(error.message);
             } else {
-                if (authMethod === "email") {
-                    toast.success("Compte créé ! Vérifiez votre email pour confirmer votre inscription.");
-                    setShowEmailConfirmation(true);
-                } else {
-                    toast.success("Compte créé avec succès !");
-                    navigate("/");
-                }
+                toast.success("Compte créé ! Vérifiez votre email pour confirmer votre inscription.");
+                setShowEmailConfirmation(true);
             }
         }
     };
