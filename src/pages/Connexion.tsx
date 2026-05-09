@@ -114,61 +114,84 @@ const Connexion = () => {
                         </p>
                     </div>
 
-                    <Tabs defaultValue="email" className="w-full" onValueChange={(v) => setAuthMethod(v as "email" | "phone")}>
-                        <TabsList className="grid w-full grid-cols-2 mb-8">
-                            <TabsTrigger value="email" className="flex items-center gap-2">
-                                <Mail className="h-4 w-4" />
-                                Email
-                            </TabsTrigger>
-                            <TabsTrigger value="phone" className="flex items-center gap-2">
-                                <PhoneIcon className="h-4 w-4" />
-                                Téléphone
-                            </TabsTrigger>
-                        </TabsList>
+                    {isLogin ? (
+                        <Tabs defaultValue="email" className="w-full" onValueChange={(v) => setAuthMethod(v as "email" | "phone")}>
+                            <TabsList className="grid w-full grid-cols-2 mb-8">
+                                <TabsTrigger value="email" className="flex items-center gap-2">
+                                    <Mail className="h-4 w-4" />
+                                    Email
+                                </TabsTrigger>
+                                <TabsTrigger value="phone" className="flex items-center gap-2">
+                                    <PhoneIcon className="h-4 w-4" />
+                                    Téléphone
+                                </TabsTrigger>
+                            </TabsList>
 
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <TabsContent value="email" className="space-y-4 mt-0">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="email">Email</Label>
+                                        <Input id="email" type="email" placeholder="moussa@exemple.com" required={authMethod === "email"} value={email} onChange={(e) => setEmail(e.target.value)} />
+                                    </div>
+                                </TabsContent>
+
+                                <TabsContent value="phone" className="space-y-4 mt-0">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="phone-login">Numéro de téléphone</Label>
+                                        <PhoneInput
+                                            value={phone}
+                                            onChange={setPhone}
+                                            disabled={isLoading}
+                                        />
+                                    </div>
+                                </TabsContent>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="password">Mot de passe</Label>
+                                    <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                                </div>
+
+                                <Button type="submit" className="w-full h-11" disabled={isLoading}>
+                                    {isLoading ? "Traitement..." : "Se connecter"}
+                                </Button>
+                            </form>
+                        </Tabs>
+                    ) : (
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            {!isLogin && (
-                                <div className="space-y-2">
-                                    <Label htmlFor="name">Nom complet</Label>
-                                    <Input id="name" placeholder="Moussa Diop" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
-                                </div>
-                            )}
-
-                            <TabsContent value="email" className="space-y-4 mt-0">
-                                <div className="space-y-2">
-                                    <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" placeholder="moussa@exemple.com" required={authMethod === "email"} value={email} onChange={(e) => setEmail(e.target.value)} />
-                                </div>
-                            </TabsContent>
-
-                            <TabsContent value="phone" className="space-y-4 mt-0">
-                                <div className="space-y-2">
-                                    <Label htmlFor="phone">Numéro de téléphone</Label>
-                                    <PhoneInput
-                                        value={phone}
-                                        onChange={setPhone}
-                                        disabled={isLoading}
-                                    />
-                                </div>
-                            </TabsContent>
+                            <div className="space-y-2">
+                                <Label htmlFor="name">Nom complet</Label>
+                                <Input id="name" placeholder="Moussa Diop" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
+                            </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="password">Mot de passe</Label>
+                                <Label htmlFor="email">Email</Label>
+                                <Input id="email" type="email" placeholder="moussa@exemple.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="phone-signup">Numéro de téléphone</Label>
+                                <PhoneInput
+                                    value={phone}
+                                    onChange={setPhone}
+                                    disabled={isLoading}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="password">Nouveau mot de passe</Label>
                                 <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
                             </div>
 
-                            {!isLogin && (
-                                <div className="space-y-2">
-                                    <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-                                    <Input id="confirmPassword" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-                                </div>
-                            )}
+                            <div className="space-y-2">
+                                <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                                <Input id="confirmPassword" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                            </div>
 
                             <Button type="submit" className="w-full h-11" disabled={isLoading}>
-                                {isLoading ? "Traitement..." : (isLogin ? "Se connecter" : "S'inscrire")}
+                                {isLoading ? "Traitement..." : "S'inscrire"}
                             </Button>
                         </form>
-                    </Tabs>
+                    )}
 
                     <div className="mt-6 text-center text-sm">
                         <span className="text-muted-foreground">
