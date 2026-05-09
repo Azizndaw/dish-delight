@@ -75,7 +75,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (isPhone) {
       const normalizedPhone = normalizePhoneNumber(email);
-      const { error } = await supabase.auth.signInWithPassword({ phone: normalizedPhone, password });
+      const { data: resolvedEmail, error: phoneLookupError } = await supabase.rpc("get_email_for_phone", {
+        _phone: normalizedPhone,
+      });
+
+      if (phoneLookupError) {
+        return { error: phoneLookupError };
+      }
+
+      if (!resolvedEmail) {
+        return {
+          error: {
+            message: "Aucun compte n'est associé à ce numéro de téléphone.",
+          },
+        };
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({ email: resolvedEmail, password });
       return { error };
     }
 
