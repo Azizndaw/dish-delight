@@ -2,14 +2,12 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, MessageCircle, Mail, Phone as PhoneIcon } from "lucide-react";
+import { ChevronLeft, Mail, Phone as PhoneIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PhoneInput } from "@/components/ui/phone-input";
 
 const Connexion = () => {
@@ -174,6 +172,7 @@ const Connexion = () => {
                                     value={phone}
                                     onChange={setPhone}
                                     disabled={isLoading}
+                                    required
                                 />
                             </div>
 
