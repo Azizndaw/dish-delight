@@ -38,6 +38,7 @@ export const toProduct = (p: DBProduct) => {
     createdAt: p.created_at,
     userId: p.user_id,
     stockQuantity: (p as any).stock_quantity ?? 1,
+    is_active: p.is_active ?? true,
   };
 };
 
