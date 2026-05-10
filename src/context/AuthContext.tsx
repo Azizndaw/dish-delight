@@ -149,7 +149,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const deleteAccount = async () => {
     try {
-      const { error } = await supabase.rpc('delete_user_account');
+      const { error } = await (supabase as any).rpc('delete_user_account');
       if (error) throw error;
       
       // After deletion, we should sign out locally
