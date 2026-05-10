@@ -305,6 +305,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      delete_user_account: { Args: never; Returns: undefined }
       get_email_for_phone: { Args: { _phone: string }; Returns: string }
       has_role: {
         Args: {
