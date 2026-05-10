@@ -55,6 +55,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string, fullName: string, phone?: string) => {
     const normalizedPhone = phone ? normalizePhoneNumber(phone) : undefined;
 
+    // Pré-vérification : numéro déjà utilisé ?
+    if (normalizedPhone) {
+      const { data: phoneTaken } = await supabase.rpc("phone_exists", { _phone: normalizedPhone });
+      if (phoneTaken) {
+        return {
+          error: {
+            message: "Ce numéro de téléphone est déjà associé à un compte existant. Veuillez vous connecter ou utiliser un autre numéro.",
+          },
+        };
+      }
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -64,14 +76,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       },
     });
 
+    if (error) {
+      const msg = error.message?.toLowerCase() || "";
+      if (msg.includes("already registered") || msg.includes("already been registered") || msg.includes("user already")) {
+        return {
+          error: {
+            message: "Cette adresse email est déjà associée à un compte. Veuillez vous connecter ou utiliser une autre adresse.",
+          },
+        };
+      }
+      return { error };
+    }
+
     // Save phone to profile after signup
-    if (!error && data.user) {
-      await supabase.from("profiles").update({ 
+    if (data.user) {
+      await supabase.from("profiles").update({
         phone: normalizedPhone,
-        email: data.user.email 
+        email: data.user.email,
       }).eq("user_id", data.user.id);
     }
-    return { error };
+    return { error: null };
   };
 
   const signIn = async (identifier: string, password: string) => {
