@@ -67,36 +67,13 @@ const Commande = () => {
       const { error: itemsError } = await supabase.from("order_items").insert(items);
       if (itemsError) throw itemsError;
 
-      // --- Notifications & Stock Update ---
+      // --- Notifications & Stock Update (Now handled by DB triggers) ---
+      // The tr_order_stock_update trigger on order_items handles:
+      // 1. Stock decrement
+      // 2. Product deactivation if stock is 0
+      // 3. Seller notifications
+      
       try {
-        // Decrease stock and notify sellers
-        for (const item of cart) {
-          if (item.id.length === 36) {
-            const { data: product } = await supabase
-              .from("products")
-              .select("stock_quantity, user_id, title")
-              .eq("id", item.id)
-              .single();
-
-            if (product) {
-              const newStock = Math.max(0, (product.stock_quantity || 1) - item.quantity);
-              const updateData: any = { stock_quantity: newStock };
-              if (newStock <= 0) {
-                updateData.is_active = false;
-              }
-              await supabase.from("products").update(updateData).eq("id", item.id);
-
-              // Notify seller
-              await createNotification(
-                product.user_id,
-                "product_sold",
-                `🎉 Votre produit "${product.title}" a été commandé par ${fullName} ! ${newStock <= 0 ? "(Stock épuisé - annonce désactivée)" : `(${newStock} restant(s) en stock)`}`,
-                order.id
-              );
-            }
-          }
-        }
-
         // Notify Admins
         await notifyAdmins(
           "new_order_admin",
@@ -114,7 +91,7 @@ const Commande = () => {
           );
         }
       } catch (notifyErr) {
-        console.error("Error sending notifications or updating stock:", notifyErr);
+        console.error("Error sending admin/buyer notifications:", notifyErr);
       }
       setSuccessData({ order, items: cart });
       clearCart();
@@ -131,7 +108,8 @@ const Commande = () => {
     const { order, items } = successData;
     const whatsappMessage = `Bonjour, je viens de passer une commande sur Vide Placard !%0A%0A🆔 *Commande:* %23${order.id.slice(0, 8)}%0A👤 *Client:* ${order.full_name}%0A📍 *Adresse:* ${order.address}%0A💰 *Total:* ${formatPrice(order.total_price)}%0A%0A*Articles:*%0A${items.map(i => `%E2%80%A2 ${i.title} (x${i.quantity})`).join('%0A')}`;
     // TODO: Replace with actual admin WhatsApp number
-    const whatsappUrl = `https://wa.me/221772243763?text=${whatsappMessage}`;
+    const cleanPhone = order.phone.replace(/[^\d]/g, "");
+    const whatsappUrl = `https://wa.me/${cleanPhone.startsWith('221') ? cleanPhone : '221' + cleanPhone}?text=${whatsappMessage}`;
 
     return (
       <Layout>
