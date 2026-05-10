@@ -313,6 +313,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      phone_exists: { Args: { _phone: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
