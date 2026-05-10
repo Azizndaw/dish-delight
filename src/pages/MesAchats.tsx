@@ -9,6 +9,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/data/products";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const MesAchats = () => {
     const navigate = useNavigate();
@@ -85,7 +86,21 @@ const MesAchats = () => {
     };
 
     if (loading || isLoading) {
-        return <Layout><div className="container py-20 text-center text-muted-foreground">Chargement...</div></Layout>;
+        return (
+            <Layout>
+                <div className="container max-w-5xl py-8 md:py-12">
+                    <div className="mb-10 space-y-2">
+                        <Skeleton className="h-10 w-48" />
+                        <Skeleton className="h-4 w-64" />
+                    </div>
+                    <div className="grid gap-6">
+                        {[...Array(3)].map((_, i) => (
+                            <Skeleton key={i} className="h-48 w-full rounded-xl" />
+                        ))}
+                    </div>
+                </div>
+            </Layout>
+        );
     }
 
     if (!user) {

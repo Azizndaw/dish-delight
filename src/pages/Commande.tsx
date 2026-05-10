@@ -6,9 +6,11 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatPrice, deliveryZones } from "@/data/products";
-import { ChevronLeft, CheckCircle2, Truck, Wallet, MapPin } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Truck, Wallet, MapPin, MessageCircle, ShoppingBag, ArrowRight, Printer } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +23,7 @@ const Commande = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [successData, setSuccessData] = useState<{ order: any, items: any[] } | null>(null);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -114,6 +117,7 @@ const Commande = () => {
       } catch (notifyErr) {
         console.error("Error sending notifications or updating stock:", notifyErr);
       }
+      setSuccessData({ order, items: cart });
       clearCart();
       setIsSuccess(true);
       toast.success("Commande enregistrée !");
@@ -124,22 +128,104 @@ const Commande = () => {
     }
   };
 
-  if (isSuccess) {
+  if (isSuccess && successData) {
+    const { order, items } = successData;
+    const whatsappMessage = `Bonjour, je viens de passer une commande sur Vide Placard !%0A%0A🆔 *Commande:* %23${order.id.slice(0, 8)}%0A👤 *Client:* ${order.full_name}%0A📍 *Adresse:* ${order.address}%0A💰 *Total:* ${formatPrice(order.total_price)}%0A%0A*Articles:*%0A${items.map(i => `%E2%80%A2 ${i.title} (x${i.quantity})`).join('%0A')}`;
+    // TODO: Replace with actual admin WhatsApp number
+    const whatsappUrl = `https://wa.me/221772243763?text=${whatsappMessage}`;
+
     return (
       <Layout>
-        <div className="container py-20 text-center animate-fade-in">
-          <div className="mb-6 flex justify-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20 text-primary">
-              <CheckCircle2 className="h-12 w-12" />
+        <div className="container max-w-2xl py-12 md:py-20 animate-fade-in">
+          <div className="text-center mb-10">
+            <div className="mb-4 flex justify-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary">
+                <CheckCircle2 className="h-10 w-10" />
+              </div>
             </div>
+            <h1 className="font-display text-3xl font-bold">Merci pour votre commande !</h1>
+            <p className="mt-2 text-muted-foreground">Votre commande a été enregistrée sous le numéro <span className="font-mono font-bold text-foreground">#{order.id.slice(0, 8)}</span></p>
           </div>
-          <h1 className="font-display text-3xl font-bold">Merci pour votre commande !</h1>
-          <p className="mt-4 text-muted-foreground max-w-md mx-auto">
-            Votre commande a été enregistrée avec succès. Vous recevrez une notification dès qu'elle sera prête.
+
+          <Card className="border-none shadow-xl bg-card overflow-hidden">
+            <div className="bg-primary px-6 py-4 text-primary-foreground flex justify-between items-center">
+              <span className="font-bold tracking-wider uppercase text-sm">Récapitulatif / Facture</span>
+              <Printer className="h-4 w-4 opacity-70 cursor-pointer hover:opacity-100" onClick={() => window.print()} />
+            </div>
+            <CardContent className="p-6 md:p-8 space-y-6">
+              <div className="grid gap-4 sm:grid-cols-2 text-sm">
+                <div>
+                  <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-widest mb-1">Livré à</p>
+                  <p className="font-semibold">{order.full_name}</p>
+                  <p className="text-muted-foreground">{order.address}</p>
+                  <p className="text-muted-foreground">{order.phone}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-widest mb-1">Détails</p>
+                  <p><span className="text-muted-foreground">Date :</span> {new Date().toLocaleDateString('fr-FR')}</p>
+                  <p><span className="text-muted-foreground">Paiement :</span> {order.payment_method === 'cod' ? 'À la livraison' : 'Mobile Money'}</p>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3">
+                {items.map((item, idx) => (
+                  <div key={idx} className="flex justify-between items-center text-sm">
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-6 w-6 items-center justify-center rounded bg-muted text-[10px] font-bold">{item.quantity}</span>
+                      <span className="font-medium">{item.title}</span>
+                    </div>
+                    <span className="font-semibold">{formatPrice(item.price * item.quantity)}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-muted/30 rounded-xl p-4 space-y-2">
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Sous-total</span>
+                  <span>{formatPrice(items.reduce((acc, i) => acc + (i.price * i.quantity), 0))}</span>
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Frais de livraison</span>
+                  <span>{formatPrice(deliveryFee)}</span>
+                </div>
+                <Separator className="bg-border/50" />
+                <div className="flex justify-between items-center pt-1">
+                  <span className="font-bold">Total Payé</span>
+                  <span className="text-xl font-bold text-primary">{formatPrice(order.total_price)}</span>
+                </div>
+              </div>
+
+              <div className="pt-4 flex flex-col gap-3">
+                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="w-full">
+                  <Button className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold h-12 gap-2">
+                    <MessageCircle className="h-5 w-5" />
+                    Recevoir ma facture sur WhatsApp
+                  </Button>
+                </a>
+                <div className="grid grid-cols-2 gap-3">
+                  <Link to="/mes-achats" className="w-full">
+                    <Button variant="outline" className="w-full gap-2 h-11 text-xs">
+                      <ShoppingBag className="h-4 w-4" />
+                      Suivre ma commande
+                    </Button>
+                  </Link>
+                  <Link to="/catalogue" className="w-full">
+                    <Button variant="ghost" className="w-full gap-2 h-11 text-xs">
+                      Continuer mes achats
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <p className="mt-8 text-center text-xs text-muted-foreground italic">
+            Une confirmation a été envoyée dans votre historique d'achats. <br />
+            Merci de faire confiance à Vide Placard !
           </p>
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Link to="/catalogue"><Button variant="hero">Retour au catalogue</Button></Link>
-          </div>
         </div>
       </Layout>
     );

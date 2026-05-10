@@ -18,6 +18,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { AlertCircle, Trash2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Compte = () => {
     const navigate = useNavigate();
@@ -51,7 +52,43 @@ const Compte = () => {
         }
     };
 
-    if (loading || !userData) return <Layout><div className="container py-20 text-center text-muted-foreground">Chargement...</div></Layout>;
+    if (loading || !userData) return (
+        <Layout>
+            <div className="container max-w-4xl py-8 md:py-12">
+                <div className="mb-8 space-y-2">
+                    <Skeleton className="h-10 w-48" />
+                    <Skeleton className="h-4 w-64" />
+                </div>
+                <div className="grid gap-8 md:grid-cols-3">
+                    <Card className="md:col-span-1 border-none bg-muted/30">
+                        <CardContent className="p-4 space-y-2">
+                            {[...Array(6)].map((_, i) => (
+                                <Skeleton key={i} className="h-10 w-full" />
+                            ))}
+                        </CardContent>
+                    </Card>
+                    <div className="md:col-span-2 space-y-6">
+                        <Card>
+                            <CardHeader><Skeleton className="h-6 w-32" /></CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="flex items-center gap-4">
+                                    <Skeleton className="h-16 w-16 rounded-full" />
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-5 w-32" />
+                                        <Skeleton className="h-4 w-24" />
+                                    </div>
+                                </div>
+                                <div className="space-y-4 pt-4 border-t">
+                                    <Skeleton className="h-12 w-full" />
+                                    <Skeleton className="h-12 w-full" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+        </Layout>
+    );
 
     return (
         <Layout>

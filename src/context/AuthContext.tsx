@@ -67,6 +67,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
 
+    // Pré-vérification : email déjà utilisé ? (Supabase ne le dit pas par défaut pour la sécurité)
+    const { data: emailTaken } = await supabase
+      .from("profiles")
+      .select("user_id")
+      .ilike("email", email)
+      .maybeSingle();
+
+    if (emailTaken) {
+      return {
+        error: {
+          message: "Cette adresse email est déjà associée à un compte. Veuillez vous connecter ou utiliser une autre adresse.",
+        },
+      };
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,

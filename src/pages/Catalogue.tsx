@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
+import { Skeleton } from "@/components/ui/skeleton";
 import { categories, senegalRegions } from "@/data/products";
 import { useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
@@ -153,7 +154,17 @@ const Catalogue = () => {
 
         {/* Products Grid */}
         {isLoading ? (
-          <div className="py-20 text-center text-muted-foreground">Chargement...</div>
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="space-y-4">
+                <Skeleton className="aspect-[4/5] w-full rounded-2xl" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : sorted.length === 0 ? (
           <div className="py-20 text-center text-muted-foreground">Aucun article trouvé.</div>
         ) : (
