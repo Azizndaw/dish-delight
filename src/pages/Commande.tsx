@@ -42,14 +42,11 @@ const Commande = () => {
     setIsSubmitting(true);
 
     try {
-      if (!user) {
-        toast.error("Vous devez être connecté pour passer commande.");
-        navigate("/connexion");
-        return;
-      }
+      // The user check is removed to allow Guest Checkout.
+      // We only link the order to a user_id if they are logged in.
 
       const { data: order, error: orderError } = await supabase.from("orders").insert({
-        user_id: user.id,
+        user_id: user?.id || null,
         full_name: fullName,
         phone,
         address,
@@ -107,13 +104,15 @@ const Commande = () => {
           order.id
         );
 
-        // Notify Buyer
-        await createNotification(
-          user.id,
-          "order_placed",
-          `✅ Votre commande de ${formatPrice(totalPrice + deliveryFee)} a été enregistrée. Nous vous tiendrons informé de son avancement.`,
-          order.id
-        );
+        // Notify Buyer (only if logged in)
+        if (user) {
+          await createNotification(
+            user.id,
+            "order_placed",
+            `✅ Votre commande de ${formatPrice(totalPrice + deliveryFee)} a été enregistrée. Nous vous tiendrons informé de son avancement.`,
+            order.id
+          );
+        }
       } catch (notifyErr) {
         console.error("Error sending notifications or updating stock:", notifyErr);
       }
