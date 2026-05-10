@@ -6,10 +6,22 @@ import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { AlertCircle, Trash2 } from "lucide-react";
 
 const Compte = () => {
     const navigate = useNavigate();
-    const { user, signOut, loading, isAdmin } = useAuth();
+    const { user, signOut, deleteAccount, loading, isAdmin } = useAuth();
     const [userData, setUserData] = useState<{ role: string; name: string } | null>(null);
 
     useEffect(() => {
@@ -27,6 +39,16 @@ const Compte = () => {
         await signOut();
         toast.info("Déconnexion réussie");
         navigate("/");
+    };
+
+    const handleDeleteAccount = async () => {
+        const { error } = await deleteAccount();
+        if (error) {
+            toast.error("Erreur lors de la suppression du compte : " + (error.message || "Erreur inconnue"));
+        } else {
+            toast.success("Compte supprimé avec succès");
+            navigate("/");
+        }
     };
 
     if (loading || !userData) return <Layout><div className="container py-20 text-center text-muted-foreground">Chargement...</div></Layout>;
@@ -131,6 +153,45 @@ const Compte = () => {
                                         <Button variant="hero">Publier une annonce</Button>
                                     </Link>
                                 </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="border-destructive/20 bg-destructive/5">
+                            <CardHeader>
+                                <CardTitle className="text-xl text-destructive flex items-center gap-2">
+                                    <AlertCircle className="h-5 w-5" />
+                                    Zone de danger
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <p className="text-sm text-muted-foreground">
+                                    La suppression de votre compte est définitive. Toutes vos données, y compris vos annonces, favoris et historique d'achats, seront supprimées.
+                                </p>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button variant="destructive" className="gap-2">
+                                            <Trash2 className="h-4 w-4" />
+                                            Supprimer mon compte
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Êtes-vous absolument sûr ?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Cette action est irréversible. Elle supprimera définitivement votre compte et toutes les données associées de nos serveurs.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                            <AlertDialogAction 
+                                                onClick={handleDeleteAccount}
+                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                            >
+                                                Supprimer définitivement
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </CardContent>
                         </Card>
                     </div>

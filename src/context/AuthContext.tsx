@@ -11,6 +11,7 @@ interface AuthContextType {
   signInWithOtp: (phone: string) => Promise<{ error: any }>;
   verifyOtp: (phone: string, token: string, fullName?: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  deleteAccount: () => Promise<{ error: any }>;
   isAdmin: boolean;
 }
 
@@ -146,8 +147,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await supabase.auth.signOut();
   };
 
+  const deleteAccount = async () => {
+    try {
+      const { error } = await supabase.rpc('delete_user_account');
+      if (error) throw error;
+      
+      // After deletion, we should sign out locally
+      await signOut();
+      return { error: null };
+    } catch (error: any) {
+      console.error("Error deleting account:", error);
+      return { error };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signInWithOtp, verifyOtp, signOut, isAdmin }}>
+    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signInWithOtp, verifyOtp, signOut, deleteAccount, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );
