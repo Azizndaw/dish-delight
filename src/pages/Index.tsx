@@ -5,6 +5,7 @@ import { Search, Leaf, ShoppingBag, Users, Shield, ArrowRight, Sparkles } from "
 import Layout from "@/components/Layout";
 import ProductCard from "@/components/ProductCard";
 import FeatureCard from "@/components/FeatureCard";
+import { Skeleton } from "@/components/ui/skeleton";
 import { categories } from "@/data/products";
 import heroImage from "@/assets/hero-image.jpg";
 import { useMemo } from "react";
@@ -16,7 +17,7 @@ const Index = () => {
   const { data: products = [] as any[], isLoading } = useProducts({ showInactive: false });
   const latestProducts = useMemo(() => products.slice(0, 8), [products]);
 
-  const { data: stats } = useQuery({
+  const { data: stats, isLoading: isLoadingStats } = useQuery({
     queryKey: ["homepage-stats"],
     queryFn: async () => {
       const { count: productsCount } = await supabase
@@ -37,7 +38,6 @@ const Index = () => {
   });
 
   const features = [
-    // ... existing features
     {
       icon: Leaf,
       title: "Éco-responsable",
@@ -101,15 +101,27 @@ const Index = () => {
               {/* Stats */}
               <div className="flex flex-wrap gap-6 pt-4">
                 <div>
-                  <p className="font-display text-2xl md:text-3xl font-bold text-foreground">{stats?.products || 0}</p>
+                  {isLoadingStats ? (
+                    <Skeleton className="h-8 w-16 mb-1" />
+                  ) : (
+                    <p className="font-display text-2xl md:text-3xl font-bold text-foreground">{stats?.products || 0}</p>
+                  )}
                   <p className="text-sm text-muted-foreground">Annonces actives</p>
                 </div>
                 <div>
-                  <p className="font-display text-2xl md:text-3xl font-bold text-foreground">{stats?.users || 0}</p>
+                  {isLoadingStats ? (
+                    <Skeleton className="h-8 w-16 mb-1" />
+                  ) : (
+                    <p className="font-display text-2xl md:text-3xl font-bold text-foreground">{stats?.users || 0}</p>
+                  )}
                   <p className="text-sm text-muted-foreground">Utilisateurs</p>
                 </div>
                 <div>
-                  <p className="font-display text-2xl md:text-3xl font-bold text-foreground">{stats?.regions || 14}</p>
+                  {isLoadingStats ? (
+                    <Skeleton className="h-8 w-16 mb-1" />
+                  ) : (
+                    <p className="font-display text-2xl md:text-3xl font-bold text-foreground">{stats?.regions || 14}</p>
+                  )}
                   <p className="text-sm text-muted-foreground">Régions</p>
                 </div>
               </div>
@@ -185,9 +197,21 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
-            {latestProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {isLoading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="space-y-4">
+                  <Skeleton className="aspect-square w-full rounded-xl" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-2/3" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                </div>
+              ))
+            ) : (
+              latestProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))
+            )}
           </div>
         </div>
       </section>

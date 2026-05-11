@@ -2,6 +2,7 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, Trash2, Sparkles, ChevronLeft, Package, Clock, ShieldCheck, Pencil, CheckCircle2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -32,9 +33,23 @@ const MesAnnonces = () => {
         showInactive: true
     });
 
-    if (loading || isLoading) {
-        return <Layout><div className="container py-20 text-center text-muted-foreground">Chargement...</div></Layout>;
-    }
+  if (loading || isLoading) {
+    return (
+      <Layout>
+        <div className="container max-w-5xl py-8 md:py-12">
+          <div className="mb-10 space-y-2">
+            <Skeleton className="h-10 w-48" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+          <div className="grid gap-6">
+            {[...Array(3)].map((_, i) => (
+              <Skeleton key={i} className="h-48 w-full rounded-xl" />
+            ))}
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
     if (!user) {
         navigate("/connexion");

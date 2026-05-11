@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Users, Package, DollarSign, Trash2, ShoppingBag, Clock, Truck, CheckCircle2,
   Search, Eye, EyeOff, Sparkles, SparklesIcon, AlertTriangle, MapPin, Phone,
@@ -160,7 +161,25 @@ const AdminDashboard = () => {
   }, [rawVisits]);
 
   if (loading || isLoadingProducts || isLoadingOrders || isLoadingProfiles || isLoadingVisits) {
-    return <Layout><div className="container py-20 text-center text-muted-foreground">Chargement du tableau de bord...</div></Layout>;
+    return (
+      <Layout>
+        <div className="container py-8 md:py-12">
+          <div className="mb-8 space-y-2">
+            <Skeleton className="h-10 w-64" />
+            <Skeleton className="h-4 w-48" />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} className="h-32 w-full rounded-xl" />
+            ))}
+          </div>
+          <div className="space-y-4">
+            <Skeleton className="h-12 w-full max-w-md rounded-lg" />
+            <Skeleton className="h-[400px] w-full rounded-xl" />
+          </div>
+        </div>
+      </Layout>
+    );
   }
 
   if (!user || !isAdmin) return <Navigate to="/" replace />;

@@ -3,6 +3,7 @@ import { useState } from "react";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronLeft, ChevronRight, MessageCircle, MapPin, Share2, ShieldCheck, Truck, ShoppingCart, Pencil, Trash2, ZoomIn, X } from "lucide-react";
 import { formatPrice } from "@/data/products";
 import { useCart } from "@/context/CartContext";
@@ -26,7 +27,32 @@ const DetailsProduit = () => {
   const isOwner = user?.id === product?.userId;
 
   if (isLoading) {
-    return <Layout><div className="container py-20 text-center text-muted-foreground">Chargement...</div></Layout>;
+    return (
+      <Layout>
+        <div className="container py-6 md:py-10">
+          <Skeleton className="h-4 w-32 mb-8" />
+          <div className="grid gap-8 lg:grid-cols-2">
+            <Skeleton className="aspect-square w-full rounded-2xl" />
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Skeleton className="h-6 w-20" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-8 w-32" />
+              </div>
+              <Skeleton className="h-4 w-40" />
+              <div className="space-y-4 border-y border-border py-6">
+                <Skeleton className="h-24 w-full" />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Skeleton className="h-16 w-full rounded-lg" />
+                  <Skeleton className="h-16 w-full rounded-lg" />
+                </div>
+              </div>
+              <Skeleton className="h-14 w-full rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
   }
 
   if (!product) {
