@@ -42,7 +42,7 @@ const ModifierAnnonce = () => {
             setLocation(product.location);
             setDescription(product.description || "");
             setIsBoosted(product.isBoosted);
-            setStockQuantity((product as any).stockQuantity?.toString() || "1");
+            setStockQuantity(product.stockQuantity?.toString() || "1");
             setIsLot(product.isLot);
 
             const initialImages: { url: string; isExisting: boolean }[] = [];
@@ -132,8 +132,9 @@ const ModifierAnnonce = () => {
             queryClient.invalidateQueries({ queryKey: ["products"] });
             queryClient.invalidateQueries({ queryKey: ["product", id] });
             navigate("/mes-annonces");
-        } catch (err: any) {
-            toast.error(err.message || "Erreur lors de la modification.");
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : "Erreur lors de la modification.";
+            toast.error(message);
         } finally {
             setIsSubmitting(false);
         }

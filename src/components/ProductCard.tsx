@@ -25,6 +25,7 @@ export interface Product {
   images?: string[];
   userId?: string;
   createdAt?: string;
+  stockQuantity?: number;
 }
 
 interface ProductCardProps {

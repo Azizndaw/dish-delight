@@ -10,13 +10,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Users, Package, DollarSign, Trash2, ShoppingBag, Clock, Truck, CheckCircle2,
-  Search, Eye, EyeOff, Sparkles, SparklesIcon, AlertTriangle, MapPin, Phone,
-  Calendar, ChevronDown, BarChart3, ArrowUpRight, ArrowDownRight, Ban,
-  TrendingUp, Globe, MousePointer2, Wallet
+  Search, Eye, EyeOff, Sparkles, AlertTriangle, MapPin, Phone,
+  Calendar, BarChart3, Ban, TrendingUp, Globe, Wallet
 } from "lucide-react";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  LineChart, Line, AreaChart, Area
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  AreaChart, Area
 } from 'recharts';
 import { formatPrice } from "@/data/products";
 import { useAuth } from "@/context/AuthContext";
@@ -26,6 +25,55 @@ import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Navigate } from "react-router-dom";
 import { useState, useMemo } from "react";
+import { Product } from "@/components/ProductCard";
+
+interface OrderItem {
+  id: string;
+  order_id: string;
+  product_id: string | null;
+  quantity: number;
+  price: number;
+  title: string;
+}
+
+interface Order {
+  id: string;
+  user_id: string | null;
+  created_at: string;
+  full_name: string;
+  phone: string;
+  address: string;
+  total_price: number;
+  payment_method: string;
+  status: string;
+  commission_amount?: number;
+  order_items?: OrderItem[];
+}
+
+interface Profile {
+  id: string;
+  user_id: string;
+  full_name: string | null;
+  phone: string | null;
+  location: string | null;
+  created_at: string;
+  avatar_url?: string | null;
+}
+
+interface AdminProduct {
+  id: string;
+  user_id: string;
+  title: string;
+  category: string;
+  condition: string;
+  location: string;
+  price: number;
+  image_url: string | null;
+  is_active: boolean;
+  is_boosted: boolean;
+  stock_quantity?: number;
+  created_at: string;
+}
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading } = useAuth();
@@ -39,11 +87,10 @@ const AdminDashboard = () => {
   const [userSearch, setUserSearch] = useState("");
 
   // Dialog states
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   // Fetch All Products (including inactive for admin)
-  const { data: rawProducts = [], isLoading: isLoadingProducts } = useQuery({
+  const { data: rawProducts = [], isLoading: isLoadingProducts } = useQuery<AdminProduct[]>({
     queryKey: ["admin-products"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -51,13 +98,13 @@ const AdminDashboard = () => {
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data as AdminProduct[];
     },
     enabled: !!isAdmin,
   });
 
   // Fetch All Orders
-  const { data: allOrders = [], isLoading: isLoadingOrders } = useQuery({
+  const { data: allOrders = [], isLoading: isLoadingOrders } = useQuery<Order[]>({
     queryKey: ["admin-orders"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -65,13 +112,13 @@ const AdminDashboard = () => {
         .select("*, order_items(*)")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data as Order[];
     },
     enabled: !!isAdmin,
   });
 
   // Fetch All Users (Profiles)
-  const { data: profiles = [], isLoading: isLoadingProfiles } = useQuery({
+  const { data: profiles = [], isLoading: isLoadingProfiles } = useQuery<Profile[]>({
     queryKey: ["admin-profiles"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -79,13 +126,13 @@ const AdminDashboard = () => {
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data as Profile[];
     },
     enabled: !!isAdmin,
   });
 
   // Fetch Site Visits
-  const { data: rawVisits = [], isLoading: isLoadingVisits } = useQuery({
+  const { data: rawVisits = [], isLoading: isLoadingVisits } = useQuery<Visit[]>({
     queryKey: ["admin-visits"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -93,7 +140,7 @@ const AdminDashboard = () => {
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data as Visit[];
     },
     enabled: !!isAdmin,
   });
@@ -103,11 +150,11 @@ const AdminDashboard = () => {
     let filtered = rawProducts;
     if (productSearch) {
       const s = productSearch.toLowerCase();
-      filtered = filtered.filter((p: any) => p.title.toLowerCase().includes(s) || p.category.toLowerCase().includes(s));
+      filtered = filtered.filter((p) => p.title.toLowerCase().includes(s) || p.category.toLowerCase().includes(s));
     }
-    if (productStatusFilter === "active") filtered = filtered.filter((p: any) => p.is_active);
-    else if (productStatusFilter === "inactive") filtered = filtered.filter((p: any) => !p.is_active);
-    else if (productStatusFilter === "boosted") filtered = filtered.filter((p: any) => p.is_boosted);
+    if (productStatusFilter === "active") filtered = filtered.filter((p) => p.is_active);
+    else if (productStatusFilter === "inactive") filtered = filtered.filter((p) => !p.is_active);
+    else if (productStatusFilter === "boosted") filtered = filtered.filter((p) => p.is_boosted);
     return filtered;
   }, [rawProducts, productSearch, productStatusFilter]);
 
@@ -115,16 +162,16 @@ const AdminDashboard = () => {
     let filtered = allOrders;
     if (orderSearch) {
       const s = orderSearch.toLowerCase();
-      filtered = filtered.filter((o: any) => o.full_name.toLowerCase().includes(s) || o.id.includes(s));
+      filtered = filtered.filter((o) => o.full_name.toLowerCase().includes(s) || o.id.includes(s));
     }
-    if (orderStatusFilter !== "all") filtered = filtered.filter((o: any) => o.status === orderStatusFilter);
+    if (orderStatusFilter !== "all") filtered = filtered.filter((o) => o.status === orderStatusFilter);
     return filtered;
   }, [allOrders, orderSearch, orderStatusFilter]);
 
   const filteredProfiles = useMemo(() => {
     if (!userSearch) return profiles;
     const s = userSearch.toLowerCase();
-    return profiles.filter((p: any) => (p.full_name || "").toLowerCase().includes(s) || (p.phone || "").includes(s) || (p.location || "").toLowerCase().includes(s));
+    return profiles.filter((p) => (p.full_name || "").toLowerCase().includes(s) || (p.phone || "").includes(s) || (p.location || "").toLowerCase().includes(s));
   }, [profiles, userSearch]);
 
   // Format visits for chart (last 7 days)
@@ -135,7 +182,7 @@ const AdminDashboard = () => {
       return d.toLocaleDateString('fr-FR', { weekday: 'short' });
     });
 
-    const counts = rawVisits.reduce((acc: any, visit: any) => {
+    const counts = rawVisits.reduce((acc: Record<string, number>, visit: Visit) => {
       const day = new Date(visit.created_at).toLocaleDateString('fr-FR', { weekday: 'short' });
       acc[day] = (acc[day] || 0) + 1;
       return acc;
@@ -149,13 +196,13 @@ const AdminDashboard = () => {
 
   // Top Pages
   const topPages = useMemo(() => {
-    const counts = rawVisits.reduce((acc: any, visit: any) => {
+    const counts = rawVisits.reduce((acc: Record<string, number>, visit: Visit) => {
       acc[visit.page_path] = (acc[visit.page_path] || 0) + 1;
       return acc;
     }, {});
 
     return Object.entries(counts)
-      .map(([path, count]) => ({ path, count: count as number }))
+      .map(([path, count]) => ({ path, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
   }, [rawVisits]);
@@ -208,7 +255,7 @@ const AdminDashboard = () => {
   };
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
-    const order = allOrders.find((o: any) => o.id === orderId);
+    const order = allOrders.find((o) => o.id === orderId);
     const previousStatus = order?.status;
 
     const { error } = await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
@@ -221,7 +268,8 @@ const AdminDashboard = () => {
           if (item.product_id) {
             const { data: product } = await supabase.from("products").select("stock_quantity").eq("id", item.product_id).single();
             if (product) {
-              const newStock = (product.stock_quantity || 0) + item.quantity;
+              const p = product as unknown as AdminProduct;
+              const newStock = (p.stock_quantity || 0) + item.quantity;
               await supabase.from("products").update({ stock_quantity: newStock, is_active: true }).eq("id", item.product_id);
             }
           }
@@ -259,20 +307,18 @@ const AdminDashboard = () => {
   };
 
   // Stats
-  const completedOrders = allOrders.filter((o: any) => o.status === "completed");
-  const totalRevenue = completedOrders.reduce((acc: number, o: any) => acc + o.total_price, 0);
-  const totalCommissionRevenue = completedOrders.reduce((acc: number, o: any) => acc + (o.commission_amount || 0), 0);
-  const pendingOrders = allOrders.filter((o: any) => o.status === "pending").length;
-  const activeProducts = rawProducts.filter((p: any) => p.is_active).length;
+  const completedOrders = allOrders.filter((o) => o.status === "completed");
+  const totalRevenue = completedOrders.reduce((acc: number, o) => acc + o.total_price, 0);
+  const totalCommissionRevenue = completedOrders.reduce((acc: number, o) => acc + (o.commission_amount || 0), 0);
+  const pendingOrders = allOrders.filter((o) => o.status === "pending").length;
+  const activeProducts = rawProducts.filter((p) => p.is_active).length;
   const inactiveProducts = rawProducts.length - activeProducts;
-  const boostedProducts = rawProducts.filter((p: any) => p.is_boosted).length;
+  const boostedProducts = rawProducts.filter((p) => p.is_boosted).length;
   const BOOST_PRICE = 500; // Average price in FCFA
   const estimatedBoostRevenue = boostedProducts * BOOST_PRICE;
 
   // Analytics Helpers
   const totalVisits = rawVisits.length;
-  const uniqueVisitors = new Set(rawVisits.filter(v => v.user_id).map(v => v.user_id)).size || 1; // Basic estimation
-
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -285,8 +331,8 @@ const AdminDashboard = () => {
   };
 
   // Get user's product count
-  const getUserProductCount = (userId: string) => rawProducts.filter((p: any) => p.user_id === userId).length;
-  const getUserOrderCount = (userId: string) => allOrders.filter((o: any) => o.user_id === userId).length;
+  const getUserProductCount = (userId: string) => rawProducts.filter((p) => p.user_id === userId).length;
+  const getUserOrderCount = (userId: string) => allOrders.filter((o) => o.user_id === userId).length;
 
   return (
     <Layout>
@@ -459,7 +505,7 @@ const AdminDashboard = () => {
                   <p className="text-muted-foreground text-sm text-center py-4">Aucune commande pour le moment.</p>
                 ) : (
                   <div className="space-y-3">
-                    {allOrders.slice(0, 5).map((order: any) => (
+                    {allOrders.slice(0, 5).map((order) => (
                       <div key={order.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
                         <div className="flex items-center gap-3">
                           {getStatusBadge(order.status)}
@@ -510,7 +556,7 @@ const AdminDashboard = () => {
                 <TableBody>
                   {filteredProducts.length === 0 ? (
                     <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">Aucun résultat</TableCell></TableRow>
-                  ) : filteredProducts.map((product: any) => (
+                  ) : filteredProducts.map((product) => (
                     <TableRow key={product.id} className="hover:bg-muted/10 transition-colors">
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -590,7 +636,7 @@ const AdminDashboard = () => {
                 <TableBody>
                   {filteredOrders.length === 0 ? (
                     <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Aucune commande</TableCell></TableRow>
-                  ) : filteredOrders.map((order: any) => (
+                  ) : filteredOrders.map((order) => (
                     <TableRow key={order.id} className="hover:bg-muted/10 transition-colors cursor-pointer" onClick={() => setSelectedOrder(order)}>
                       <TableCell className="font-mono text-xs text-muted-foreground">#{order.id.slice(0, 8)}</TableCell>
                       <TableCell>
@@ -643,7 +689,7 @@ const AdminDashboard = () => {
                 <TableBody>
                   {filteredProfiles.length === 0 ? (
                     <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Aucun utilisateur trouvé</TableCell></TableRow>
-                  ) : filteredProfiles.map((profile: any) => (
+                  ) : filteredProfiles.map((profile) => (
                     <TableRow key={profile.id} className="hover:bg-muted/10 transition-colors">
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -712,7 +758,7 @@ const AdminDashboard = () => {
                 <p className="text-xs text-muted-foreground uppercase font-medium mb-2">Articles commandés</p>
                 {selectedOrder.order_items?.length > 0 ? (
                   <div className="space-y-2">
-                    {selectedOrder.order_items.map((item: any) => (
+                    {selectedOrder.order_items.map((item) => (
                       <div key={item.id} className="flex justify-between items-center p-2 rounded bg-muted/30">
                         <div>
                           <p className="text-sm font-medium">{item.title}</p>

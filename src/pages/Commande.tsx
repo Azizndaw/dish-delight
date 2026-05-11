@@ -17,13 +17,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { createNotification, notifyAdmins } from "@/hooks/useNotifications";
 
+interface Order {
+  id: string;
+  full_name: string;
+  phone: string;
+  address: string;
+  payment_method: string;
+  total_price: number;
+}
+
 const Commande = () => {
   const { cart, totalPrice, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [successData, setSuccessData] = useState<{ order: any, items: any[] } | null>(null);
+  const [successData, setSuccessData] = useState<{ order: Order, items: { title: string, price: number, quantity: number }[] } | null>(null);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -97,8 +106,9 @@ const Commande = () => {
       clearCart();
       setIsSuccess(true);
       toast.success("Commande enregistrée !");
-    } catch (err: any) {
-      toast.error(err.message || "Erreur lors de la commande.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Erreur lors de la commande.";
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

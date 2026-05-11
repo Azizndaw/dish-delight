@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Leaf, ShoppingBag, Users, Shield, ArrowRight, Sparkles } from "lucide-react";
 import Layout from "@/components/Layout";
-import ProductCard from "@/components/ProductCard";
+import ProductCard, { Product } from "@/components/ProductCard";
 import FeatureCard from "@/components/FeatureCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { categories } from "@/data/products";
@@ -14,7 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
-  const { data: products = [] as any[], isLoading } = useProducts({ showInactive: false });
+  const { data: products = [] as Product[], isLoading } = useProducts({ showInactive: false });
   const latestProducts = useMemo(() => products.slice(0, 8), [products]);
 
   const { data: stats, isLoading: isLoadingStats } = useQuery({

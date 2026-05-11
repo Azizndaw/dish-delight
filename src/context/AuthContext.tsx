@@ -6,12 +6,12 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string, phone?: string) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signInWithOtp: (phone: string) => Promise<{ error: any }>;
-  verifyOtp: (phone: string, token: string, fullName?: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName: string, phone?: string) => Promise<{ error: unknown }>;
+  signIn: (email: string, password: string) => Promise<{ error: unknown }>;
+  signInWithOtp: (phone: string) => Promise<{ error: unknown }>;
+  verifyOtp: (phone: string, token: string, fullName?: string) => Promise<{ error: unknown }>;
   signOut: () => Promise<void>;
-  deleteAccount: () => Promise<{ error: any }>;
+  deleteAccount: () => Promise<{ error: unknown }>;
   isAdmin: boolean;
 }
 
@@ -188,15 +188,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const deleteAccount = async () => {
     try {
-      const { error } = await (supabase as any).rpc('delete_user_account');
+      const { error } = await supabase.rpc('delete_user_account');
       if (error) throw error;
-      
+
       // After deletion, we should sign out locally
       await signOut();
       return { error: null };
-    } catch (error: any) {
-      console.error("Error deleting account:", error);
-      return { error };
+    } catch (err: unknown) {
+      console.error("Error deleting account:", err);
+      return { error: err };
     }
   };
 

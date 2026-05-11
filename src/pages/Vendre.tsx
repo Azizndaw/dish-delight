@@ -90,8 +90,9 @@ const Vendre = () => {
       if (error) throw error;
       toast.success("Annonce publiée avec succès !");
       navigate("/catalogue");
-    } catch (err: any) {
-      toast.error(err.message || "Erreur lors de la publication.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Erreur lors de la publication.";
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

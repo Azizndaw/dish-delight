@@ -169,7 +169,7 @@ const MesAchats = () => {
                                 </CardHeader>
                                 <CardContent className="p-6">
                                     <div className="space-y-4">
-                                        {order.order_items.map((item: any) => (
+                                        {order.order_items.map((item) => (
                                             <div key={item.id} className="flex items-center gap-4">
                                                 <div className="h-12 w-12 rounded border bg-muted flex items-center justify-center">
                                                     <Package className="h-6 w-6 text-muted-foreground" />

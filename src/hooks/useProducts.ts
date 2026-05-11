@@ -17,6 +17,7 @@ export interface DBProduct {
   is_lot: boolean | null;
   is_active: boolean | null;
   created_at: string;
+  stock_quantity?: number;
 }
 
 // Convert DB product to the Product format used by ProductCard
@@ -29,7 +30,7 @@ export const toProduct = (p: DBProduct) => {
     location: p.location,
     image: images[0] || "https://images.unsplash.com/photo-1621327017866-6fb07e6c96ca?q=80&w=800",
     images: images,
-    condition: p.condition as any,
+    condition: p.condition as "Neuf" | "Très bon état" | "Bon état" | "État correct",
     isLot: p.is_lot ?? false,
     isBoosted: p.is_boosted ?? false,
     category: p.category,
@@ -37,7 +38,7 @@ export const toProduct = (p: DBProduct) => {
     description: p.description ?? undefined,
     createdAt: p.created_at,
     userId: p.user_id,
-    stockQuantity: (p as any).stock_quantity ?? 1,
+    stockQuantity: p.stock_quantity ?? 1,
     is_active: p.is_active ?? true,
   };
 };
