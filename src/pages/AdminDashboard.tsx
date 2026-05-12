@@ -209,7 +209,7 @@ const AdminDashboard = () => {
     }, {});
 
     return Object.entries(counts)
-      .map(([path, count]) => ({ path, count }))
+      .map(([path, count]): { path: string, count: number } => ({ path, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
   }, [rawVisits]);
