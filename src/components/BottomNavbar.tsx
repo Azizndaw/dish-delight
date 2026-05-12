@@ -28,7 +28,7 @@ const BottomNavbar = () => {
                     <div className={`${item.primary ? "rounded-full bg-primary p-2 text-primary-foreground -mt-8 shadow-lg ring-4 ring-background" : ""}`}>
                         <item.icon className={item.primary ? "h-6 w-6" : "h-5 w-5"} />
                     </div>
-                    <span className="text-[10px] font-medium">{item.label}</span>
+                    <span className="sr-only">{item.label}</span>
                     {item.badge !== undefined && item.badge > 0 && (
                         <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
                             {item.badge}

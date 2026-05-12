@@ -6,12 +6,12 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string, phone?: string) => Promise<{ error: unknown }>;
-  signIn: (email: string, password: string) => Promise<{ error: unknown }>;
-  signInWithOtp: (phone: string) => Promise<{ error: unknown }>;
-  verifyOtp: (phone: string, token: string, fullName?: string) => Promise<{ error: unknown }>;
+  signUp: (email: string, password: string, fullName: string, phone?: string) => Promise<{ error: any }>;
+  signIn: (identifier: string, password: string) => Promise<{ error: any }>;
+  signInWithOtp: (phone: string) => Promise<{ error: any }>;
+  verifyOtp: (phone: string, token: string, fullName?: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
-  deleteAccount: () => Promise<{ error: unknown }>;
+  deleteAccount: () => Promise<{ error: any }>;
   isAdmin: boolean;
 }
 

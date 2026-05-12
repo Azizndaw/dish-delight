@@ -10,9 +10,10 @@ const Footer = () => {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
-                <span className="font-display text-xl font-bold text-primary-foreground">V</span>
+            <Link to="/" className="flex items-center gap-2 group">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary transition-transform group-hover:scale-105">
+                <span className="font-display text-xl font-bold text-primary-foreground" aria-hidden="true">V</span>
+                <span className="sr-only">V</span>
               </div>
               <span className="font-display text-xl font-semibold text-foreground">
                 Vide Placard
