@@ -6,6 +6,7 @@ export const categories = [
   { id: "verres", name: "Verres & Tasses" },
   { id: "couverts", name: "Couverts" },
   { id: "services", name: "Services complets" },
+  { id: "decoration-table", name: "Décoration de table" },
   { id: "vaisselle-divers", name: "Vaisselle divers" },
 ];
 
