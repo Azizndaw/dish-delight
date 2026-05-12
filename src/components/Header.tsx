@@ -37,9 +37,10 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
-            <span className="font-display text-xl font-bold text-primary-foreground">V</span>
+        <Link to="/" className="flex items-center gap-2 group">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary transition-transform group-hover:scale-105">
+            <span className="font-display text-xl font-bold text-primary-foreground" aria-hidden="true">V</span>
+            <span className="sr-only">V</span>
           </div>
           <span className="font-display text-lg font-bold text-foreground sm:text-xl">
             Vide Placard
