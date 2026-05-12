@@ -75,6 +75,13 @@ interface AdminProduct {
   created_at: string;
 }
 
+interface Visit {
+  id: string;
+  user_id?: string | null;
+  page_path: string;
+  created_at: string;
+}
+
 const AdminDashboard = () => {
   const { user, isAdmin, loading } = useAuth();
   const queryClient = useQueryClient();
