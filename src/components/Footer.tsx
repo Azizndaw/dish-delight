@@ -16,7 +16,7 @@ const Footer = () => {
                 <span className="sr-only">V</span>
               </div>
               <span className="font-display text-xl font-semibold text-foreground">
-                Vide Placard
+                Vide Vaisselle
               </span>
             </Link>
             <p className="text-sm text-muted-foreground">
@@ -78,7 +78,7 @@ const Footer = () => {
 
         <div className="mt-12 border-t border-border pt-8 text-center">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} Vide Placard. Tous droits réservés.
+            © {currentYear} Vide Vaisselle. Tous droits réservés.
           </p>
         </div>
       </div>

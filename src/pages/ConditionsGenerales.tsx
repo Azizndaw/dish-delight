@@ -11,7 +11,7 @@ const ConditionsGenerales = () => {
 
           <div className="prose prose-lg text-muted-foreground">
             <p className="lead">
-              Bienvenue sur Vide Placard. En utilisant notre plateforme, vous acceptez
+              Bienvenue sur Vide Vaisselle. En utilisant notre plateforme, vous acceptez
               les présentes conditions générales d'utilisation.
             </p>
 
@@ -19,7 +19,7 @@ const ConditionsGenerales = () => {
               1. Objet
             </h2>
             <p>
-              Vide Placard est une plateforme de mise en relation entre particuliers
+              Vide Vaisselle est une plateforme de mise en relation entre particuliers
               pour l'achat et la vente de vaisselle d'occasion. Nous ne sommes pas partie
               aux transactions entre utilisateurs.
             </p>
@@ -49,7 +49,7 @@ const ConditionsGenerales = () => {
               4. Prix
             </h2>
             <p>
-              Vide Placard promeut les petits prix. Nous nous réservons le droit de fixer
+              Vide Vaisselle promeut les petits prix. Nous nous réservons le droit de fixer
               des prix plafonds par catégorie pour maintenir l'accessibilité de la plateforme.
             </p>
 
@@ -58,7 +58,7 @@ const ConditionsGenerales = () => {
             </h2>
             <p>
               Les transactions s'effectuent directement entre acheteurs et vendeurs, généralement
-              en remise en main propre. Vide Placard ne garantit pas les transactions et
+              en remise en main propre. Vide Vaisselle ne garantit pas les transactions et
               n'est pas responsable des litiges entre utilisateurs.
             </p>
 
@@ -67,7 +67,7 @@ const ConditionsGenerales = () => {
             </h2>
             <p>
               Les utilisateurs sont responsables du contenu qu'ils publient et des transactions
-              qu'ils effectuent. Vide Placard décline toute responsabilité en cas de litige,
+              qu'ils effectuent. Vide Vaisselle décline toute responsabilité en cas de litige,
               d'arnaque ou de produit non conforme.
             </p>
 

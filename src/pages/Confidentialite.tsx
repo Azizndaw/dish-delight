@@ -11,7 +11,7 @@ const Confidentialite = () => {
 
           <div className="prose prose-lg text-muted-foreground">
             <p className="lead">
-              Chez Vide Placard, nous accordons une grande importance à la protection
+              Chez Vide Vaisselle, nous accordons une grande importance à la protection
               de vos données personnelles. Cette politique explique comment nous collectons,
               utilisons et protégeons vos informations.
             </p>

@@ -346,7 +346,7 @@ const AdminDashboard = () => {
       <div className="container py-8 md:py-12">
         <div className="mb-8">
           <h1 className="font-display text-3xl font-bold text-foreground">Tableau de Bord Admin</h1>
-          <p className="text-muted-foreground">Gestion centrale de Vide Placard.</p>
+          <p className="text-muted-foreground">Gestion centrale de Vide Vaisselle.</p>
         </div>
 
         <Tabs defaultValue="stats" className="space-y-8">

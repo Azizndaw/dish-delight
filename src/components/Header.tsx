@@ -43,7 +43,7 @@ const Header = () => {
             <span className="sr-only">V</span>
           </div>
           <span className="font-display text-lg font-bold text-foreground sm:text-xl">
-            Vide Placard
+            Vide Vaisselle
           </span>
         </Link>
 
