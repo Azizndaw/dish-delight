@@ -227,7 +227,7 @@ const Index = () => {
         <div className="container">
           <div className="mb-12 text-center">
             <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">
-              Pourquoi Vide Placard ?
+              Pourquoi Vide Vaisselle ?
             </h2>
             <p className="mt-3 max-w-2xl mx-auto text-muted-foreground">
               Une plateforme simple, fiable et éco-responsable pour acheter et vendre

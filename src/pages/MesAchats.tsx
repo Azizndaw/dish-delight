@@ -129,7 +129,7 @@ const MesAchats = () => {
                 <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="font-display text-3xl font-bold text-foreground md:text-4xl">Mes Achats</h1>
-                        <p className="mt-2 text-muted-foreground">Retrouvez l'historique de vos commandes sur Vide Placard.</p>
+                        <p className="mt-2 text-muted-foreground">Retrouvez l'historique de vos commandes sur Vide Vaisselle.</p>
                     </div>
                 </div>
 

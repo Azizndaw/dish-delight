@@ -32,7 +32,7 @@ const APropos = () => {
         <div className="container">
           <div className="mx-auto max-w-3xl text-center">
             <h1 className="font-display text-4xl font-bold text-foreground md:text-5xl">
-              À propos de Vide Placard
+              À propos de Vide Vaisselle
             </h1>
             <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
               Nous sommes nés d'une conviction simple : la vaisselle inutilisée mérite
@@ -52,7 +52,7 @@ const APropos = () => {
             </h2>
             <div className="prose prose-lg text-muted-foreground">
               <p>
-                Vide Placard est né d'un constat simple : chaque année, des milliers
+                Vide Vaisselle est né d'un constat simple : chaque année, des milliers
                 de pièces de vaisselle en parfait état finissent oubliées dans des cartons
                 ou pire, à la poubelle.
               </p>
