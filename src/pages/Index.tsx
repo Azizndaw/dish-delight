@@ -99,30 +99,36 @@ const Index = () => {
               </div>
 
               {/* Stats */}
-              <div className="flex flex-wrap gap-6 pt-4">
-                <div>
+              <div className="flex flex-wrap gap-8 pt-6">
+                <div className="flex flex-col">
                   {isLoadingStats ? (
                     <Skeleton className="h-8 w-16 mb-1" />
                   ) : (
-                    <p className="font-display text-2xl md:text-3xl font-bold text-foreground">{stats?.products || 0}</p>
+                    <p className="font-display text-2xl md:text-3xl font-bold text-foreground">
+                      {stats?.products || 0}
+                    </p>
                   )}
-                  <p className="text-sm text-muted-foreground">Annonces actives</p>
+                  <p className="text-sm font-medium text-muted-foreground">Annonces actives</p>
                 </div>
-                <div>
+                <div className="flex flex-col">
                   {isLoadingStats ? (
                     <Skeleton className="h-8 w-16 mb-1" />
                   ) : (
-                    <p className="font-display text-2xl md:text-3xl font-bold text-foreground">{stats?.users || 0}</p>
+                    <p className="font-display text-2xl md:text-3xl font-bold text-foreground">
+                      {stats?.users || 0}
+                    </p>
                   )}
-                  <p className="text-sm text-muted-foreground">Utilisateurs</p>
+                  <p className="text-sm font-medium text-muted-foreground">Utilisateurs</p>
                 </div>
-                <div>
+                <div className="flex flex-col">
                   {isLoadingStats ? (
                     <Skeleton className="h-8 w-16 mb-1" />
                   ) : (
-                    <p className="font-display text-2xl md:text-3xl font-bold text-foreground">{stats?.regions || 14}</p>
+                    <p className="font-display text-2xl md:text-3xl font-bold text-foreground">
+                      {stats?.regions || 14}
+                    </p>
                   )}
-                  <p className="text-sm text-muted-foreground">Régions</p>
+                  <p className="text-sm font-medium text-muted-foreground">Régions</p>
                 </div>
               </div>
             </div>
