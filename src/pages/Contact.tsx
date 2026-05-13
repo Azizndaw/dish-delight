@@ -102,7 +102,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-medium text-foreground">Email</h3>
-                      <p className="text-muted-foreground">awa.avril@gmail.com</p>
+                      <p className="text-muted-foreground">Vudevaissellesn@gmail.com</p>
                       <p className="text-sm text-muted-foreground">Réponse sous 24-48h</p>
                     </div>
                   </div>
@@ -113,7 +113,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-medium text-foreground">Téléphone</h3>
-                      <p className="text-muted-foreground">+221 77 224 37 63</p>
+                      <p className="text-muted-foreground">+221 76 880 41 09</p>
                       <p className="text-sm text-muted-foreground">7j/7, 9h-21h</p>
                     </div>
                   </div>
@@ -134,7 +134,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-medium text-foreground">WhatsApp</h3>
-                      <p className="text-muted-foreground">+221 77 224 37 63</p>
+                      <p className="text-muted-foreground">+221 76 880 41 09</p>
                       <p className="text-sm text-muted-foreground">Réponse rapide</p>
                     </div>
                   </div>

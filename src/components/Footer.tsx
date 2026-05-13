@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react";
+import { Facebook, Instagram, X, Mail, Phone, MapPin } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -23,14 +23,14 @@ const Footer = () => {
               La marketplace de vaisselle d'occasion au Sénégal. Achetez et vendez à petits prix.
             </p>
             <div className="flex gap-4">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
+              <a href="https://www.facebook.com/share/1DfA8c9Cd9/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
+              <a href="https://www.instagram.com/videvaisselle?utm_source=qr&igsh=MWVicXh6cDhxemdkNg==" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
-                <Twitter className="h-5 w-5" />
+              <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
+                <X className="h-5 w-5" />
               </a>
             </div>
           </div>
@@ -62,11 +62,11 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4" />
-                <span>awa.avril@gmail.com</span>
+                <span>Vudevaissellesn@gmail.com</span>
               </li>
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Phone className="h-4 w-4" />
-                <span>+221 77 224 37 63</span>
+                <span>+221 76 880 41 09</span>
               </li>
               <li className="flex items-start gap-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 mt-0.5" />
