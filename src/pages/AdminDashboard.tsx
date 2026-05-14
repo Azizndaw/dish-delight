@@ -602,6 +602,7 @@ const AdminDashboard = () => {
                             <Badge variant="secondary" className="text-xs">Inactif</Badge>
                           )}
                           {product.is_boosted && <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-xs">⭐ Boosté</Badge>}
+                          {product.is_boosted && !product.is_active && <Badge className="bg-orange-100 text-orange-700 border-orange-200 text-xs">⏳ Boost à valider</Badge>}
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
