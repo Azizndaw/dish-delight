@@ -162,6 +162,7 @@ const AdminDashboard = () => {
     if (productStatusFilter === "active") filtered = filtered.filter((p) => p.is_active);
     else if (productStatusFilter === "inactive") filtered = filtered.filter((p) => !p.is_active);
     else if (productStatusFilter === "boosted") filtered = filtered.filter((p) => p.is_boosted);
+    else if (productStatusFilter === "boost_pending") filtered = filtered.filter((p) => p.is_boosted && !p.is_active);
     return filtered;
   }, [rawProducts, productSearch, productStatusFilter]);
 
