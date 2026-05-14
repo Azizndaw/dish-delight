@@ -221,7 +221,7 @@ const Vendre = () => {
                 </div>
                 <div className="flex-1">
                   <h4 className="text-sm font-bold text-foreground">Booster mon annonce</h4>
-                  <p className="text-xs text-muted-foreground mt-1">Restez en haut du catalogue pendant 3 jours.</p>
+                  <p className="text-xs text-muted-foreground mt-1">Restez en haut du catalogue pendant 3 jours. Paiement 500 FCFA via Wave / Orange Money au +221 76 880 41 09. L'annonce sera publiée après validation par l'admin.</p>
                   <label className="mt-3 flex cursor-pointer items-center gap-2">
                     <input type="checkbox" className="h-4 w-4 rounded border-primary text-primary focus:ring-primary" onChange={(e) => setIsBoosted(e.target.checked)} />
                     <span className="text-sm font-semibold text-primary">Activer le Boost – 500 FCFA</span>
