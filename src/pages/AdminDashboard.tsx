@@ -253,6 +253,20 @@ const AdminDashboard = () => {
     queryClient.invalidateQueries({ queryKey: ["admin-products"] });
   };
 
+  const validateBoost = async (product: AdminProduct) => {
+    const { error } = await supabase.from("products").update({ is_active: true }).eq("id", product.id);
+    if (error) { toast.error("Erreur lors de la validation"); return; }
+    try {
+      await createNotification(
+        product.user_id,
+        "boost_validated",
+        `✅ Paiement reçu ! Votre annonce boostée "${product.title}" est maintenant en ligne et mise en avant.`
+      );
+    } catch (e) { console.error(e); }
+    toast.success("Boost validé, annonce publiée");
+    queryClient.invalidateQueries({ queryKey: ["admin-products"] });
+  };
+
   const handleHardDelete = async (id: string) => {
     if (!confirm("Supprimer cet article DÉFINITIVEMENT ?")) return;
     const { error } = await supabase.from("products").delete().eq("id", id);
