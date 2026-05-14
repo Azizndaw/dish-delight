@@ -95,9 +95,9 @@ const Vendre = () => {
         await supabase.from("notifications").insert({
           user_id: user.id,
           type: "boost_pending",
-          message: "⭐ Votre annonce boostée est en attente de validation. Merci de régler 500 FCFA via Wave ou Orange Money au +221 76 880 41 09 pour activer le Boost. Dès réception du paiement, l'admin validera et votre annonce sera publiée en haut du catalogue.",
+          message: "⭐ Votre annonce boostée est en attente de validation. Merci de régler 500 FCFA via Wave ou Orange Money au +221 77 224 37 63 pour activer le Boost. Dès réception du paiement, l'admin validera et votre annonce sera publiée en haut du catalogue.",
         });
-        toast.success("Annonce enregistrée ! Réglez 500 FCFA via Wave ou Orange Money au +221 76 880 41 09. Elle sera publiée après validation par l'admin.", { duration: 10000 });
+        toast.success("Annonce enregistrée ! Réglez 500 FCFA via Wave ou Orange Money au +221 77 224 37 63. Elle sera publiée après validation par l'admin.", { duration: 10000 });
       } else {
         toast.success("Annonce publiée avec succès !");
       }
