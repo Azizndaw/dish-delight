@@ -607,6 +607,11 @@ const AdminDashboard = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          {product.is_boosted && !product.is_active && (
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:bg-green-50" title="Valider le Boost (paiement reçu)" onClick={() => validateBoost(product)}>
+                              <CheckCircle2 className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button variant="ghost" size="icon" className="h-8 w-8" title={product.is_active ? "Désactiver" : "Réactiver"} onClick={() => toggleActive(product.id, !!product.is_active)}>
                             {product.is_active ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </Button>
