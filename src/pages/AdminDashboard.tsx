@@ -162,6 +162,7 @@ const AdminDashboard = () => {
     if (productStatusFilter === "active") filtered = filtered.filter((p) => p.is_active);
     else if (productStatusFilter === "inactive") filtered = filtered.filter((p) => !p.is_active);
     else if (productStatusFilter === "boosted") filtered = filtered.filter((p) => p.is_boosted);
+    else if (productStatusFilter === "boost_pending") filtered = filtered.filter((p) => p.is_boosted && !p.is_active);
     return filtered;
   }, [rawProducts, productSearch, productStatusFilter]);
 
@@ -250,6 +251,20 @@ const AdminDashboard = () => {
     const { error } = await supabase.from("products").update({ is_boosted: !currentBoosted }).eq("id", id);
     if (error) { toast.error("Erreur"); return; }
     toast.success(currentBoosted ? "Boost retiré" : "Annonce boostée !");
+    queryClient.invalidateQueries({ queryKey: ["admin-products"] });
+  };
+
+  const validateBoost = async (product: AdminProduct) => {
+    const { error } = await supabase.from("products").update({ is_active: true }).eq("id", product.id);
+    if (error) { toast.error("Erreur lors de la validation"); return; }
+    try {
+      await createNotification(
+        product.user_id,
+        "boost_validated",
+        `✅ Paiement reçu ! Votre annonce boostée "${product.title}" est maintenant en ligne et mise en avant.`
+      );
+    } catch (e) { console.error(e); }
+    toast.success("Boost validé, annonce publiée");
     queryClient.invalidateQueries({ queryKey: ["admin-products"] });
   };
 
@@ -545,6 +560,7 @@ const AdminDashboard = () => {
                   <SelectItem value="active">Actifs ({activeProducts})</SelectItem>
                   <SelectItem value="inactive">Inactifs ({inactiveProducts})</SelectItem>
                   <SelectItem value="boosted">Boostés ({boostedProducts})</SelectItem>
+                  <SelectItem value="boost_pending">⏳ Boosts à valider ({rawProducts.filter(p => p.is_boosted && !p.is_active).length})</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -586,10 +602,16 @@ const AdminDashboard = () => {
                             <Badge variant="secondary" className="text-xs">Inactif</Badge>
                           )}
                           {product.is_boosted && <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-xs">⭐ Boosté</Badge>}
+                          {product.is_boosted && !product.is_active && <Badge className="bg-orange-100 text-orange-700 border-orange-200 text-xs">⏳ Boost à valider</Badge>}
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          {product.is_boosted && !product.is_active && (
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:bg-green-50" title="Valider le Boost (paiement reçu)" onClick={() => validateBoost(product)}>
+                              <CheckCircle2 className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button variant="ghost" size="icon" className="h-8 w-8" title={product.is_active ? "Désactiver" : "Réactiver"} onClick={() => toggleActive(product.id, !!product.is_active)}>
                             {product.is_active ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </Button>

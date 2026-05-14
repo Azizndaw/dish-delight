@@ -85,10 +85,22 @@ const Vendre = () => {
         is_boosted: isBoosted,
         is_lot: isLot,
         stock_quantity: parseInt(stockQuantity) || 1,
+        is_active: !isBoosted, // Boost requires admin validation before being published
       });
 
       if (error) throw error;
-      toast.success("Annonce publiée avec succès !");
+
+      if (isBoosted) {
+        // Notify the seller with payment instructions
+        await supabase.from("notifications").insert({
+          user_id: user.id,
+          type: "boost_pending",
+          message: "⭐ Votre annonce boostée est en attente de validation. Merci de régler 500 FCFA via Wave ou Orange Money au +221 76 880 41 09 pour activer le Boost. Dès réception du paiement, l'admin validera et votre annonce sera publiée en haut du catalogue.",
+        });
+        toast.success("Annonce enregistrée ! Réglez 500 FCFA via Wave ou Orange Money au +221 76 880 41 09. Elle sera publiée après validation par l'admin.", { duration: 10000 });
+      } else {
+        toast.success("Annonce publiée avec succès !");
+      }
       navigate("/catalogue");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erreur lors de la publication.";
@@ -209,7 +221,7 @@ const Vendre = () => {
                 </div>
                 <div className="flex-1">
                   <h4 className="text-sm font-bold text-foreground">Booster mon annonce</h4>
-                  <p className="text-xs text-muted-foreground mt-1">Restez en haut du catalogue pendant 3 jours.</p>
+                  <p className="text-xs text-muted-foreground mt-1">Restez en haut du catalogue pendant 3 jours. Paiement 500 FCFA via Wave / Orange Money au +221 76 880 41 09. L'annonce sera publiée après validation par l'admin.</p>
                   <label className="mt-3 flex cursor-pointer items-center gap-2">
                     <input type="checkbox" className="h-4 w-4 rounded border-primary text-primary focus:ring-primary" onChange={(e) => setIsBoosted(e.target.checked)} />
                     <span className="text-sm font-semibold text-primary">Activer le Boost – 500 FCFA</span>
