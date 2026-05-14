@@ -560,6 +560,7 @@ const AdminDashboard = () => {
                   <SelectItem value="active">Actifs ({activeProducts})</SelectItem>
                   <SelectItem value="inactive">Inactifs ({inactiveProducts})</SelectItem>
                   <SelectItem value="boosted">Boostés ({boostedProducts})</SelectItem>
+                  <SelectItem value="boost_pending">⏳ Boosts à valider ({rawProducts.filter(p => p.is_boosted && !p.is_active).length})</SelectItem>
                 </SelectContent>
               </Select>
             </div>
