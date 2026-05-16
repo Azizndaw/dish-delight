@@ -217,10 +217,17 @@ const DetailsProduit = () => {
             </div>
 
             <div className="space-y-3">
-              <Button onClick={() => addToCart(product)} variant="hero" className="w-full h-12 md:h-14 text-base md:text-lg gap-3">
-                <ShoppingCart className="h-5 w-5" />
-                Ajouter au panier
-              </Button>
+              {(product.stockQuantity ?? 1) <= 0 ? (
+                <div className="w-full rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-center">
+                  <p className="font-display text-lg font-bold text-destructive">Rupture de stock</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Cet article a déjà été commandé. Il n'est plus disponible à l'achat pour le moment.</p>
+                </div>
+              ) : (
+                <Button onClick={() => addToCart(product)} variant="hero" className="w-full h-12 md:h-14 text-base md:text-lg gap-3">
+                  <ShoppingCart className="h-5 w-5" />
+                  Ajouter au panier
+                </Button>
+              )}
             </div>
 
             <div className="rounded-xl bg-muted/50 p-4">

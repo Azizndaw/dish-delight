@@ -29,9 +29,18 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [cart]);
 
     const addToCart = (product: Product) => {
+        if ((product.stockQuantity ?? 1) <= 0) {
+            toast.error(`${product.title} est en rupture de stock`);
+            return;
+        }
         setCart((prevCart) => {
             const existingItem = prevCart.find((item) => item.id === product.id);
             if (existingItem) {
+                const maxStock = product.stockQuantity ?? 1;
+                if (existingItem.quantity >= maxStock) {
+                    toast.error(`Stock maximum atteint pour ${product.title}`);
+                    return prevCart;
+                }
                 toast.info(`Quantité augmentée pour ${product.title}`);
                 return prevCart.map((item) =>
                     item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
