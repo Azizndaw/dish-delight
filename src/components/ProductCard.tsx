@@ -38,6 +38,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const navigate = useNavigate();
   const { toggleFavorite, isFavorite } = useFavorites();
   const isLiked = isFavorite(product.id);
+  const isOutOfStock = (product.stockQuantity ?? 1) <= 0;
 
   const conditionColors: Record<string, string> = {
     "Neuf": "bg-sage text-sage-dark",
@@ -53,8 +54,15 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <img
             src={product.image}
             alt={product.title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+            className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-110 ${isOutOfStock ? "grayscale opacity-70" : ""}`}
           />
+          {isOutOfStock && (
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/40 backdrop-blur-[1px]">
+              <Badge variant="destructive" className="text-xs sm:text-sm py-1 px-3 shadow-md">
+                Rupture de stock
+              </Badge>
+            </div>
+          )}
           {product.isBoosted && (
             <Badge className="absolute left-3 top-3 z-10 bg-amber-500 text-white border-none gap-1 py-1 shadow-sm">
               <Sparkles className="h-3 w-3" />
@@ -108,13 +116,15 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <div className="mt-3 flex gap-2">
             <Button
               className="flex-1 gap-2 text-[10px] sm:text-xs h-8 sm:h-9"
+              disabled={isOutOfStock}
               onClick={(e) => {
                 e.preventDefault();
+                if (isOutOfStock) return;
                 addToCart(product);
               }}
             >
               <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
-              Panier
+              {isOutOfStock ? "Indisponible" : "Panier"}
             </Button>
           </div>
         </CardContent>
