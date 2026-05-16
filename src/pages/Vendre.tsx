@@ -26,6 +26,7 @@ const Vendre = () => {
   const [isBoosted, setIsBoosted] = useState(false);
   const [isLot, setIsLot] = useState(false);
   const [stockQuantity, setStockQuantity] = useState("1");
+  const [acceptCommission, setAcceptCommission] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,6 +57,10 @@ const Vendre = () => {
     if (!user) {
       toast.error("Connectez-vous pour publier une annonce.");
       navigate("/connexion");
+      return;
+    }
+    if (!acceptCommission) {
+      toast.error("Vous devez accepter la commission de 10% pour publier.");
       return;
     }
     setIsSubmitting(true);
@@ -228,6 +233,30 @@ const Vendre = () => {
                   </label>
                 </div>
               </div>
+            </div>
+
+            <div className="sm:col-span-2 rounded-xl border-2 border-amber-500/30 bg-amber-500/5 p-4">
+              <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
+                💰 Commission de la plateforme : 10%
+              </h4>
+              <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                En publiant cette annonce, vous acceptez de reverser <span className="font-semibold text-foreground">10% du prix de vente</span> au propriétaire de la plateforme après chaque transaction réussie, via <span className="font-semibold">Wave</span> ou <span className="font-semibold">Orange Money</span> au <span className="font-mono font-bold text-foreground">+221 77 224 37 63</span>.
+              </p>
+              <p className="text-xs text-muted-foreground mt-2 italic">
+                Cette commission permet de maintenir la plateforme, modérer les annonces et garantir un service de qualité à toute la communauté Vide Vaisselle.
+              </p>
+              <label className="mt-3 flex cursor-pointer items-start gap-2">
+                <input
+                  type="checkbox"
+                  required
+                  checked={acceptCommission}
+                  onChange={(e) => setAcceptCommission(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <span className="text-sm font-medium text-foreground">
+                  J'accepte de reverser 10% du prix de vente après chaque transaction.
+                </span>
+              </label>
             </div>
           </div>
 
