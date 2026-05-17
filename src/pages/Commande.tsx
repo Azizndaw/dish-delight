@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { formatPrice } from "@/data/products";
-import { ChevronLeft, CheckCircle2, Truck, Wallet, MapPin, MessageCircle, ShoppingBag, ArrowRight, Printer, Bike } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Truck, Wallet, MapPin, MessageCircle, ShoppingBag, ArrowRight, Printer, Bike, Info } from "lucide-react";
 
 type DeliveryMethod = "yango" | "tiaktiak";
 
