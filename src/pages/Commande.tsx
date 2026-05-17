@@ -4,9 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { formatPrice, deliveryZones } from "@/data/products";
-import { ChevronLeft, CheckCircle2, Truck, Wallet, MapPin, MessageCircle, ShoppingBag, ArrowRight, Printer } from "lucide-react";
+import { formatPrice } from "@/data/products";
+import { ChevronLeft, CheckCircle2, Truck, Wallet, MapPin, MessageCircle, ShoppingBag, ArrowRight, Printer, Bike, HandCoins, Info } from "lucide-react";
+
+type DeliveryMethod = "yango" | "tiaktiak" | "pickup";
+
+const DELIVERY_LABELS: Record<DeliveryMethod, string> = {
+  yango: "Yango",
+  tiaktiak: "Tiak-Tiak",
+  pickup: "Remise en main propre",
+};
 
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
