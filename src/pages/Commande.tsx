@@ -159,7 +159,7 @@ const Commande = () => {
                 </div>
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>Frais de livraison</span>
-                  <span className="italic">{deliveryMethod === "pickup" ? "Gratuit" : "Payé au livreur"}</span>
+                  <span className="italic">Payé au livreur</span>
                 </div>
                 <Separator className="bg-border/50" />
                 <div className="flex justify-between items-center pt-1">
