@@ -278,36 +278,45 @@ const Commande = () => {
             <div className="space-y-6 rounded-2xl border border-border bg-card p-6">
               <h2 className="flex items-center gap-2 text-lg font-semibold border-b border-border pb-4">
                 <Truck className="h-5 w-5 text-primary" />
-                Livraison (Tiak-Tiak)
+                Mode de livraison
               </h2>
-              <div className="space-y-4 pt-2">
-                <div className="space-y-2">
-                  <Label htmlFor="zone">Zone de livraison</Label>
-                  <Select onValueChange={setSelectedZone} required>
-                    <SelectTrigger className="h-11">
-                      <SelectValue placeholder="Choisir votre quartier/zone" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {deliveryZones.map((zone) => (
-                        <SelectItem key={zone.id} value={zone.id}>
-                          {zone.name} ({formatPrice(zone.price)})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {selectedZone && (
-                  <div className="flex items-center space-x-3 rounded-lg border border-border p-4 bg-muted/30">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                      <Truck className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="font-medium">Frais de livraison : {formatPrice(deliveryFee)}</p>
-                      <p className="text-xs text-muted-foreground">Livraison rapide par Tiak-Tiak.</p>
-                    </div>
-                  </div>
-                )}
+              <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 flex gap-2 text-xs text-muted-foreground">
+                <Info className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                <p>
+                  Vide Vaisselle met en relation particuliers. Le <strong className="text-foreground">frais de livraison</strong> est
+                  payé directement au livreur (Yango/Tiak-Tiak) selon la distance entre le vendeur et vous.
+                  Si vous êtes proches, choisissez la remise en main propre.
+                </p>
               </div>
+              <RadioGroup value={deliveryMethod} onValueChange={(v) => setDeliveryMethod(v as DeliveryMethod)} className="grid gap-3 pt-1">
+                <label htmlFor="d-yango" className={`flex items-center gap-3 rounded-lg border p-4 cursor-pointer transition-colors ${deliveryMethod === "yango" ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"}`}>
+                  <RadioGroupItem value="yango" id="d-yango" />
+                  <Bike className="h-5 w-5 text-primary" />
+                  <div className="flex-1">
+                    <p className="font-medium">Livraison Yango</p>
+                    <p className="text-xs text-muted-foreground">Frais à régler au livreur. Estimé selon la distance.</p>
+                  </div>
+                  <span className="text-xs font-semibold text-primary">À déterminer</span>
+                </label>
+                <label htmlFor="d-tiak" className={`flex items-center gap-3 rounded-lg border p-4 cursor-pointer transition-colors ${deliveryMethod === "tiaktiak" ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"}`}>
+                  <RadioGroupItem value="tiaktiak" id="d-tiak" />
+                  <Truck className="h-5 w-5 text-primary" />
+                  <div className="flex-1">
+                    <p className="font-medium">Livraison Tiak-Tiak</p>
+                    <p className="text-xs text-muted-foreground">Frais à régler au livreur lors de la réception.</p>
+                  </div>
+                  <span className="text-xs font-semibold text-primary">À déterminer</span>
+                </label>
+                <label htmlFor="d-pickup" className={`flex items-center gap-3 rounded-lg border p-4 cursor-pointer transition-colors ${deliveryMethod === "pickup" ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"}`}>
+                  <RadioGroupItem value="pickup" id="d-pickup" />
+                  <HandCoins className="h-5 w-5 text-primary" />
+                  <div className="flex-1">
+                    <p className="font-medium">Remise en main propre</p>
+                    <p className="text-xs text-muted-foreground">Vous convenez d'un point de rendez-vous avec le vendeur.</p>
+                  </div>
+                  <span className="text-xs font-semibold text-primary">Gratuit</span>
+                </label>
+              </RadioGroup>
             </div>
 
             <Button type="submit" variant="hero" className="w-full h-14 text-lg font-bold" disabled={isSubmitting}>
