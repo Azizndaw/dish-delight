@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Users, Package, DollarSign, Trash2, ShoppingBag, Clock, Truck, CheckCircle2,
   Search, Eye, EyeOff, Sparkles, AlertTriangle, MapPin, Phone,
-  Calendar, BarChart3, Ban, TrendingUp, Globe, Wallet
+  Calendar, BarChart3, Ban, TrendingUp, Globe, Wallet, MessageCircle
 } from "lucide-react";
 import { formatPrice } from "@/data/products";
 import { useAuth } from "@/context/AuthContext";
