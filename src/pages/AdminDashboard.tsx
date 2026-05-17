@@ -138,18 +138,47 @@ const AdminDashboard = () => {
     enabled: !!isAdmin,
   });
 
-  // Fetch Site Visits
+  // Fetch Site Visits (paginated to bypass 1000-row default limit)
   const { data: rawVisits = [], isLoading: isLoadingVisits } = useQuery<Visit[]>({
     queryKey: ["admin-visits"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("site_visits")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data as Visit[];
+      const pageSize = 1000;
+      let all: Visit[] = [];
+      let from = 0;
+      // Only fetch last 30 days to keep things light but accurate
+      const since = new Date();
+      since.setDate(since.getDate() - 30);
+      while (true) {
+        const { data, error } = await supabase
+          .from("site_visits")
+          .select("*")
+          .gte("created_at", since.toISOString())
+          .order("created_at", { ascending: false })
+          .range(from, from + pageSize - 1);
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        all = all.concat(data as Visit[]);
+        if (data.length < pageSize) break;
+        from += pageSize;
+      }
+      return all;
     },
     enabled: !!isAdmin,
+    refetchInterval: 30000,
+  });
+
+  // True total visits count (not capped by 1000-row limit)
+  const { data: totalVisitsCount = 0 } = useQuery<number>({
+    queryKey: ["admin-visits-total-count"],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("site_visits")
+        .select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: !!isAdmin,
+    refetchInterval: 30000,
   });
 
   // Filtered data
@@ -340,7 +369,7 @@ const AdminDashboard = () => {
   const estimatedBoostRevenue = boostedProducts * BOOST_PRICE;
 
   // Analytics Helpers
-  const totalVisits = rawVisits.length;
+  const totalVisits = totalVisitsCount;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
