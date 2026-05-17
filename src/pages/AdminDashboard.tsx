@@ -13,10 +13,6 @@ import {
   Search, Eye, EyeOff, Sparkles, AlertTriangle, MapPin, Phone,
   Calendar, BarChart3, Ban, TrendingUp, Globe, Wallet
 } from "lucide-react";
-import {
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  AreaChart, Area
-} from 'recharts';
 import { formatPrice } from "@/data/products";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -230,6 +226,11 @@ const AdminDashboard = () => {
       visites: counts[day] || 0
     }));
   }, [rawVisits]);
+
+  const maxDailyVisits = useMemo(
+    () => Math.max(...visitsByDay.map((day) => day.visites), 1),
+    [visitsByDay]
+  );
 
   // Top Pages
   const topPages = useMemo(() => {
@@ -492,25 +493,28 @@ const AdminDashboard = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-[250px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={visitsByDay}>
-                        <defs>
-                          <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
-                            <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} />
-                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} />
-                        <Tooltip
-                          contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                          cursor={{ stroke: '#10B981', strokeWidth: 2 }}
-                        />
-                        <Area type="monotone" dataKey="visites" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorVisits)" />
-                      </AreaChart>
-                    </ResponsiveContainer>
+                  <div className="h-[250px] w-full rounded-xl border bg-muted/20 px-3 py-4">
+                    <div className="flex h-full items-end justify-between gap-2">
+                      {visitsByDay.map((day) => {
+                        const barHeight = `${Math.max((day.visites / maxDailyVisits) * 100, day.visites > 0 ? 12 : 4)}%`;
+
+                        return (
+                          <div key={day.name} className="flex h-full min-w-0 flex-1 flex-col justify-end gap-2">
+                            <div className="flex min-h-6 items-end justify-center text-xs font-semibold text-foreground">
+                              {day.visites}
+                            </div>
+                            <div className="relative flex-1 rounded-md bg-muted/60">
+                              <div
+                                className="absolute inset-x-0 bottom-0 rounded-md bg-primary/80 transition-all"
+                                style={{ height: barHeight }}
+                                title={`${day.name} : ${day.visites} visite${day.visites > 1 ? "s" : ""}`}
+                              />
+                            </div>
+                            <div className="text-center text-xs text-muted-foreground">{day.name}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
