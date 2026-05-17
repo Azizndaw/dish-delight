@@ -39,7 +39,7 @@ const Commande = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [successData, setSuccessData] = useState<{ order: Order, items: { title: string, price: number, quantity: number }[] } | null>(null);
+  const [successData, setSuccessData] = useState<{ order: Order, items: { title: string, price: number, quantity: number }[], sellers: SellerInfo[] } | null>(null);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
