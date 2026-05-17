@@ -92,7 +92,7 @@ const Commande = () => {
   };
 
   if (isSuccess && successData) {
-    const { order, items, sellers } = successData;
+    const { order, items } = successData;
     const whatsappMessage = `Bonjour, je viens de passer une commande sur Vide Vaisselle !%0A%0A🆔 *Commande:* %23${order.id.slice(0, 8)}%0A👤 *Client:* ${order.full_name}%0A📍 *Adresse:* ${order.address}%0A💰 *Total:* ${formatPrice(order.total_price)}%0A%0A*Articles:*%0A${items.map(i => `%E2%80%A2 ${i.title} (x${i.quantity})`).join('%0A')}`;
     // TODO: Replace with actual admin WhatsApp number
     const cleanPhone = order.phone.replace(/[^\d]/g, "");
