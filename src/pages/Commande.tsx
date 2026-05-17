@@ -65,9 +65,9 @@ const Commande = () => {
         user_id: user?.id || null,
         full_name: fullName,
         phone,
-        address,
+        address: `${address} — Livraison: ${DELIVERY_LABELS[deliveryMethod as DeliveryMethod]}`,
         payment_method: paymentMethod,
-        total_price: totalPrice + deliveryFee,
+        total_price: totalPrice,
       }).select().single();
 
       if (orderError) throw orderError;
