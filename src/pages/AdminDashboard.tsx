@@ -167,6 +167,20 @@ const AdminDashboard = () => {
     refetchInterval: 30000,
   });
 
+  // True total visits count (not capped by 1000-row limit)
+  const { data: totalVisitsCount = 0 } = useQuery<number>({
+    queryKey: ["admin-visits-total-count"],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("site_visits")
+        .select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: !!isAdmin,
+    refetchInterval: 30000,
+  });
+
   // Filtered data
   const filteredProducts = useMemo(() => {
     let filtered = rawProducts;
