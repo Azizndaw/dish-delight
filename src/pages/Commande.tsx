@@ -5,14 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { formatPrice } from "@/data/products";
-import { ChevronLeft, CheckCircle2, Truck, Wallet, MapPin, MessageCircle, ShoppingBag, ArrowRight, Printer, Bike, HandCoins, Info } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Truck, Wallet, MapPin, MessageCircle, ShoppingBag, ArrowRight, Printer, Bike } from "lucide-react";
 
-type DeliveryMethod = "yango" | "tiaktiak" | "pickup";
+type DeliveryMethod = "yango" | "tiaktiak";
 
 const DELIVERY_LABELS: Record<DeliveryMethod, string> = {
   yango: "Yango",
   tiaktiak: "Tiak-Tiak",
-  pickup: "Remise en main propre",
 };
 
 import { Link, useNavigate } from "react-router-dom";
