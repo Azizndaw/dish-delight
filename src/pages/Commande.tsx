@@ -7,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatPrice, deliveryZones } from "@/data/products";
 import { ChevronLeft, CheckCircle2, Truck, Wallet, MapPin, MessageCircle, ShoppingBag, ArrowRight, Printer } from "lucide-react";
+
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
