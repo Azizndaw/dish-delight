@@ -54,6 +54,14 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <img
             src={product.image}
             alt={product.title}
+            loading="lazy"
+            decoding="async"
+            onError={(e) => {
+              const img = e.currentTarget;
+              if (img.src !== window.location.origin + "/placeholder.svg") {
+                img.src = "/placeholder.svg";
+              }
+            }}
             className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-110 ${isOutOfStock ? "grayscale opacity-70" : ""}`}
           />
           {isOutOfStock && (
