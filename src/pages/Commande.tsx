@@ -15,7 +15,6 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { PhoneInput } from "@/components/ui/phone-input";
-import { createNotification, notifyAdmins } from "@/hooks/useNotifications";
 
 interface Order {
   id: string;
@@ -24,6 +23,14 @@ interface Order {
   address: string;
   payment_method: string;
   total_price: number;
+}
+
+interface SellerInfo {
+  productId: string;
+  productTitle: string;
+  sellerName: string | null;
+  sellerPhone: string | null;
+  sellerWhatsapp: string | null;
 }
 
 const Commande = () => {
