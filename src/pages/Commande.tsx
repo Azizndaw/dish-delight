@@ -5,14 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { formatPrice } from "@/data/products";
-import { ChevronLeft, CheckCircle2, Truck, Wallet, MapPin, MessageCircle, ShoppingBag, ArrowRight, Printer, Bike, HandCoins, Info } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Truck, Wallet, MapPin, MessageCircle, ShoppingBag, ArrowRight, Printer, Bike } from "lucide-react";
 
-type DeliveryMethod = "yango" | "tiaktiak" | "pickup";
+type DeliveryMethod = "yango" | "tiaktiak";
 
 const DELIVERY_LABELS: Record<DeliveryMethod, string> = {
   yango: "Yango",
   tiaktiak: "Tiak-Tiak",
-  pickup: "Remise en main propre",
 };
 
 import { Link, useNavigate } from "react-router-dom";
@@ -160,7 +159,7 @@ const Commande = () => {
                 </div>
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>Frais de livraison</span>
-                  <span className="italic">{deliveryMethod === "pickup" ? "Gratuit" : "Payé au livreur"}</span>
+                  <span className="italic">Payé au livreur</span>
                 </div>
                 <Separator className="bg-border/50" />
                 <div className="flex justify-between items-center pt-1">
@@ -280,14 +279,6 @@ const Commande = () => {
                 <Truck className="h-5 w-5 text-primary" />
                 Mode de livraison
               </h2>
-              <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 flex gap-2 text-xs text-muted-foreground">
-                <Info className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                <p>
-                  Vide Vaisselle met en relation particuliers. Le <strong className="text-foreground">frais de livraison</strong> est
-                  payé directement au livreur (Yango/Tiak-Tiak) selon la distance entre le vendeur et vous.
-                  Si vous êtes proches, choisissez la remise en main propre.
-                </p>
-              </div>
               <RadioGroup value={deliveryMethod} onValueChange={(v) => setDeliveryMethod(v as DeliveryMethod)} className="grid gap-3 pt-1">
                 <label htmlFor="d-yango" className={`flex items-center gap-3 rounded-lg border p-4 cursor-pointer transition-colors ${deliveryMethod === "yango" ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"}`}>
                   <RadioGroupItem value="yango" id="d-yango" />
@@ -306,15 +297,6 @@ const Commande = () => {
                     <p className="text-xs text-muted-foreground">Frais à régler au livreur lors de la réception.</p>
                   </div>
                   <span className="text-xs font-semibold text-primary">À déterminer</span>
-                </label>
-                <label htmlFor="d-pickup" className={`flex items-center gap-3 rounded-lg border p-4 cursor-pointer transition-colors ${deliveryMethod === "pickup" ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"}`}>
-                  <RadioGroupItem value="pickup" id="d-pickup" />
-                  <HandCoins className="h-5 w-5 text-primary" />
-                  <div className="flex-1">
-                    <p className="font-medium">Remise en main propre</p>
-                    <p className="text-xs text-muted-foreground">Vous convenez d'un point de rendez-vous avec le vendeur.</p>
-                  </div>
-                  <span className="text-xs font-semibold text-primary">Gratuit</span>
                 </label>
               </RadioGroup>
             </div>
@@ -343,7 +325,7 @@ const Commande = () => {
               </div>
               <div className="space-y-3 pt-6 border-t border-border">
                 <div className="flex justify-between text-muted-foreground"><span>Sous-total</span><span>{formatPrice(totalPrice)}</span></div>
-                <div className="flex justify-between text-muted-foreground"><span>Livraison</span><span className="text-xs italic">{deliveryMethod === "pickup" ? "Gratuit" : deliveryMethod ? "Payé au livreur" : "Choisir un mode"}</span></div>
+                <div className="flex justify-between text-muted-foreground"><span>Livraison</span><span className="text-xs italic">{deliveryMethod ? "Payé au livreur" : "Choisir un mode"}</span></div>
                 <div className="flex justify-between font-bold text-xl pt-2"><span>Total articles</span><span className="text-primary">{formatPrice(totalPrice)}</span></div>
               </div>
             </div>
