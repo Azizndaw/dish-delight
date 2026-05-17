@@ -145,40 +145,6 @@ const Commande = () => {
                 ))}
               </div>
 
-              {sellers.length > 0 && (
-                <>
-                  <Separator />
-                  <div>
-                    <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-widest mb-3">Contacter le(s) vendeur(s)</p>
-                    <div className="space-y-2">
-                      {sellers.map((s) => {
-                        const wa = (s.sellerWhatsapp || "").replace(/[^\d]/g, "");
-                        const waUrl = wa
-                          ? `https://wa.me/${wa.startsWith("221") ? wa : "221" + wa}?text=${encodeURIComponent(`Bonjour, je viens de commander "${s.productTitle}" sur Vide Vaisselle (commande #${order.id.slice(0, 8)}).`)}`
-                          : null;
-                        return (
-                          <div key={s.productId} className="flex items-center justify-between gap-3 rounded-lg border border-border p-3 text-sm">
-                            <div className="min-w-0 flex-1">
-                              <p className="font-medium truncate">{s.productTitle}</p>
-                              <p className="text-xs text-muted-foreground">
-                                {s.sellerName || "Vendeur"}{s.sellerPhone ? ` · ${s.sellerPhone}` : ""}
-                              </p>
-                            </div>
-                            {waUrl && (
-                              <a href={waUrl} target="_blank" rel="noopener noreferrer">
-                                <Button size="sm" className="bg-[#25D366] hover:bg-[#128C7E] text-white gap-1.5 h-8">
-                                  <MessageCircle className="h-3.5 w-3.5" />
-                                  WhatsApp
-                                </Button>
-                              </a>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </>
-              )}
 
               <div className="bg-muted/30 rounded-xl p-4 space-y-2">
                 <div className="flex justify-between text-xs text-muted-foreground">
