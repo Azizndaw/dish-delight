@@ -325,7 +325,7 @@ const Commande = () => {
               </div>
               <div className="space-y-3 pt-6 border-t border-border">
                 <div className="flex justify-between text-muted-foreground"><span>Sous-total</span><span>{formatPrice(totalPrice)}</span></div>
-                <div className="flex justify-between text-muted-foreground"><span>Livraison</span><span className="text-xs italic">{deliveryMethod === "pickup" ? "Gratuit" : deliveryMethod ? "Payé au livreur" : "Choisir un mode"}</span></div>
+                <div className="flex justify-between text-muted-foreground"><span>Livraison</span><span className="text-xs italic">{deliveryMethod ? "Payé au livreur" : "Choisir un mode"}</span></div>
                 <div className="flex justify-between font-bold text-xl pt-2"><span>Total articles</span><span className="text-primary">{formatPrice(totalPrice)}</span></div>
               </div>
             </div>
