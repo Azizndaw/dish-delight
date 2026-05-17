@@ -128,6 +128,8 @@ const DetailsProduit = () => {
                 <img
                   src={product.images && product.images.length > 0 ? product.images[currentImageIndex] : product.image}
                   alt={product.title}
+                  decoding="async"
+                  onError={(e) => { e.currentTarget.src = "/placeholder.svg"; }}
                   className="h-full w-full object-cover animate-fade-in"
                 />
               </div>
