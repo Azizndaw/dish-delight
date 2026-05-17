@@ -10,6 +10,7 @@ import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import imageCompression from "browser-image-compression";
 
 const Vendre = () => {
   const navigate = useNavigate();
@@ -69,9 +70,17 @@ const Vendre = () => {
       const imageUrls: string[] = [];
 
       for (const file of imageFiles) {
-        const ext = file.name.split(".").pop();
+        // Compresser l'image avant l'upload
+        const options = {
+          maxSizeMB: 0.5, // 500 KB max
+          maxWidthOrHeight: 1200,
+          useWebWorker: true,
+        };
+        const compressedFile = await imageCompression(file, options);
+
+        const ext = file.name.split(".").pop() || "jpg";
         const path = `${user.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
-        const { error: uploadError } = await supabase.storage.from("product-images").upload(path, file);
+        const { error: uploadError } = await supabase.storage.from("product-images").upload(path, compressedFile);
         if (uploadError) throw uploadError;
         const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(path);
         imageUrls.push(urlData.publicUrl);

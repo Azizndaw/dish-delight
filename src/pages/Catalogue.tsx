@@ -89,7 +89,7 @@ const Catalogue = () => {
             </Select>
             <Button variant="outline" className="gap-2" onClick={() => setShowFilters(!showFilters)}>
               <SlidersHorizontal className="h-4 w-4" />
-              Filtres
+              <span>Filtres</span>
             </Button>
           </div>
         </div>
@@ -147,7 +147,7 @@ const Catalogue = () => {
               </div>
             </div>
             <div className="mt-6 flex gap-3">
-              <Button variant="ghost" onClick={resetFilters}>Réinitialiser</Button>
+              <Button variant="ghost" onClick={resetFilters}><span>Réinitialiser</span></Button>
             </div>
           </div>
         )}
@@ -155,11 +155,11 @@ const Catalogue = () => {
         {/* Category Pills */}
         <div className="mb-8 flex flex-wrap gap-2">
           <Button variant="secondary" size="sm" className={category === "all" ? "bg-primary text-primary-foreground" : ""} onClick={() => setCategory("all")}>
-            Tous
+            <span>Tous</span>
           </Button>
           {categories.slice(0, 6).map((cat) => (
             <Button key={cat.id} variant="secondary" size="sm" className={category === cat.id ? "bg-primary text-primary-foreground" : ""} onClick={() => setCategory(cat.id)}>
-              {cat.name}
+              <span>{cat.name}</span>
             </Button>
           ))}
         </div>

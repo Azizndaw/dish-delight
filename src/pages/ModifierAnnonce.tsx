@@ -12,6 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useProduct } from "@/hooks/useProducts";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import imageCompression from "browser-image-compression";
 
 const ModifierAnnonce = () => {
     const { id } = useParams();
@@ -97,9 +98,17 @@ const ModifierAnnonce = () => {
                     finalImageUrls.push(img.url);
                 } else if (img.file) {
                     const file = img.file;
-                    const ext = file.name.split(".").pop();
+                    
+                    const options = {
+                        maxSizeMB: 0.5,
+                        maxWidthOrHeight: 1200,
+                        useWebWorker: true,
+                    };
+                    const compressedFile = await imageCompression(file, options);
+
+                    const ext = file.name.split(".").pop() || "jpg";
                     const path = `${user.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
-                    const { error: uploadError } = await supabase.storage.from("product-images").upload(path, file);
+                    const { error: uploadError } = await supabase.storage.from("product-images").upload(path, compressedFile);
                     if (uploadError) throw uploadError;
                     const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(path);
                     finalImageUrls.push(urlData.publicUrl);

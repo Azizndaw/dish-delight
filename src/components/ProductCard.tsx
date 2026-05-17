@@ -67,19 +67,19 @@ const ProductCard = ({ product }: ProductCardProps) => {
           {isOutOfStock && (
             <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/40 backdrop-blur-[1px]">
               <Badge variant="destructive" className="text-xs sm:text-sm py-1 px-3 shadow-md">
-                Rupture de stock
+                <span>Rupture de stock</span>
               </Badge>
             </div>
           )}
           {product.isBoosted && (
             <Badge className="absolute left-3 top-3 z-10 bg-amber-500 text-white border-none gap-1 py-1 shadow-sm">
               <Sparkles className="h-3 w-3" />
-              À la une
+              <span>À la une</span>
             </Badge>
           )}
           {product.isLot && (
             <Badge className={`absolute left-3 ${product.isBoosted ? 'top-10' : 'top-3'} bg-primary text-primary-foreground`}>
-              Lot
+              <span>Lot</span>
             </Badge>
           )}
           <Button
@@ -106,19 +106,19 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <CardContent className="p-3 sm:p-4">
           <div className="mb-2 flex items-start justify-between gap-2">
             <h3 className="line-clamp-2 text-xs sm:text-sm font-medium text-foreground group-hover:text-primary transition-colors">
-              {product.title}
+              <span>{product.title}</span>
             </h3>
           </div>
           <p className="mb-2 font-display text-base sm:text-lg font-bold text-primary">
-            {formatPrice(product.price)}
+            <span>{formatPrice(product.price)}</span>
           </p>
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className={conditionColors[product.condition]}>
-              {product.condition}
+              <span>{product.condition}</span>
             </Badge>
             <span className="flex items-center gap-1 text-xs text-muted-foreground">
               <MapPin className="h-3 w-3" />
-              {product.location}
+              <span>{product.location}</span>
             </span>
           </div>
           <div className="mt-3 flex gap-2">
@@ -132,7 +132,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
               }}
             >
               <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
-              {isOutOfStock ? "Indisponible" : "Panier"}
+              <span>{isOutOfStock ? "Indisponible" : "Panier"}</span>
             </Button>
           </div>
         </CardContent>
