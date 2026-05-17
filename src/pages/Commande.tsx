@@ -79,36 +79,7 @@ const Commande = () => {
       // Notifications (vendeur / admins / acheteur) sont envoyées
       // automatiquement par le trigger DB `tr_order_stock_update`.
 
-      // Récupérer les coordonnées des vendeurs pour les afficher
-      const productIds = cart.map((i) => i.id).filter((id) => id.length === 36);
-      let sellers: SellerInfo[] = [];
-      if (productIds.length > 0) {
-        const { data: prods } = await supabase
-          .from("products")
-          .select("id, title, whatsapp, user_id")
-          .in("id", productIds);
-
-        if (prods && prods.length > 0) {
-          const userIds = prods.map((p) => p.user_id);
-          const { data: profs } = await supabase
-            .from("profiles")
-            .select("user_id, full_name, phone")
-            .in("user_id", userIds);
-
-          sellers = prods.map((p) => {
-            const prof = profs?.find((pr) => pr.user_id === p.user_id);
-            return {
-              productId: p.id,
-              productTitle: p.title,
-              sellerName: prof?.full_name || null,
-              sellerPhone: prof?.phone || null,
-              sellerWhatsapp: p.whatsapp || prof?.phone || null,
-            };
-          });
-        }
-      }
-
-      setSuccessData({ order, items: cart, sellers });
+      setSuccessData({ order, items: cart });
       clearCart();
       setIsSuccess(true);
       toast.success("Commande enregistrée !");
