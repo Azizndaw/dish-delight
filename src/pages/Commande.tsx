@@ -26,21 +26,13 @@ interface Order {
   total_price: number;
 }
 
-interface SellerInfo {
-  productId: string;
-  productTitle: string;
-  sellerName: string | null;
-  sellerPhone: string | null;
-  sellerWhatsapp: string | null;
-}
-
 const Commande = () => {
   const { cart, totalPrice, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [successData, setSuccessData] = useState<{ order: Order, items: { title: string, price: number, quantity: number }[], sellers: SellerInfo[] } | null>(null);
+  const [successData, setSuccessData] = useState<{ order: Order, items: { title: string, price: number, quantity: number }[] } | null>(null);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
