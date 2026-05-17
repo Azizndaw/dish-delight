@@ -61,7 +61,7 @@ const Catalogue = () => {
       <div className="container py-8 md:py-12">
         <div className="mb-8">
           <h1 className="font-display text-3xl font-bold text-foreground md:text-4xl">Catalogue</h1>
-          <p className="mt-2 text-muted-foreground">{sorted.length} articles disponibles</p>
+          <p className="mt-2 text-muted-foreground"><span>{sorted.length}</span> articles disponibles</p>
         </div>
 
         {/* Search and Sort */}
@@ -142,7 +142,7 @@ const Catalogue = () => {
                 </Select>
               </div>
               <div className="space-y-4">
-                <label className="text-sm font-medium text-foreground">Prix max : {maxPrice.toLocaleString()} FCFA</label>
+                <label className="text-sm font-medium text-foreground">Prix max : <span>{maxPrice.toLocaleString()}</span> FCFA</label>
                 <Slider value={[maxPrice]} onValueChange={([v]) => setMaxPrice(v)} max={50000} step={500} className="mt-2" />
               </div>
             </div>
@@ -165,27 +165,29 @@ const Catalogue = () => {
         </div>
 
         {/* Products Grid */}
-        {isLoading ? (
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="space-y-4">
-                <Skeleton className="aspect-[4/5] w-full rounded-2xl" />
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
+        <div className="w-full">
+          {isLoading ? (
+            <div key="skeleton-grid" className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="space-y-4">
+                  <Skeleton className="aspect-[4/5] w-full rounded-2xl" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : sorted.length === 0 ? (
-          <div className="py-20 text-center text-muted-foreground">Aucun article trouvé.</div>
-        ) : (
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6">
-            {sorted.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          ) : sorted.length === 0 ? (
+            <div key="empty-state" className="py-20 text-center text-muted-foreground">Aucun article trouvé.</div>
+          ) : (
+            <div key="products-grid" className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6">
+              {sorted.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </Layout>
   );
