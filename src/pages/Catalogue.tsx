@@ -7,7 +7,7 @@ import { Search, SlidersHorizontal, X } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { categories, senegalRegions } from "@/data/products";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
 
 const Catalogue = () => {
@@ -19,22 +19,34 @@ const Catalogue = () => {
   const [maxPrice, setMaxPrice] = useState(50000);
   const [sortBy, setSortBy] = useState("recent");
 
-  const { data: products = [], isLoading } = useProducts({ category, search, location, condition, maxPrice });
+  // Fetch all active products once (cache shared with the home page)
+  const { data: products = [], isLoading } = useProducts({ showInactive: false });
 
-  const sorted = [...products].sort((a, b) => {
-    // 1. Boosted items ALWAYS come first
-    if (a.isBoosted && !b.isBoosted) return -1;
-    if (!a.isBoosted && b.isBoosted) return 1;
+  // Apply all filters client-side for instant interactions
+  const sorted = useMemo(() => {
+    const s = search.trim().toLowerCase();
+    const filtered = products.filter((p) => {
+      if (category !== "all" && p.category !== category) return false;
+      if (condition !== "all" && p.condition !== condition) return false;
+      if (location !== "all" && !p.location.toLowerCase().includes(location.toLowerCase())) return false;
+      if (maxPrice < 50000 && p.price > maxPrice) return false;
+      if (s) {
+        const hay = `${p.title} ${p.description ?? ""} ${p.category}`.toLowerCase();
+        if (!hay.includes(s)) return false;
+      }
+      return true;
+    });
 
-    // 2. Secondary sort within the same priority group
-    if (sortBy === "price-asc") return a.price - b.price;
-    if (sortBy === "price-desc") return b.price - a.price;
-
-    // Default: Sort by date (most recent first)
-    const dateA = new Date(a.createdAt || 0).getTime();
-    const dateB = new Date(b.createdAt || 0).getTime();
-    return dateB - dateA;
-  });
+    return filtered.sort((a, b) => {
+      if (a.isBoosted && !b.isBoosted) return -1;
+      if (!a.isBoosted && b.isBoosted) return 1;
+      if (sortBy === "price-asc") return a.price - b.price;
+      if (sortBy === "price-desc") return b.price - a.price;
+      const dateA = new Date(a.createdAt || 0).getTime();
+      const dateB = new Date(b.createdAt || 0).getTime();
+      return dateB - dateA;
+    });
+  }, [products, category, condition, location, maxPrice, search, sortBy]);
 
   const resetFilters = () => {
     setCategory("all");
