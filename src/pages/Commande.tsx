@@ -215,6 +215,8 @@ const Commande = () => {
                   </div>
                 </>
               )}
+
+              <div className="bg-muted/30 rounded-xl p-4 space-y-2">
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>Sous-total</span>
                   <span>{formatPrice(items.reduce((acc, i) => acc + (i.price * i.quantity), 0))}</span>
