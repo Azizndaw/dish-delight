@@ -369,7 +369,7 @@ const AdminDashboard = () => {
   const estimatedBoostRevenue = boostedProducts * BOOST_PRICE;
 
   // Analytics Helpers
-  const totalVisits = rawVisits.length;
+  const totalVisits = totalVisitsCount;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
