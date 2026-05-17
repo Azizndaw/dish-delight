@@ -44,14 +44,14 @@ const Commande = () => {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cod");
-  const [selectedZone, setSelectedZone] = useState("");
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod | "">("");
 
-  const deliveryFee = deliveryZones.find(z => z.id === selectedZone)?.price || 0;
+  const deliveryFee = 0; // Frais déterminés à la livraison (Yango/Tiak-Tiak) ou gratuit (remise en main propre)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedZone) {
-      toast.error("Veuillez choisir une zone de livraison.");
+    if (!deliveryMethod) {
+      toast.error("Veuillez choisir un mode de livraison.");
       return;
     }
 
