@@ -134,6 +134,48 @@ const AdminDashboard = () => {
     enabled: !!isAdmin,
   });
 
+  // Fetch sellers info for the selected order
+  const { data: orderSellers = [] } = useQuery<{
+    productId: string;
+    productTitle: string;
+    sellerName: string | null;
+    sellerPhone: string | null;
+    sellerWhatsapp: string | null;
+  }[]>({
+    queryKey: ["admin-order-sellers", selectedOrder?.id],
+    queryFn: async () => {
+      if (!selectedOrder?.order_items?.length) return [];
+      const productIds = selectedOrder.order_items
+        .map((it) => it.product_id)
+        .filter((id): id is string => !!id);
+      if (productIds.length === 0) return [];
+
+      const { data: prods } = await supabase
+        .from("products")
+        .select("id, title, whatsapp, user_id")
+        .in("id", productIds);
+      if (!prods || prods.length === 0) return [];
+
+      const userIds = prods.map((p) => p.user_id);
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, phone")
+        .in("user_id", userIds);
+
+      return prods.map((p) => {
+        const prof = profs?.find((pr) => pr.user_id === p.user_id);
+        return {
+          productId: p.id,
+          productTitle: p.title,
+          sellerName: prof?.full_name || null,
+          sellerPhone: prof?.phone || null,
+          sellerWhatsapp: p.whatsapp || prof?.phone || null,
+        };
+      });
+    },
+    enabled: !!isAdmin && !!selectedOrder,
+  });
+
   // Fetch Site Visits (paginated to bypass 1000-row default limit)
   const { data: rawVisits = [], isLoading: isLoadingVisits } = useQuery<Visit[]>({
     queryKey: ["admin-visits"],
