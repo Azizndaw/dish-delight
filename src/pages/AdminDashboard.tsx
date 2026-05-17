@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Users, Package, DollarSign, Trash2, ShoppingBag, Clock, Truck, CheckCircle2,
   Search, Eye, EyeOff, Sparkles, AlertTriangle, MapPin, Phone,
-  Calendar, BarChart3, Ban, TrendingUp, Globe, Wallet
+  Calendar, BarChart3, Ban, TrendingUp, Globe, Wallet, MessageCircle
 } from "lucide-react";
 import { formatPrice } from "@/data/products";
 import { useAuth } from "@/context/AuthContext";
@@ -132,6 +132,48 @@ const AdminDashboard = () => {
       return data as Profile[];
     },
     enabled: !!isAdmin,
+  });
+
+  // Fetch sellers info for the selected order
+  const { data: orderSellers = [] } = useQuery<{
+    productId: string;
+    productTitle: string;
+    sellerName: string | null;
+    sellerPhone: string | null;
+    sellerWhatsapp: string | null;
+  }[]>({
+    queryKey: ["admin-order-sellers", selectedOrder?.id],
+    queryFn: async () => {
+      if (!selectedOrder?.order_items?.length) return [];
+      const productIds = selectedOrder.order_items
+        .map((it) => it.product_id)
+        .filter((id): id is string => !!id);
+      if (productIds.length === 0) return [];
+
+      const { data: prods } = await supabase
+        .from("products")
+        .select("id, title, whatsapp, user_id")
+        .in("id", productIds);
+      if (!prods || prods.length === 0) return [];
+
+      const userIds = prods.map((p) => p.user_id);
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, phone")
+        .in("user_id", userIds);
+
+      return prods.map((p) => {
+        const prof = profs?.find((pr) => pr.user_id === p.user_id);
+        return {
+          productId: p.id,
+          productTitle: p.title,
+          sellerName: prof?.full_name || null,
+          sellerPhone: prof?.phone || null,
+          sellerWhatsapp: p.whatsapp || prof?.phone || null,
+        };
+      });
+    },
+    enabled: !!isAdmin && !!selectedOrder,
   });
 
   // Fetch Site Visits (paginated to bypass 1000-row default limit)
@@ -834,6 +876,38 @@ const AdminDashboard = () => {
                   <p className="text-sm text-muted-foreground">Aucun article détaillé.</p>
                 )}
               </div>
+
+              {orderSellers.length > 0 && (
+                <div className="border-t pt-4">
+                  <p className="text-xs text-muted-foreground uppercase font-medium mb-2">Coordonnées du/des vendeur(s)</p>
+                  <div className="space-y-2">
+                    {orderSellers.map((s) => {
+                      const wa = (s.sellerWhatsapp || "").replace(/[^\d]/g, "");
+                      const waUrl = wa
+                        ? `https://wa.me/${wa.startsWith("221") ? wa : "221" + wa}?text=${encodeURIComponent(`Bonjour, une commande vient d'être passée pour votre article "${s.productTitle}" (commande #${selectedOrder.id.slice(0, 8)}) sur Vide Vaisselle.`)}`
+                        : null;
+                      return (
+                        <div key={s.productId} className="flex items-center justify-between gap-3 rounded-lg border border-border p-3 text-sm">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium truncate">{s.productTitle}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {s.sellerName || "Vendeur"}{s.sellerPhone ? ` · ${s.sellerPhone}` : ""}
+                            </p>
+                          </div>
+                          {waUrl && (
+                            <a href={waUrl} target="_blank" rel="noopener noreferrer">
+                              <Button size="sm" className="bg-[#25D366] hover:bg-[#128C7E] text-white gap-1.5 h-8">
+                                <MessageCircle className="h-3.5 w-3.5" />
+                                WhatsApp
+                              </Button>
+                            </a>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               <div className="border-t pt-4 flex justify-between items-center">
                 <span className="font-medium">Total</span>
