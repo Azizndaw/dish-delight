@@ -15,7 +15,6 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { PhoneInput } from "@/components/ui/phone-input";
-import { createNotification, notifyAdmins } from "@/hooks/useNotifications";
 
 interface Order {
   id: string;
@@ -26,13 +25,21 @@ interface Order {
   total_price: number;
 }
 
+interface SellerInfo {
+  productId: string;
+  productTitle: string;
+  sellerName: string | null;
+  sellerPhone: string | null;
+  sellerWhatsapp: string | null;
+}
+
 const Commande = () => {
   const { cart, totalPrice, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [successData, setSuccessData] = useState<{ order: Order, items: { title: string, price: number, quantity: number }[] } | null>(null);
+  const [successData, setSuccessData] = useState<{ order: Order, items: { title: string, price: number, quantity: number }[], sellers: SellerInfo[] } | null>(null);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -76,33 +83,39 @@ const Commande = () => {
       const { error: itemsError } = await supabase.from("order_items").insert(items);
       if (itemsError) throw itemsError;
 
-      // --- Notifications & Stock Update (Now handled by DB triggers) ---
-      // The tr_order_stock_update trigger on order_items handles:
-      // 1. Stock decrement
-      // 2. Product deactivation if stock is 0
-      // 3. Seller notifications
-      
-      try {
-        // Notify Admins
-        await notifyAdmins(
-          "new_order_admin",
-          `📦 Nouvelle commande #${order.id.slice(0, 8)} de ${fullName} pour ${formatPrice(totalPrice + deliveryFee)}`,
-          order.id
-        );
+      // Notifications (vendeur / admins / acheteur) sont envoyées
+      // automatiquement par le trigger DB `tr_order_stock_update`.
 
-        // Notify Buyer (only if logged in)
-        if (user) {
-          await createNotification(
-            user.id,
-            "order_placed",
-            `✅ Votre commande de ${formatPrice(totalPrice + deliveryFee)} a été enregistrée. Nous vous tiendrons informé de son avancement.`,
-            order.id
-          );
+      // Récupérer les coordonnées des vendeurs pour les afficher
+      const productIds = cart.map((i) => i.id).filter((id) => id.length === 36);
+      let sellers: SellerInfo[] = [];
+      if (productIds.length > 0) {
+        const { data: prods } = await supabase
+          .from("products")
+          .select("id, title, whatsapp, user_id")
+          .in("id", productIds);
+
+        if (prods && prods.length > 0) {
+          const userIds = prods.map((p) => p.user_id);
+          const { data: profs } = await supabase
+            .from("profiles")
+            .select("user_id, full_name, phone")
+            .in("user_id", userIds);
+
+          sellers = prods.map((p) => {
+            const prof = profs?.find((pr) => pr.user_id === p.user_id);
+            return {
+              productId: p.id,
+              productTitle: p.title,
+              sellerName: prof?.full_name || null,
+              sellerPhone: prof?.phone || null,
+              sellerWhatsapp: p.whatsapp || prof?.phone || null,
+            };
+          });
         }
-      } catch (notifyErr) {
-        console.error("Error sending admin/buyer notifications:", notifyErr);
       }
-      setSuccessData({ order, items: cart });
+
+      setSuccessData({ order, items: cart, sellers });
       clearCart();
       setIsSuccess(true);
       toast.success("Commande enregistrée !");
@@ -115,7 +128,7 @@ const Commande = () => {
   };
 
   if (isSuccess && successData) {
-    const { order, items } = successData;
+    const { order, items, sellers } = successData;
     const whatsappMessage = `Bonjour, je viens de passer une commande sur Vide Vaisselle !%0A%0A🆔 *Commande:* %23${order.id.slice(0, 8)}%0A👤 *Client:* ${order.full_name}%0A📍 *Adresse:* ${order.address}%0A💰 *Total:* ${formatPrice(order.total_price)}%0A%0A*Articles:*%0A${items.map(i => `%E2%80%A2 ${i.title} (x${i.quantity})`).join('%0A')}`;
     // TODO: Replace with actual admin WhatsApp number
     const cleanPhone = order.phone.replace(/[^\d]/g, "");
@@ -167,6 +180,41 @@ const Commande = () => {
                   </div>
                 ))}
               </div>
+
+              {sellers.length > 0 && (
+                <>
+                  <Separator />
+                  <div>
+                    <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-widest mb-3">Contacter le(s) vendeur(s)</p>
+                    <div className="space-y-2">
+                      {sellers.map((s) => {
+                        const wa = (s.sellerWhatsapp || "").replace(/[^\d]/g, "");
+                        const waUrl = wa
+                          ? `https://wa.me/${wa.startsWith("221") ? wa : "221" + wa}?text=${encodeURIComponent(`Bonjour, je viens de commander "${s.productTitle}" sur Vide Vaisselle (commande #${order.id.slice(0, 8)}).`)}`
+                          : null;
+                        return (
+                          <div key={s.productId} className="flex items-center justify-between gap-3 rounded-lg border border-border p-3 text-sm">
+                            <div className="min-w-0 flex-1">
+                              <p className="font-medium truncate">{s.productTitle}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {s.sellerName || "Vendeur"}{s.sellerPhone ? ` · ${s.sellerPhone}` : ""}
+                              </p>
+                            </div>
+                            {waUrl && (
+                              <a href={waUrl} target="_blank" rel="noopener noreferrer">
+                                <Button size="sm" className="bg-[#25D366] hover:bg-[#128C7E] text-white gap-1.5 h-8">
+                                  <MessageCircle className="h-3.5 w-3.5" />
+                                  WhatsApp
+                                </Button>
+                              </a>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
+              )}
 
               <div className="bg-muted/30 rounded-xl p-4 space-y-2">
                 <div className="flex justify-between text-xs text-muted-foreground">
