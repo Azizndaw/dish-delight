@@ -39,6 +39,23 @@ const MesAchats = () => {
         enabled: !!user,
     });
 
+    const { data: reviews = [], refetch: refetchReviews } = useQuery({
+        queryKey: ["user-reviews", user?.id],
+        queryFn: async () => {
+            if (!user) return [];
+            const { data, error } = await supabase
+                .from("reviews")
+                .select("order_id, product_id, rating")
+                .eq("user_id", user.id);
+            if (error) throw error;
+            return data;
+        },
+        enabled: !!user,
+    });
+
+    const getReview = (orderId: string, productId: string | null) =>
+        productId ? reviews.find((r) => r.order_id === orderId && r.product_id === productId) : null;
+
     const handleArchive = (id: string) => {
         // Since we don't have a hidden column in orders yet, we'll simulate it
         toast.success("Achat masqué de votre historique (Simulation)");
