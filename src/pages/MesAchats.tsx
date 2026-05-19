@@ -190,18 +190,41 @@ const MesAchats = () => {
                                 </CardHeader>
                                 <CardContent className="p-6">
                                     <div className="space-y-4">
-                                        {order.order_items.map((item) => (
-                                            <div key={item.id} className="flex items-center gap-4">
-                                                <div className="h-12 w-12 rounded border bg-muted flex items-center justify-center">
-                                                    <Package className="h-6 w-6 text-muted-foreground" />
+                                        {order.order_items.map((item) => {
+                                            const review = getReview(order.id, item.product_id);
+                                            const canReview = order.status === "completed" && item.product_id;
+                                            return (
+                                                <div key={item.id} className="flex flex-wrap items-center gap-4">
+                                                    <div className="h-12 w-12 rounded border bg-muted flex items-center justify-center">
+                                                        <Package className="h-6 w-6 text-muted-foreground" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-medium">{item.title}</p>
+                                                        <p className="text-xs text-muted-foreground">Quantité : {item.quantity}</p>
+                                                        {review && (
+                                                            <div className="flex items-center gap-0.5 mt-1">
+                                                                {[1,2,3,4,5].map(n => (
+                                                                    <Star key={n} className={cn("h-3.5 w-3.5", review.rating >= n ? "fill-amber-400 text-amber-400" : "text-muted-foreground/40")} />
+                                                                ))}
+                                                                <span className="text-xs text-muted-foreground ml-1">Votre avis</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-sm font-bold">{formatPrice(item.price)}</p>
+                                                    {canReview && (
+                                                        <Button
+                                                            variant={review ? "outline" : "default"}
+                                                            size="sm"
+                                                            className="gap-1.5"
+                                                            onClick={() => setReviewTarget({ orderId: order.id, productId: item.product_id!, title: item.title })}
+                                                        >
+                                                            <Star className="h-4 w-4" />
+                                                            {review ? "Modifier mon avis" : "Donner mon avis"}
+                                                        </Button>
+                                                    )}
                                                 </div>
-                                                <div className="flex-1">
-                                                    <p className="text-sm font-medium">{item.title}</p>
-                                                    <p className="text-xs text-muted-foreground">Quantité : {item.quantity}</p>
-                                                </div>
-                                                <p className="text-sm font-bold">{formatPrice(item.price)}</p>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                     <div className="mt-6 pt-6 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                         <div className="text-sm">
