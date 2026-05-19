@@ -12,6 +12,7 @@ import { useProduct } from "@/hooks/useProducts";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import ProductReviews from "@/components/ProductReviews";
 
 const DetailsProduit = () => {
   const { id } = useParams();
@@ -242,7 +243,11 @@ const DetailsProduit = () => {
             </div>
           </div>
         </div>
+
+        <ProductReviews productId={product.id} />
       </div>
+
+
 
       {/* Lightbox Modal */}
       {isLightboxOpen && (

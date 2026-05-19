@@ -389,6 +389,15 @@ const AdminDashboard = () => {
           `📦 Votre commande #${orderId.slice(0, 8)} est maintenant ${statusText}.`,
           orderId
         );
+
+        if (newStatus === "completed" && previousStatus !== "completed") {
+          await createNotification(
+            order.user_id,
+            "review_request",
+            `⭐ Votre commande est livrée ! Donnez votre avis depuis "Mes achats".`,
+            orderId
+          );
+        }
       }
     } catch (notifyErr) {
       console.error("Error notifying buyer:", notifyErr);

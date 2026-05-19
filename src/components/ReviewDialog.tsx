@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { notifyAdmins } from "@/hooks/useNotifications";
 
 interface ReviewDialogProps {
   open: boolean;
@@ -69,6 +70,11 @@ const ReviewDialog = ({ open, onOpenChange, orderId, productId, productTitle, on
           comment: comment.trim() || null,
         });
         if (error) throw error;
+        await notifyAdmins(
+          "new_review",
+          `⭐ Nouvel avis (${rating}/5) sur "${productTitle}"`,
+          orderId
+        );
       }
       toast.success("Merci pour votre avis !");
       onOpenChange(false);
