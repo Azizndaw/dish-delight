@@ -373,7 +373,19 @@ const AdminDashboard = () => {
 
     // Notify Buyer
     try {
-      if (order && order.user_id) {
+      let buyerUserId: string | null = order?.user_id || null;
+
+      // Si commande invité, tenter de retrouver un compte via le téléphone
+      if (!buyerUserId && order?.phone) {
+        const { data: prof } = await supabase
+          .from("profiles")
+          .select("user_id")
+          .eq("phone", order.phone)
+          .maybeSingle();
+        if (prof?.user_id) buyerUserId = prof.user_id;
+      }
+
+      if (buyerUserId) {
         let statusText = newStatus;
         if (newStatus === "processing") statusText = "en cours de traitement";
         else if (newStatus === "shipped") statusText = "expédiée";
@@ -384,7 +396,7 @@ const AdminDashboard = () => {
         else if (newStatus === "preparing") statusText = "en préparation";
 
         await createNotification(
-          order.user_id,
+          buyerUserId,
           "order_status",
           `📦 Votre commande #${orderId.slice(0, 8)} est maintenant ${statusText}.`,
           orderId
@@ -392,7 +404,7 @@ const AdminDashboard = () => {
 
         if (newStatus === "completed" && previousStatus !== "completed") {
           await createNotification(
-            order.user_id,
+            buyerUserId,
             "review_request",
             `⭐ Votre commande est livrée ! Donnez votre avis depuis "Mes achats".`,
             orderId
@@ -402,6 +414,7 @@ const AdminDashboard = () => {
     } catch (notifyErr) {
       console.error("Error notifying buyer:", notifyErr);
     }
+
 
     toast.success(`Statut → ${newStatus}`);
     queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
