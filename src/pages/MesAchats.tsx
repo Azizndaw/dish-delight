@@ -2,7 +2,7 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingBag, ChevronLeft, Package, Clock, Truck, CheckCircle2, Trash2, EyeOff, XCircle } from "lucide-react";
+import { ShoppingBag, ChevronLeft, Package, Clock, Truck, CheckCircle2, Trash2, EyeOff, XCircle, Star } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -10,8 +10,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/data/products";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import ReviewDialog from "@/components/ReviewDialog";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 const MesAchats = () => {
+    const [reviewTarget, setReviewTarget] = useState<{ orderId: string; productId: string; title: string } | null>(null);
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const { user, loading } = useAuth();
@@ -34,6 +38,23 @@ const MesAchats = () => {
         },
         enabled: !!user,
     });
+
+    const { data: reviews = [], refetch: refetchReviews } = useQuery({
+        queryKey: ["user-reviews", user?.id],
+        queryFn: async () => {
+            if (!user) return [];
+            const { data, error } = await supabase
+                .from("reviews")
+                .select("order_id, product_id, rating")
+                .eq("user_id", user.id);
+            if (error) throw error;
+            return data;
+        },
+        enabled: !!user,
+    });
+
+    const getReview = (orderId: string, productId: string | null) =>
+        productId ? reviews.find((r) => r.order_id === orderId && r.product_id === productId) : null;
 
     const handleArchive = (id: string) => {
         // Since we don't have a hidden column in orders yet, we'll simulate it
@@ -169,18 +190,41 @@ const MesAchats = () => {
                                 </CardHeader>
                                 <CardContent className="p-6">
                                     <div className="space-y-4">
-                                        {order.order_items.map((item) => (
-                                            <div key={item.id} className="flex items-center gap-4">
-                                                <div className="h-12 w-12 rounded border bg-muted flex items-center justify-center">
-                                                    <Package className="h-6 w-6 text-muted-foreground" />
+                                        {order.order_items.map((item) => {
+                                            const review = getReview(order.id, item.product_id);
+                                            const canReview = order.status === "completed" && item.product_id;
+                                            return (
+                                                <div key={item.id} className="flex flex-wrap items-center gap-4">
+                                                    <div className="h-12 w-12 rounded border bg-muted flex items-center justify-center">
+                                                        <Package className="h-6 w-6 text-muted-foreground" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-medium">{item.title}</p>
+                                                        <p className="text-xs text-muted-foreground">Quantité : {item.quantity}</p>
+                                                        {review && (
+                                                            <div className="flex items-center gap-0.5 mt-1">
+                                                                {[1,2,3,4,5].map(n => (
+                                                                    <Star key={n} className={cn("h-3.5 w-3.5", review.rating >= n ? "fill-amber-400 text-amber-400" : "text-muted-foreground/40")} />
+                                                                ))}
+                                                                <span className="text-xs text-muted-foreground ml-1">Votre avis</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-sm font-bold">{formatPrice(item.price)}</p>
+                                                    {canReview && (
+                                                        <Button
+                                                            variant={review ? "outline" : "default"}
+                                                            size="sm"
+                                                            className="gap-1.5"
+                                                            onClick={() => setReviewTarget({ orderId: order.id, productId: item.product_id!, title: item.title })}
+                                                        >
+                                                            <Star className="h-4 w-4" />
+                                                            {review ? "Modifier mon avis" : "Donner mon avis"}
+                                                        </Button>
+                                                    )}
                                                 </div>
-                                                <div className="flex-1">
-                                                    <p className="text-sm font-medium">{item.title}</p>
-                                                    <p className="text-xs text-muted-foreground">Quantité : {item.quantity}</p>
-                                                </div>
-                                                <p className="text-sm font-bold">{formatPrice(item.price)}</p>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                     <div className="mt-6 pt-6 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                         <div className="text-sm">
@@ -220,6 +264,16 @@ const MesAchats = () => {
                     )}
                 </div>
             </div>
+            {reviewTarget && (
+                <ReviewDialog
+                    open={!!reviewTarget}
+                    onOpenChange={(o) => !o && setReviewTarget(null)}
+                    orderId={reviewTarget.orderId}
+                    productId={reviewTarget.productId}
+                    productTitle={reviewTarget.title}
+                    onSubmitted={() => refetchReviews()}
+                />
+            )}
         </Layout>
     );
 };
