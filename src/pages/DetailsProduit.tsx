@@ -241,10 +241,12 @@ const DetailsProduit = () => {
                 <li>• Ne payez pas à l'avance sans avoir vu l'article.</li>
               </ul>
             </div>
+          </div>
         </div>
 
         <ProductReviews productId={product.id} />
       </div>
+
 
 
       {/* Lightbox Modal */}
