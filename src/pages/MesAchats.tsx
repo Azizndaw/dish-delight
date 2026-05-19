@@ -2,7 +2,7 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingBag, ChevronLeft, Package, Clock, Truck, CheckCircle2, Trash2, EyeOff, XCircle } from "lucide-react";
+import { ShoppingBag, ChevronLeft, Package, Clock, Truck, CheckCircle2, Trash2, EyeOff, XCircle, Star } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -10,8 +10,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/data/products";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import ReviewDialog from "@/components/ReviewDialog";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 const MesAchats = () => {
+    const [reviewTarget, setReviewTarget] = useState<{ orderId: string; productId: string; title: string } | null>(null);
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const { user, loading } = useAuth();
