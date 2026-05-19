@@ -264,6 +264,16 @@ const MesAchats = () => {
                     )}
                 </div>
             </div>
+            {reviewTarget && (
+                <ReviewDialog
+                    open={!!reviewTarget}
+                    onOpenChange={(o) => !o && setReviewTarget(null)}
+                    orderId={reviewTarget.orderId}
+                    productId={reviewTarget.productId}
+                    productTitle={reviewTarget.title}
+                    onSubmitted={() => refetchReviews()}
+                />
+            )}
         </Layout>
     );
 };
