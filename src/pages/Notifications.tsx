@@ -2,7 +2,7 @@ import Layout from "@/components/Layout";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Bell, CheckCheck, Package, ShoppingCart, AlertCircle, ChevronLeft } from "lucide-react";
+import { Bell, CheckCheck, Package, ShoppingCart, AlertCircle, ChevronLeft, Star } from "lucide-react";
 import { Link, Navigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -12,6 +12,8 @@ const typeIcons: Record<string, React.ReactNode> = {
   order_status: <Package className="h-5 w-5 text-blue-500" />,
   new_order_admin: <AlertCircle className="h-5 w-5 text-amber-500" />,
   product_sold: <ShoppingCart className="h-5 w-5 text-green-500" />,
+  review_request: <Star className="h-5 w-5 text-amber-400" />,
+  new_review: <Star className="h-5 w-5 text-amber-400" />,
   default: <Bell className="h-5 w-5 text-muted-foreground" />,
 };
 
