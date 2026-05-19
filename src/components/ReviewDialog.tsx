@@ -70,6 +70,11 @@ const ReviewDialog = ({ open, onOpenChange, orderId, productId, productTitle, on
           comment: comment.trim() || null,
         });
         if (error) throw error;
+        await notifyAdmins(
+          "new_review",
+          `⭐ Nouvel avis (${rating}/5) sur "${productTitle}"`,
+          orderId
+        );
       }
       toast.success("Merci pour votre avis !");
       onOpenChange(false);
