@@ -244,10 +244,18 @@ const AdminDashboard = () => {
   }, [allOrders, orderSearch, orderStatusFilter]);
 
   const filteredProfiles = useMemo(() => {
-    if (!userSearch) return profiles;
-    const s = userSearch.toLowerCase();
-    return profiles.filter((p) => (p.full_name || "").toLowerCase().includes(s) || (p.phone || "").includes(s) || (p.location || "").toLowerCase().includes(s));
-  }, [profiles, userSearch]);
+    const list = !userSearch
+      ? [...profiles]
+      : profiles.filter((p) => {
+          const s = userSearch.toLowerCase();
+          return (p.full_name || "").toLowerCase().includes(s) || (p.phone || "").includes(s) || (p.location || "").toLowerCase().includes(s);
+        });
+    return list.sort((a, b) => {
+      const da = allOrders.filter((o) => o.status === "completed" && (o.user_id === a.user_id || (a.phone && o.phone === a.phone))).length;
+      const db = allOrders.filter((o) => o.status === "completed" && (o.user_id === b.user_id || (b.phone && o.phone === b.phone))).length;
+      return db - da;
+    });
+  }, [profiles, userSearch, allOrders]);
 
   // Format visits for chart (last 7 days)
   const visitsByDay = useMemo(() => {
