@@ -824,20 +824,31 @@ const AdminDashboard = () => {
                     <TableHead className="hidden md:table-cell">Localisation</TableHead>
                     <TableHead className="hidden md:table-cell">Annonces</TableHead>
                     <TableHead className="hidden md:table-cell">Commandes</TableHead>
+                    <TableHead className="hidden md:table-cell">Livrées</TableHead>
                     <TableHead>Inscription</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredProfiles.length === 0 ? (
-                    <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Aucun utilisateur trouvé</TableCell></TableRow>
-                  ) : filteredProfiles.map((profile) => (
+                    <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Aucun utilisateur trouvé</TableCell></TableRow>
+                  ) : filteredProfiles.map((profile) => {
+                    const delivered = getUserDeliveredCount(profile.user_id, profile.phone);
+                    const isTop = delivered > 0 && delivered === maxDelivered;
+                    return (
                     <TableRow key={profile.id} className="hover:bg-muted/10 transition-colors">
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
                             {(profile.full_name || "?")[0].toUpperCase()}
                           </div>
-                          <span className="font-semibold text-sm">{profile.full_name || "Non renseigné"}</span>
+                          <span className="font-semibold text-sm flex items-center gap-1.5">
+                            {profile.full_name || "Non renseigné"}
+                            {isTop && (
+                              <Badge className="bg-amber-500 text-white text-[10px] gap-1 px-1.5 py-0">
+                                <Trophy className="h-3 w-3" /> Meilleur client
+                              </Badge>
+                            )}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell className="text-sm">{profile.phone || <span className="text-muted-foreground">---</span>}</TableCell>
@@ -848,14 +859,20 @@ const AdminDashboard = () => {
                         <Badge variant="outline" className="text-xs">{getUserProductCount(profile.user_id)} annonces</Badge>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        <Badge variant="outline" className="text-xs">{getUserOrderCount(profile.user_id)} commandes</Badge>
+                        <Badge variant="outline" className="text-xs">{getUserOrderCount(profile.user_id, profile.phone)} commandes</Badge>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <Badge className={delivered > 0 ? "bg-green-500 text-white text-xs gap-1" : "bg-muted text-muted-foreground text-xs"}>
+                          <CheckCircle2 className="h-3 w-3" /> {delivered} livrée{delivered > 1 ? "s" : ""}
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
                         {new Date(profile.created_at).toLocaleDateString("fr-FR")}
                       </TableCell>
                     </TableRow>
-                  ))}
+                    );
+                  })}
                 </TableBody>
               </Table>
             </Card>
