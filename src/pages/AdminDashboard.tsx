@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Users, Package, DollarSign, Trash2, ShoppingBag, Clock, Truck, CheckCircle2,
   Search, Eye, EyeOff, Sparkles, AlertTriangle, MapPin, Phone,
-  Calendar, BarChart3, Ban, TrendingUp, Globe, Wallet, MessageCircle
+  Calendar, BarChart3, Ban, TrendingUp, Globe, Wallet, MessageCircle, Trophy
 } from "lucide-react";
 import { formatPrice } from "@/data/products";
 import { useAuth } from "@/context/AuthContext";
@@ -244,10 +244,18 @@ const AdminDashboard = () => {
   }, [allOrders, orderSearch, orderStatusFilter]);
 
   const filteredProfiles = useMemo(() => {
-    if (!userSearch) return profiles;
-    const s = userSearch.toLowerCase();
-    return profiles.filter((p) => (p.full_name || "").toLowerCase().includes(s) || (p.phone || "").includes(s) || (p.location || "").toLowerCase().includes(s));
-  }, [profiles, userSearch]);
+    const list = !userSearch
+      ? [...profiles]
+      : profiles.filter((p) => {
+          const s = userSearch.toLowerCase();
+          return (p.full_name || "").toLowerCase().includes(s) || (p.phone || "").includes(s) || (p.location || "").toLowerCase().includes(s);
+        });
+    return list.sort((a, b) => {
+      const da = allOrders.filter((o) => o.status === "completed" && (o.user_id === a.user_id || (a.phone && o.phone === a.phone))).length;
+      const db = allOrders.filter((o) => o.status === "completed" && (o.user_id === b.user_id || (b.phone && o.phone === b.phone))).length;
+      return db - da;
+    });
+  }, [profiles, userSearch, allOrders]);
 
   // Format visits for chart (last 7 days)
   const visitsByDay = useMemo(() => {
@@ -448,7 +456,14 @@ const AdminDashboard = () => {
 
   // Get user's product count
   const getUserProductCount = (userId: string) => rawProducts.filter((p) => p.user_id === userId).length;
-  const getUserOrderCount = (userId: string) => allOrders.filter((o) => o.user_id === userId).length;
+  const getUserOrderCount = (userId: string, phone?: string | null) =>
+    allOrders.filter((o) => o.user_id === userId || (phone && o.phone && o.phone === phone)).length;
+  const getUserDeliveredCount = (userId: string, phone?: string | null) =>
+    allOrders.filter((o) => o.status === "completed" && (o.user_id === userId || (phone && o.phone && o.phone === phone))).length;
+  const maxDelivered = useMemo(
+    () => Math.max(0, ...profiles.map((p) => getUserDeliveredCount(p.user_id, p.phone))),
+    [profiles, allOrders]
+  );
 
   return (
     <Layout>
@@ -809,20 +824,31 @@ const AdminDashboard = () => {
                     <TableHead className="hidden md:table-cell">Localisation</TableHead>
                     <TableHead className="hidden md:table-cell">Annonces</TableHead>
                     <TableHead className="hidden md:table-cell">Commandes</TableHead>
+                    <TableHead className="hidden md:table-cell">Livrées</TableHead>
                     <TableHead>Inscription</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredProfiles.length === 0 ? (
-                    <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Aucun utilisateur trouvé</TableCell></TableRow>
-                  ) : filteredProfiles.map((profile) => (
+                    <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Aucun utilisateur trouvé</TableCell></TableRow>
+                  ) : filteredProfiles.map((profile) => {
+                    const delivered = getUserDeliveredCount(profile.user_id, profile.phone);
+                    const isTop = delivered > 0 && delivered === maxDelivered;
+                    return (
                     <TableRow key={profile.id} className="hover:bg-muted/10 transition-colors">
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
                             {(profile.full_name || "?")[0].toUpperCase()}
                           </div>
-                          <span className="font-semibold text-sm">{profile.full_name || "Non renseigné"}</span>
+                          <span className="font-semibold text-sm flex items-center gap-1.5">
+                            {profile.full_name || "Non renseigné"}
+                            {isTop && (
+                              <Badge className="bg-amber-500 text-white text-[10px] gap-1 px-1.5 py-0">
+                                <Trophy className="h-3 w-3" /> Meilleur client
+                              </Badge>
+                            )}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell className="text-sm">{profile.phone || <span className="text-muted-foreground">---</span>}</TableCell>
@@ -833,14 +859,20 @@ const AdminDashboard = () => {
                         <Badge variant="outline" className="text-xs">{getUserProductCount(profile.user_id)} annonces</Badge>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        <Badge variant="outline" className="text-xs">{getUserOrderCount(profile.user_id)} commandes</Badge>
+                        <Badge variant="outline" className="text-xs">{getUserOrderCount(profile.user_id, profile.phone)} commandes</Badge>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <Badge className={delivered > 0 ? "bg-green-500 text-white text-xs gap-1" : "bg-muted text-muted-foreground text-xs"}>
+                          <CheckCircle2 className="h-3 w-3" /> {delivered} livrée{delivered > 1 ? "s" : ""}
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
                         {new Date(profile.created_at).toLocaleDateString("fr-FR")}
                       </TableCell>
                     </TableRow>
-                  ))}
+                    );
+                  })}
                 </TableBody>
               </Table>
             </Card>
