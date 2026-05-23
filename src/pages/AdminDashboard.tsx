@@ -448,7 +448,14 @@ const AdminDashboard = () => {
 
   // Get user's product count
   const getUserProductCount = (userId: string) => rawProducts.filter((p) => p.user_id === userId).length;
-  const getUserOrderCount = (userId: string) => allOrders.filter((o) => o.user_id === userId).length;
+  const getUserOrderCount = (userId: string, phone?: string | null) =>
+    allOrders.filter((o) => o.user_id === userId || (phone && o.phone && o.phone === phone)).length;
+  const getUserDeliveredCount = (userId: string, phone?: string | null) =>
+    allOrders.filter((o) => o.status === "completed" && (o.user_id === userId || (phone && o.phone && o.phone === phone))).length;
+  const maxDelivered = useMemo(
+    () => Math.max(0, ...profiles.map((p) => getUserDeliveredCount(p.user_id, p.phone))),
+    [profiles, allOrders]
+  );
 
   return (
     <Layout>
