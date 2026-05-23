@@ -460,10 +460,7 @@ const AdminDashboard = () => {
     allOrders.filter((o) => o.user_id === userId || (phone && o.phone && o.phone === phone)).length;
   const getUserDeliveredCount = (userId: string, phone?: string | null) =>
     allOrders.filter((o) => o.status === "completed" && (o.user_id === userId || (phone && o.phone && o.phone === phone))).length;
-  const maxDelivered = useMemo(
-    () => Math.max(0, ...profiles.map((p) => getUserDeliveredCount(p.user_id, p.phone))),
-    [profiles, allOrders]
-  );
+  const maxDelivered = Math.max(0, ...profiles.map((p) => getUserDeliveredCount(p.user_id, p.phone)));
 
   return (
     <Layout>
