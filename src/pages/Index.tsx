@@ -26,7 +26,7 @@ const Index = () => {
         .eq("is_active", true);
 
       const { count: usersCount } = await supabase
-        .from("profiles")
+        .from("public_profiles")
         .select("*", { count: 'exact', head: true });
 
       return {

@@ -88,15 +88,11 @@ export const createNotification = async (userId: string, type: string, message: 
   });
 };
 
-// Notify all admins
+// Notify all admins via SECURITY DEFINER RPC (allows non-admin authenticated callers e.g. review submission)
 export const notifyAdmins = async (type: string, message: string, orderId?: string) => {
-  const { data: adminRoles } = await supabase
-    .from("user_roles")
-    .select("user_id")
-    .eq("role", "admin");
-  if (adminRoles) {
-    for (const role of adminRoles) {
-      await createNotification(role.user_id, type, message, orderId);
-    }
-  }
+  await supabase.rpc("notify_admins", {
+    _type: type,
+    _message: message,
+    _order_id: orderId || null,
+  });
 };

@@ -335,10 +335,34 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          full_name: string | null
+          location: string | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          location?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          location?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       delete_user_account: { Args: never; Returns: undefined }
+      email_exists: { Args: { _email: string }; Returns: boolean }
       get_email_for_phone: { Args: { _phone: string }; Returns: string }
       has_role: {
         Args: {
@@ -346,6 +370,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      notify_admins: {
+        Args: { _message: string; _order_id?: string; _type: string }
+        Returns: undefined
       }
       phone_exists: { Args: { _phone: string }; Returns: boolean }
     }

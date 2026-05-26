@@ -68,11 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     // Pré-vérification : email déjà utilisé ? (Supabase ne le dit pas par défaut pour la sécurité)
-    const { data: emailTaken } = await supabase
-      .from("profiles")
-      .select("user_id")
-      .ilike("email", email)
-      .maybeSingle();
+    const { data: emailTaken } = await supabase.rpc("email_exists", { _email: email });
 
     if (emailTaken) {
       return {
