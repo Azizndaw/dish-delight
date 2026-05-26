@@ -433,7 +433,7 @@ const AdminDashboard = () => {
   // Stats
   const completedOrders = allOrders.filter((o) => o.status === "completed");
   const totalRevenue = completedOrders.reduce((acc: number, o) => acc + o.total_price, 0);
-  const totalCommissionRevenue = completedOrders.reduce((acc: number, o) => acc + (o.commission_amount || 0), 0);
+  const totalCommissionRevenue = Math.round(totalRevenue * 0.1);
   const pendingOrders = allOrders.filter((o) => o.status === "pending").length;
   const activeProducts = rawProducts.filter((p) => p.is_active).length;
   const inactiveProducts = rawProducts.length - activeProducts;
