@@ -34,7 +34,7 @@ const ProductReviews = ({ productId }: Props) => {
       let profiles: Record<string, { full_name: string | null; avatar_url: string | null }> = {};
       if (userIds.length) {
         const { data: profs } = await supabase
-          .from("profiles")
+          .from("public_profiles")
           .select("user_id, full_name, avatar_url")
           .in("user_id", userIds);
         profiles = Object.fromEntries((profs || []).map((p) => [p.user_id, { full_name: p.full_name, avatar_url: p.avatar_url }]));
